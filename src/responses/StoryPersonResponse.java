@@ -5,26 +5,29 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.Response.ResponseBuilder;
 
-import objects.ItemGroupPerson;
+import objects.StoryPerson;
 
 import java.util.*;
 import java.sql.*;
 
 import com.google.gson.*;
 
-@Path("/ItemGroupPerson")
-public class ItemGroupPersonResponse {
+@Path("/StoryPerson")
+public class StoryPersonResponse {
 	
 	
 	public String executeQuery(String query, String type) throws SQLException{
 		final String DB_URL="jdbc:mysql://mysql-db1.man.poznan.pl:3307/transcribathon";
 		final String USER = "enrichingeuropeana";
 		final String PASS = "Ke;u5De)u8sh";
-		   List<ItemGroupPerson> itemGroupPersonList = new ArrayList<ItemGroupPerson>();
+		   List<StoryPerson> storyPersonList = new ArrayList<StoryPerson>();
 		   // Register JDBC driver
 		   try {
 			Class.forName("com.mysql.jdbc.Driver");
@@ -47,10 +50,10 @@ public class ItemGroupPersonResponse {
 		   // Extract data from result set
 		   while(rs.next()){
 		      //Retrieve by column name
-			  ItemGroupPerson itemGroupPerson = new ItemGroupPerson();
-			  itemGroupPerson.setItemGroupId(rs.getInt("ItemGroupId"));
-			  itemGroupPerson.setPersonId(rs.getInt("PersonId"));
-			  itemGroupPersonList.add(itemGroupPerson);
+			  StoryPerson storyPerson = new StoryPerson();
+			  storyPerson.setStoryId(rs.getInt("StoryId"));
+			  storyPerson.setPersonId(rs.getInt("PersonId"));
+			  storyPersonList.add(storyPerson);
 		   }
 		
 		   // Clean-up environment
@@ -64,17 +67,19 @@ public class ItemGroupPersonResponse {
 			   e.printStackTrace();
 		}
 	    Gson gsonBuilder = new GsonBuilder().create();
-	    String result = gsonBuilder.toJson(itemGroupPersonList);
+	    String result = gsonBuilder.toJson(storyPersonList);
 	    return result;
 	}
 
 	//Get all Entries
 	@Path("/all")
+	@Produces("application/json;charset=utf-8")
 	@GET
-	public String getAll() throws SQLException {
-		String query = "SELECT * FROM ItemGroupPerson WHERE 1";
+	public Response getAll() throws SQLException {
+		String query = "SELECT * FROM StoryPerson WHERE 1";
 		String resource = executeQuery(query, "Select");
-		return resource;
+		ResponseBuilder rBuild = Response.ok(resource);
+        return rBuild.build();
 	}
 	
 
@@ -84,13 +89,13 @@ public class ItemGroupPersonResponse {
 	public String add(String body) throws SQLException {	
 	    GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
 	    Gson gson = gsonBuilder.create();
-	    ItemGroupPerson itemGroupPerson = gson.fromJson(body, ItemGroupPerson.class);
+	    StoryPerson storyPerson = gson.fromJson(body, StoryPerson.class);
 	    
 	    //Check if all mandatory fields are included
-	    if (itemGroupPerson.ItemGroupId != null && itemGroupPerson.PersonId != null) {
-			String query = "INSERT INTO ItemGroupPerson (ItemGroupId, PersonId) "
-							+ "VALUES ('" + itemGroupPerson.ItemGroupId + "'"
-								+ ", " + itemGroupPerson.PersonId + ")";
+	    if (storyPerson.StoryId != null && storyPerson.PersonId != null) {
+			String query = "INSERT INTO StoryPerson (StoryId, PersonId) "
+							+ "VALUES ('" + storyPerson.StoryId + "'"
+								+ ", " + storyPerson.PersonId + ")";
 			String resource = executeQuery(query, "Insert");
 			return resource;
 	    } else {
@@ -104,24 +109,27 @@ public class ItemGroupPersonResponse {
 	@Path("/{id}")
 	@DELETE
 	public String delete(@PathParam("id") int id) throws SQLException {
-		String resource = executeQuery("DELETE FROM ItemGroupPerson WHERE ItemGroupPersonId = " + id, "Delete");
+		String resource = executeQuery("DELETE FROM StoryPerson WHERE StoryPersonId = " + id, "Delete");
 		return resource;
 	}
 	
 
 	//Get entry by id
 	@Path("/{id}")
+	@Produces("application/json;charset=utf-8")
 	@GET
-	public String getEntry(@PathParam("id") int id) throws SQLException {
-		String resource = executeQuery("SELECT * FROM ItemGroupPerson WHERE ItemGroupPersonId = " + id, "Select");
-		return resource;
+	public Response getEntry(@PathParam("id") int id) throws SQLException {
+		String resource = executeQuery("SELECT * FROM StoryPerson WHERE StoryPersonId = " + id, "Select");
+		ResponseBuilder rBuild = Response.ok(resource);
+        return rBuild.build();
 	}
 
 	//Search using custom filters
 	@Path("/search")
+	@Produces("application/json;charset=utf-8")
 	@GET
-	public String search(@Context UriInfo uriInfo) throws SQLException {
-		String query = "SELECT * FROM Campaign WHERE 1";
+	public Response search(@Context UriInfo uriInfo) throws SQLException {
+		String query = "SELECT * FROM StoryPerson WHERE 1";
 		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
 		
 		for(String key : queryParams.keySet()){
@@ -139,7 +147,8 @@ public class ItemGroupPersonResponse {
 		    query += ")";
 		}
 		String resource = executeQuery(query, "Select");
-		return resource;
+		ResponseBuilder rBuild = Response.ok(resource);
+        return rBuild.build();
 	}
 }
 

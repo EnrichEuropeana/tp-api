@@ -5,9 +5,12 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.Response.ResponseBuilder;
 
 import objects.ItemVisit;
 
@@ -72,11 +75,13 @@ public class ItemVisitResponse {
 
 	//Get all Entries
 	@Path("/all")
+	@Produces("application/json;charset=utf-8")
 	@GET
-	public String getAll() throws SQLException {
+	public Response getAll() throws SQLException {
 		String query = "SELECT * FROM ItemVisit WHERE 1";
 		String resource = executeQuery(query, "Select");
-		return resource;
+		ResponseBuilder rBuild = Response.ok(resource);
+        return rBuild.build();
 	}
 	
 
@@ -112,17 +117,20 @@ public class ItemVisitResponse {
 
 	//Get entry by id
 	@Path("/{id}")
+	@Produces("application/json;charset=utf-8")
 	@GET
-	public String getEntry(@PathParam("id") int id) throws SQLException {
+	public Response getEntry(@PathParam("id") int id) throws SQLException {
 		String resource = executeQuery("SELECT * FROM ItemVisit WHERE ItemVisitId = " + id, "Select");
-		return resource;
+		ResponseBuilder rBuild = Response.ok(resource);
+        return rBuild.build();
 	}
 
 	//Search using custom filters
 	@Path("/search")
+	@Produces("application/json;charset=utf-8")
 	@GET
-	public String search(@Context UriInfo uriInfo) throws SQLException {
-		String query = "SELECT * FROM Campaign WHERE 1";
+	public Response search(@Context UriInfo uriInfo) throws SQLException {
+		String query = "SELECT * FROM ItemVisit WHERE 1";
 		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
 		
 		for(String key : queryParams.keySet()){
@@ -140,7 +148,8 @@ public class ItemVisitResponse {
 		    query += ")";
 		}
 		String resource = executeQuery(query, "Select");
-		return resource;
+		ResponseBuilder rBuild = Response.ok(resource);
+        return rBuild.build();
 	}
 }
 
