@@ -12,22 +12,22 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
-import objects.PropertyType;
+import objects.AnnotationType;
 
 import java.util.*;
 import java.sql.*;
 
 import com.google.gson.*;
 
-@Path("/PropertyType")
-public class PropertyTypeResponse {
+@Path("/AnnotationType")
+public class AnnotationTypeResponse {
 
 
 	public String executeQuery(String query, String type) throws SQLException{
 		final String DB_URL="jdbc:mysql://mysql-db1.man.poznan.pl:3307/transcribathon";
 		final String USER = "enrichingeuropeana";
 		final String PASS = "Ke;u5De)u8sh";
-		   List<PropertyType> propertyTypeList = new ArrayList<PropertyType>();
+		   List<AnnotationType> annotationTypeList = new ArrayList<AnnotationType>();
 		   // Register JDBC driver
 		   try {
 			Class.forName("com.mysql.jdbc.Driver");
@@ -50,12 +50,11 @@ public class PropertyTypeResponse {
 		   // Extract data from result set
 		   while(rs.next()){
 		      //Retrieve by column name
-			  PropertyType propertyType = new PropertyType();
-			  propertyType.setPropertyTypeId(rs.getInt("PropertyTypeTypeId"));
-			  propertyType.setName(rs.getString("Name"));
-			  propertyType.setMotivationId(rs.getString("MotivationId"));
-			  propertyType.setEditable(rs.getString("Editable"));
-			  propertyTypeList.add(propertyType);
+			  AnnotationType annotationType = new AnnotationType();
+			  annotationType.setAnnotationTypeId(rs.getInt("AnnotationTypeTypeId"));
+			  annotationType.setName(rs.getString("Name"));
+			  annotationType.setMotivationId(rs.getString("MotivationId"));
+			  annotationTypeList.add(annotationType);
 		   }
 		
 		   // Clean-up environment
@@ -69,7 +68,7 @@ public class PropertyTypeResponse {
 			   e.printStackTrace();
 		}
 	    Gson gsonBuilder = new GsonBuilder().create();
-	    String result = gsonBuilder.toJson(propertyTypeList);
+	    String result = gsonBuilder.toJson(annotationTypeList);
 	    return result;
 	}
 
@@ -78,7 +77,7 @@ public class PropertyTypeResponse {
 	@Produces("application/json;charset=utf-8")
 	@GET
 	public Response getAll() throws SQLException {
-		String query = "SELECT * FROM PropertyType WHERE 1";
+		String query = "SELECT * FROM AnnotationType WHERE 1";
 		String resource = executeQuery(query, "Select");
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
@@ -91,14 +90,13 @@ public class PropertyTypeResponse {
 	public String add(String body) throws SQLException {	
 	    GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
 	    Gson gson = gsonBuilder.create();
-	    PropertyType propertyType = gson.fromJson(body, PropertyType.class);
+	    AnnotationType annotationType = gson.fromJson(body, AnnotationType.class);
 	    
 	    //Check if all mandatory fields are included
-	    if (propertyType.Name != null && propertyType.Editable != null) {
-			String query = "INSERT INTO PropertyType (Name, MotivationId, Editable) "
-							+ "VALUES ('" + propertyType.Name + "'"
-								+ ", " + propertyType.MotivationId
-								+ ", " + propertyType.Editable + ")";
+	    if (annotationType.Name != null && annotationType.MotivationId != null) {
+			String query = "INSERT INTO AnnotationType (Name, MotivationId) "
+							+ "VALUES ('" + annotationType.Name + "'"
+								+ ", " + annotationType.MotivationId + ")";
 			String resource = executeQuery(query, "Insert");
 			return resource;
 	    } else {
@@ -116,15 +114,14 @@ public class PropertyTypeResponse {
 	    JsonObject  changes = gson.fromJson(body, JsonObject.class);
 	    
 	    //Check if field is allowed to be changed
-	    if (changes.get("PropertyTypeId") != null) {
+	    if (changes.get("AnnotationTypeId") != null) {
 	    	return "Prohibited change attempt";
 	    }
 	    
 	    //Check if NOT NULL field is attempted to be changed to NULL
 	    if ((changes.get("Name") == null || !changes.get("Name").isJsonNull())
-	    		&& (changes.get("Editable") == null || !changes.get("Editable").isJsonNull())
 	    		&& (changes.get("MotivationId") == null || !changes.get("MotivationId").isJsonNull())) {
-		    String query = "UPDATE PropertyType SET ";
+		    String query = "UPDATE AnnotationType SET ";
 		    
 		    int keyCount = changes.entrySet().size();
 		    int i = 1;
@@ -135,7 +132,7 @@ public class PropertyTypeResponse {
 			    }
 			    i++;
 			}
-			query += " WHERE PropertyTypeId = " + id;
+			query += " WHERE AnnotationTypeId = " + id;
 			String resource = executeQuery(query, "Update");
 			return resource;
 	    } else {
@@ -148,7 +145,7 @@ public class PropertyTypeResponse {
 	@Path("/{id}")
 	@DELETE
 	public String delete(@PathParam("id") int id) throws SQLException {
-		String resource = executeQuery("DELETE FROM PropertyType WHERE PropertyTypeId = " + id, "Delete");
+		String resource = executeQuery("DELETE FROM AnnotationType WHERE AnnotationTypeId = " + id, "Delete");
 		return resource;
 	}
 	
@@ -158,7 +155,7 @@ public class PropertyTypeResponse {
 	@Produces("application/json;charset=utf-8")
 	@GET
 	public Response getEntry(@PathParam("id") int id) throws SQLException {
-		String resource = executeQuery("SELECT * FROM PropertyType WHERE PropertyTypeId = " + id, "Select");
+		String resource = executeQuery("SELECT * FROM AnnotationType WHERE AnnotationTypeId = " + id, "Select");
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
 	}
@@ -168,7 +165,7 @@ public class PropertyTypeResponse {
 	@Produces("application/json;charset=utf-8")
 	@GET
 	public Response search(@Context UriInfo uriInfo) throws SQLException {
-		String query = "SELECT * FROM PropertyType WHERE 1";
+		String query = "SELECT * FROM AnnotationType WHERE 1";
 		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
 		
 		for(String key : queryParams.keySet()){
