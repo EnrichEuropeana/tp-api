@@ -4,38 +4,29 @@ import java.sql.Timestamp;
 
 public class User {
 	public Integer UserId; 
-	public String Email; 
-	public String Username; 
+	public Integer WP_UserId; 
+	public String WP_Role; 
+	public String Role; 
 	public Timestamp Timestamp;
-	public Integer RoleId; 
-	public String Confirmed; 
-	public String Newsletter; 
-	
-	public void setUserId (Integer UserId) {
-		this.UserId = UserId;
+	public String Token;
+
+	public void setUserId(Integer userId) {
+		UserId = userId;
 	}
-	
-	public void setEmail (String Email) {
-		this.Email = Email;
+	public void setWP_UserId(Integer wP_UserId) {
+		WP_UserId = wP_UserId;
 	}
-	
-	public void setUsername (String Username) {
-		this.Username = Username;
+	public void setWP_Role(String wP_Role) {
+		WP_Role = wP_Role;
 	}
-	
-	public void setTimestamp (Timestamp Timestamp) {
-		this.Timestamp = Timestamp;
+	public void setRole(String role) {
+		Role = role;
 	}
-	
-	public void setRoleId (Integer RoleId) {
-		this.RoleId = RoleId;
+	public void setTimestamp(Timestamp timestamp) {
+		Timestamp = timestamp;
 	}
+	public void setToken(String token) {
+		Token = token;
+	} 
 	
-	public void setConfirmed (String Confirmed) {
-		this.Confirmed = Confirmed;
-	}
-	
-	public void setNewsletter (String Newsletter) {
-		this.Newsletter = Newsletter;
-	}
 }

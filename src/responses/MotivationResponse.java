@@ -12,22 +12,22 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
-import objects.User;
+import objects.Motivation;
 
 import java.util.*;
 import java.sql.*;
 
 import com.google.gson.*;
 
-@Path("/User")
-public class UserResponse {
+@Path("/Motivation")
+public class MotivationResponse {
 
 
 	public String executeQuery(String query, String type) throws SQLException{
 		final String DB_URL="jdbc:mysql://mysql-db1.man.poznan.pl:3307/transcribathon";
 		final String USER = "enrichingeuropeana";
 		final String PASS = "Ke;u5De)u8sh";
-		   List<User> userList = new ArrayList<User>();
+		   List<Motivation> motivationList = new ArrayList<Motivation>();
 		   // Register JDBC driver
 		   try {
 			Class.forName("com.mysql.jdbc.Driver");
@@ -50,14 +50,11 @@ public class UserResponse {
 		   // Extract data from result set
 		   while(rs.next()){
 		      //Retrieve by column name
-			  User user = new User();
-			  user.setUserId(rs.getInt("UserId"));
-			  user.setWP_UserId(rs.getInt("WP_UserId"));
-			  user.setWP_Role(rs.getString("Email"));
-			  user.setRole(rs.getString("RoleId"));
-			  user.setTimestamp(rs.getTimestamp("Timestamp"));
-			  user.setToken(rs.getString("Token"));
-			  userList.add(user);
+			  Motivation motivation = new Motivation();
+			  motivation.setMotivationId(rs.getInt("MotivationTypeId"));
+			  motivation.setName(rs.getString("Name"));
+			  motivation.setProjectId(rs.getString("ProjectId"));
+			  motivationList.add(motivation);
 		   }
 		
 		   // Clean-up environment
@@ -71,7 +68,7 @@ public class UserResponse {
 			   e.printStackTrace();
 		}
 	    Gson gsonBuilder = new GsonBuilder().create();
-	    String result = gsonBuilder.toJson(userList);
+	    String result = gsonBuilder.toJson(motivationList);
 	    return result;
 	}
 
@@ -80,35 +77,13 @@ public class UserResponse {
 	@Produces("application/json;charset=utf-8")
 	@GET
 	public Response getAll() throws SQLException {
-		String query = "SELECT * FROM User WHERE 1";
+		String query = "SELECT * FROM Motivation WHERE 1";
 		String resource = executeQuery(query, "Select");
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
 	}
 	
 
-	//Add new entry
-	@Path("/add")
-	@POST
-	public String add(String body) throws SQLException {	
-	    GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
-	    Gson gson = gsonBuilder.create();
-	    User user = gson.fromJson(body, User.class);
-	    
-	    //Check if all mandatory fields are included
-	    if (user.WP_UserId != null && user.Role != null 
-	    		&& user.WP_Role != null && user.Token != null) {
-			String query = "INSERT INTO User (WP_UserId, RoleId, WP_Role, Token) "
-							+ "VALUES (" + user.WP_UserId
-							+ ", (SELECT RoleID FROM Role WHERE Name = '" + user.Role + "')"
-							+ ", '" + user.WP_Role + "'"
-							+ ", '" + user.Token +"')";
-			String resource = executeQuery(query, "Insert");
-			return resource;
-	    } else {
-	    	return "Fields missing";
-	    }
-	}
 	
 
 	//Edit entry by id
@@ -120,17 +95,14 @@ public class UserResponse {
 	    JsonObject  changes = gson.fromJson(body, JsonObject.class);
 	    
 	    //Check if field is allowed to be changed
-	    if (changes.get("UserId") != null || changes.get("Timestamp") != null) {
+	    if (changes.get("MotivationId") != null) {
 	    	return "Prohibited change attempt";
 	    }
 	    
 	    //Check if NOT NULL field is attempted to be changed to NULL
-	    if ((changes.get("Email") == null || !changes.get("Email").isJsonNull())
-	    		&& (changes.get("Username") == null || !changes.get("Username").isJsonNull())
-	    		&& (changes.get("RoleId") == null || !changes.get("RoleId").isJsonNull())
-	    		&& (changes.get("Confirmed") == null || !changes.get("Confirmed").isJsonNull())
-	    		&& (changes.get("Newsletter") == null || !changes.get("Newsletter").isJsonNull())){
-		    String query = "UPDATE User SET ";
+	    if ((changes.get("Name") == null || !changes.get("Name").isJsonNull())
+	    		&& (changes.get("MotivationId") == null || !changes.get("MotivationId").isJsonNull())) {
+		    String query = "UPDATE Motivation SET ";
 		    
 		    int keyCount = changes.entrySet().size();
 		    int i = 1;
@@ -141,21 +113,20 @@ public class UserResponse {
 			    }
 			    i++;
 			}
-			query += " WHERE UserId = " + id;
+			query += " WHERE MotivationId = " + id;
 			String resource = executeQuery(query, "Update");
 			return resource;
 	    } else {
-	    	return "Prohibited changes to null";
+	    	return "Prohibited change to null";
 	    }
 	}
-	
 	
 
 	//Delete entry by id
 	@Path("/{id}")
 	@DELETE
 	public String delete(@PathParam("id") int id) throws SQLException {
-		String resource = executeQuery("DELETE FROM User WHERE UserId = " + id, "Delete");
+		String resource = executeQuery("DELETE FROM Motivation WHERE MotivationId = " + id, "Delete");
 		return resource;
 	}
 	
@@ -165,7 +136,7 @@ public class UserResponse {
 	@Produces("application/json;charset=utf-8")
 	@GET
 	public Response getEntry(@PathParam("id") int id) throws SQLException {
-		String resource = executeQuery("SELECT * FROM User WHERE UserId = " + id, "Select");
+		String resource = executeQuery("SELECT * FROM Motivation WHERE MotivationId = " + id, "Select");
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
 	}
@@ -175,7 +146,7 @@ public class UserResponse {
 	@Produces("application/json;charset=utf-8")
 	@GET
 	public Response search(@Context UriInfo uriInfo) throws SQLException {
-		String query = "SELECT * FROM Campaign WHERE 1";
+		String query = "SELECT * FROM Motivation WHERE 1";
 		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
 		
 		for(String key : queryParams.keySet()){
@@ -197,5 +168,3 @@ public class UserResponse {
         return rBuild.build();
 	}
 }
-
-
