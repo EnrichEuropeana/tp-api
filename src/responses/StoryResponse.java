@@ -89,10 +89,22 @@ public class StoryResponse {
 				  String[] ItemCompletionStatusIds = rs.getString("CompletionStatusId").split("§~§");
 				  String[] ItemProjectItemIds = rs.getString("ProjectItemId").split("§~§");
 				  String[] ItemProjectIds = rs.getString("ProjectId").split("§~§");
-				  String[] ItemDescriptions = rs.getString("Description").split("§~§");
-				  String[] ItemDateStarts = rs.getString("DateStart").split("§~§");
-				  String[] ItemDateEnds = rs.getString("DateEnd").split("§~§");
-				  String[] ItemDatasetIds = rs.getString("DatasetId").split("§~§");
+				  String[] ItemDescriptions = null;
+				  if (rs.getString("Description") != null) {
+					  ItemDescriptions = rs.getString("Description").split("§~§");
+				  }
+				  String[] ItemDateStarts = null;
+				  if (rs.getString("DateStart") != null) {
+					  ItemDateStarts = rs.getString("DateStart").split("§~§");
+				  }
+				  String[] ItemDateEnds = null;
+				  if (rs.getString("DateEnd") != null) {
+					  ItemDateEnds = rs.getString("DateEnd").split("§~§");
+				  }
+				  String[] ItemDatasetIds = null;
+				  if (rs.getString("DateEnd") != null) {
+					  ItemDatasetIds = rs.getString("DatasetId").split("§~§");
+				  }
 				  String[] ItemImageLinks = rs.getString("ImageLink").split("§~§");
 				  String[] ItemOrderIndexs = rs.getString("OrderIndex").split("§~§");
 				  String[] ItemTimestamps = rs.getString("Timestamp").split("§~§");
@@ -230,30 +242,38 @@ public class StoryResponse {
 					  item.setItemId(Integer.parseInt(ItemIds[j]));
 					  item.setTitle(ItemTitles[j]);
 					  item.setCompletionStatusId(Integer.parseInt(ItemCompletionStatusIds[j]));
-					  item.setProjectItemId(Integer.parseInt(ItemProjectItemIds[j]));
+					  if (ItemProjectItemIds != null) {
+						  item.setProjectItemId(Integer.parseInt(ItemProjectItemIds[j]));
+					  }
 					  item.setProjectId(Integer.parseInt(ItemProjectIds[j]));
-					  item.setDescription(ItemDescriptions[j]);
-					  try {
-				            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-				            Date date = formatter.parse(ItemDateStarts[j]);
-				            Timestamp timeStampDate = new Timestamp(date.getTime());
-				            item.setDateStart(timeStampDate);
-	
-				        } catch (ParseException e) {
-				            System.out.println("Exception :" + e);
-				            return "Exception :" + e;
-				        }
-					  try {
-				            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-				            Date date = formatter.parse(ItemDateEnds[j]);
-				            Timestamp timeStampDate = new Timestamp(date.getTime());
-				            item.setDateEnd(timeStampDate);
-	
-				        } catch (ParseException e) {
-				            System.out.println("Exception :" + e);
-				            return "Exception :" + e;
-				        }
-					  item.setDatasetId(Integer.parseInt(ItemDatasetIds[j]));
+					  if (ItemDescriptions != null) {
+						  item.setDescription(ItemDescriptions[j]);
+					  }
+					  if (ItemDateStarts != null) {
+						  try {
+					            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+					            Date date = formatter.parse(ItemDateStarts[j]);
+					            Timestamp timeStampDate = new Timestamp(date.getTime());
+					            item.setDateStart(timeStampDate);
+							} catch (ParseException e) {
+							    System.out.println("Exception :" + e);
+							    return "Exception :" + e;
+							}
+					  }
+					  if (ItemDateEnds != null) {
+						  try {
+					            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+					            Date date = formatter.parse(ItemDateEnds[j]);
+					            Timestamp timeStampDate = new Timestamp(date.getTime());
+					            item.setDateEnd(timeStampDate);
+					        } catch (ParseException e) {
+					            System.out.println("Exception :" + e);
+					            return "Exception :" + e;
+					        }
+					  }
+					  if (ItemDatasetIds != null) {
+						  item.setDatasetId(Integer.parseInt(ItemDatasetIds[j]));
+					  }
 					  item.setImageLink(ItemImageLinks[j]);
 					  item.setOrderIndex(Integer.parseInt(ItemOrderIndexs[j]));
 					  try {
@@ -266,7 +286,7 @@ public class StoryResponse {
 				            System.out.println("Exception :" + e);
 				            return "Exception :" + e;
 				        }
-					  
+						  
 					  // Add Properties
 					  List<Property> PropertyList = new ArrayList<Property>();
 					  if (rs.getString("PropertyId") != null) {
