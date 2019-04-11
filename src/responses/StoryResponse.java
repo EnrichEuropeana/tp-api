@@ -847,7 +847,154 @@ public class StoryResponse {
 	@Produces("application/json;charset=utf-8")
 	@GET
 	public Response search(@Context UriInfo uriInfo) throws SQLException {
-		String query = "SELECT * FROM Story WHERE 1";
+		String query = "SELECT * FROM " +
+				"(SELECT s.StoryId as StoryId" + 
+				", s.dcTitle as StorydcTitle" +
+				", s.dcDescription as StorydcDescription" +
+				", s.ProjectItemUrl as StoryProjectItemUrl" +
+				", s.DateStartDisplay as StoryDateStartDisplay" +
+				", s.DateEndDisplay as StoryDateEndDisplay" +
+				", s.PlaceName as StoryPlaceName" +
+				", s.PlaceLatitude as StoryPlaceLatitude" +
+				", s.PlaceLongitute as StoryPlaceLongitute" +
+				", s.PlaceEditable as StoryPlaceEditable" +
+				", s.Contributor as StoryContributor" +
+				", s.Rights as StoryRights" +
+				", s.Summary as StorySummary" +
+				", s.ParentStory as StoryParentStory" +
+				", s.Manifest as StoryManifest" +
+				", s.SearchText as StorySearchText" +
+				", s.DateStart as StoryDateStart" +
+				", s.DateEnd as StoryDateEnd" +
+				", s.OrderIndex as StoryOrderIndex" +
+				", group_concat(i.ItemId SEPARATOR '§~§') as ItemId" +
+				", group_concat(i.Title SEPARATOR '§~§') as Title" +
+				", group_concat(i.CompletionStatusId SEPARATOR '§~§') as CompletionStatusId" +
+				", group_concat(i.ProjectItemId SEPARATOR '§~§') as ProjectItemId" +
+				", group_concat(i.ProjectId SEPARATOR '§~§') as ProjectId" +
+				", group_concat(i.Description SEPARATOR '§~§') as Description" +
+				", group_concat(i.DateStart SEPARATOR '§~§') as DateStart" +
+				", group_concat(i.DateEnd SEPARATOR '§~§') as DateEnd" +
+				", group_concat(i.DatasetId SEPARATOR '§~§') as DatasetId" +
+				", group_concat(i.ImageLink SEPARATOR '§~§') as ImageLink" +
+				", group_concat(i.OrderIndex SEPARATOR '§~§') as OrderIndex" +
+				", group_concat(i.Timestamp SEPARATOR '§~§') as Timestamp" +
+				", group_concat(a.PropertyId SEPARATOR '§~§') as PropertyId " +
+				", group_concat(a.PropertyValue SEPARATOR '§~§') as PropertyValue " +
+				", group_concat(a.PropertyTypeName SEPARATOR '§~§') as PropertyTypeName " +
+				", group_concat(a.PropertyEditable SEPARATOR '§~§') as PropertyEditable " +
+				", group_concat(b.CommentId SEPARATOR '§~§') as CommentId " +
+				", group_concat(b.CommentText SEPARATOR '§~§') as CommentText " +
+				", group_concat(b.CommentUserId SEPARATOR '§~§') as CommentUserId " +
+				", group_concat(b.CommentTimestamp SEPARATOR '§~§') as CommentTimestamp " +
+				", group_concat(c.PlaceId SEPARATOR '§~§') as PlaceId " +
+				", group_concat(c.PlaceName SEPARATOR '§~§') as PlaceName " +
+				", group_concat(c.PlaceLatitude SEPARATOR '§~§') as PlaceLatitude " +
+				", group_concat(c.PlaceLongitude SEPARATOR '§~§') as PlaceLongitude " +
+				", group_concat(c.PlaceLink SEPARATOR '§~§') as PlaceLink " +
+				", group_concat(c.PlaceZoom SEPARATOR '§~§') as PlaceZoom " +
+				", group_concat(c.PlaceComment SEPARATOR '§~§') as PlaceComment " +
+				", group_concat(c.PlaceAccuracy SEPARATOR '§~§') as PlaceAccuracy " +
+				", group_concat(c.PlaceEditable SEPARATOR '§~§') as PlaceEditable " +
+				", group_concat(d.TranscriptionId SEPARATOR '§~§') as TranscriptionId " +
+				", group_concat(d.TranscriptionText SEPARATOR '§~§') as TranscriptionText " +
+				", group_concat(d.TranscriptionUserId SEPARATOR '§~§') as TranscriptionUserId " +
+				", group_concat(d.TranscriptionCurrentVersion SEPARATOR '§~§') as TranscriptionCurrentVersion " +
+				", group_concat(d.TranscriptionTimestamp SEPARATOR '§~§') as TranscriptionTimestamp " +
+				", group_concat(e.AnnotationId SEPARATOR '§~§') as AnnotationId " +
+				", group_concat(e.AnnotationType SEPARATOR '§~§') as AnnotationType " +
+				", group_concat(e.AnnotationText SEPARATOR '§~§') as AnnotationText " +
+				", group_concat(e.AnnotationUserId SEPARATOR '§~§') as AnnotationUserId " +
+				", group_concat(e.AnnotationX_Coord SEPARATOR '§~§') as AnnotationX_Coord " +
+				", group_concat(e.AnnotationY_Coord SEPARATOR '§~§') as AnnotationY_Coord " +
+				", group_concat(e.AnnotationWidth SEPARATOR '§~§') as AnnotationWidth " +
+				", group_concat(e.AnnotationHeight SEPARATOR '§~§') as AnnotationHeight " +
+				"FROM " +
+				"(" +
+					"SELECT * " +
+					"FROM Item i " + 
+				") i " +
+				"LEFT JOIN " + 
+				"(" +
+					"SELECT i.ItemId as ItemId " +
+					", group_concat(IFNULL(p.PropertyId, 'NULL') SEPARATOR '&~&') as PropertyId" +
+					", group_concat(IFNULL(pt.Name, 'NULL') SEPARATOR '&~&') as PropertyTypeName " +
+					", group_concat(IFNULL(p.Value, 'NULL') SEPARATOR '&~&') as PropertyValue " +
+					", group_concat(IFNULL(pt.Editable + 0, 'NULL') SEPARATOR '&~&') as PropertyEditable " +
+					"FROM Item i " + 
+					"LEFT JOIN ItemProperty ip on i.ItemId = ip.ItemId " + 
+					"LEFT JOIN Property p on ip.PropertyId = p.PropertyId " + 
+					"LEFT JOIN PropertyType pt on p.PropertyTypeId = pt.PropertyTypeId " + 
+					"GROUP BY i.ItemId " +
+				") a " +
+				"ON i.ItemId = a.ItemId " +
+				"LEFT JOIN " + 
+				"(" + 
+					"SELECT i.ItemId as ItemId" +
+					", group_concat(IFNULL(c.CommentId, 'NULL') SEPARATOR '&~&') as CommentId " +
+					", group_concat(IFNULL(c.Text, 'NULL') SEPARATOR '&~&') as CommentText " +
+					", group_concat(IFNULL(c.UserId, 'NULL') SEPARATOR '&~&') as CommentUserId " +
+					", group_concat(IFNULL(c.Timestamp, 'NULL') SEPARATOR '&~&') as CommentTimestamp " +
+					"FROM Item i " + 
+					"LEFT JOIN Comment c on i.ItemId = c.ItemId " +  
+					"GROUP BY i.ItemId " +
+				") b " +
+				"ON i.ItemId = b.ItemId " +
+				"LEFT JOIN " + 
+				"(" + 
+					"SELECT i.ItemId as ItemId" +
+					", group_concat(IFNULL(pl.PlaceId, 'NULL') SEPARATOR '&~&') as PlaceId " +
+					", group_concat(IFNULL(pl.Name, 'NULL') SEPARATOR '&~&') as PlaceName " +
+					", group_concat(IFNULL(pl.Latitude, 'NULL') SEPARATOR '&~&') as PlaceLatitude " +
+					", group_concat(IFNULL(pl.Longitude, 'NULL') SEPARATOR '&~&') as PlaceLongitude " +
+					", group_concat(IFNULL(pl.Link, 'NULL') SEPARATOR '&~&') as PlaceLink " +
+					", group_concat(IFNULL(pl.Zoom, 'NULL') SEPARATOR '&~&') as PlaceZoom " +
+					", group_concat(IFNULL(pl.Comment, 'NULL') SEPARATOR '&~&') as PlaceComment " +
+					", group_concat(IFNULL(pl.Accuracy, 'NULL') SEPARATOR '&~&') as PlaceAccuracy " +
+					", group_concat(IFNULL(pl.Editable + 0, 'NULL') SEPARATOR '&~&') as PlaceEditable " +
+					"FROM Item i " + 
+					"LEFT JOIN Place pl on i.ItemId = pl.ItemId " +  
+					"GROUP BY i.ItemId " +
+				") c " + 
+				"ON i.ItemId = c.ItemId " +
+				"LEFT JOIN " + 
+				"(" + 
+					"SELECT i.ItemId as ItemId" +
+					", group_concat(IFNULL(t.TranscriptionId, 'NULL') SEPARATOR '&~&') as TranscriptionId " +
+					", group_concat(IFNULL(t.Text, 'NULL') SEPARATOR '&~&') as TranscriptionText " +
+					", group_concat(IFNULL(t.UserId, 'NULL') SEPARATOR '&~&') as TranscriptionUserId " +
+					", group_concat(IFNULL(t.CurrentVersion + 0, 'NULL') SEPARATOR '&~&') as TranscriptionCurrentVersion " +
+					", group_concat(IFNULL(t.Timestamp, 'NULL') SEPARATOR '&~&') as TranscriptionTimestamp " +
+					"FROM Item i " + 
+					"LEFT JOIN Transcription t on i.ItemId = t.ItemId " +  
+					"GROUP BY i.ItemId " +
+				") d " +
+				"ON i.ItemId = d.ItemId " +
+				"LEFT JOIN " + 
+				"(" + 
+					"SELECT i.ItemId as ItemId" +
+					", group_concat(IFNULL(a.AnnotationId, 'NULL') SEPARATOR '&~&') as AnnotationId " +
+					", group_concat(IFNULL(at.Name, 'NULL') SEPARATOR '&~&') as AnnotationType " +
+					", group_concat(IFNULL(a.Text, 'NULL') SEPARATOR '&~&') as AnnotationText " +
+					", group_concat(IFNULL(a.UserId, 'NULL') SEPARATOR '&~&') as AnnotationUserId " +
+					", group_concat(IFNULL(a.X_Coord, 'NULL') SEPARATOR '&~&') as AnnotationX_Coord " +
+					", group_concat(IFNULL(a.Y_Coord, 'NULL') SEPARATOR '&~&') as AnnotationY_Coord " +
+					", group_concat(IFNULL(a.Width, 'NULL') SEPARATOR '&~&') as AnnotationWidth " +
+					", group_concat(IFNULL(a.Height, 'NULL') SEPARATOR '&~&') as AnnotationHeight " +
+					"FROM Item i " + 
+					"LEFT JOIN Annotation a on i.ItemId = a.ItemId " +
+					"LEFT JOIN AnnotationType at on a.AnnotationTypeId = at.AnnotationTypeId " +  
+					"GROUP BY i.ItemId " +
+				") e " + 
+				"ON i.ItemId = e.ItemId " +
+				"LEFT JOIN " + 
+				"(" +
+					"SELECT * " +
+					"FROM Story " + 
+				") s " +
+				"ON i.StoryId = s.StoryId " +
+				"GROUP BY s.StoryId) s " +
+				"WHERE 1";
 		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
 		
 		for(String key : queryParams.keySet()){
