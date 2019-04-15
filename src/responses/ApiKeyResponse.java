@@ -26,7 +26,7 @@ public class ApiKeyResponse {
 
 
 	public String executeQuery(String query, String type) throws SQLException{
-		final String DB_URL="jdbc:mysql://mysql-db1.man.poznan.pl:3307/transcribathon";
+		final String DB_URL="jdbc:mysql://mysql-db1.man.poznan.pl:3307/transcribathon?serverTimezone=CET";
 		final String USER = "enrichingeuropeana";
 		final String PASS = "Ke;u5De)u8sh";
 		   List<ApiKey> apiKeys = new ArrayList<ApiKey>();

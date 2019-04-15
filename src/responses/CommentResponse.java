@@ -24,7 +24,7 @@ public class CommentResponse {
 
 
 	public String executeQuery(String query, String type) throws SQLException{
-		final String DB_URL="jdbc:mysql://mysql-db1.man.poznan.pl:3307/transcribathon";
+		final String DB_URL="jdbc:mysql://mysql-db1.man.poznan.pl:3307/transcribathon?serverTimezone=CET";
 		final String USER = "enrichingeuropeana";
 		final String PASS = "Ke;u5De)u8sh";
 		   List<Comment> commentList = new ArrayList<Comment>();
@@ -51,7 +51,7 @@ public class CommentResponse {
 		   while(rs.next()){
 		      //Retrieve by column name
 			  Comment comment = new Comment();
-			  comment.setCommentId(rs.getInt("commentId"));
+			  comment.setCommentId(rs.getInt("CommentId"));
 			  comment.setText(rs.getString("Text"));
 			  comment.setUserId(rs.getInt("UserId"));
 			  comment.setItemId(rs.getInt("ItemId"));
@@ -69,6 +69,9 @@ public class CommentResponse {
 		   } catch (ClassNotFoundException e) {
 			   e.printStackTrace();
 		}
+		   catch (Exception e) {
+			   return e.toString();
+		   }
 	    Gson gsonBuilder = new GsonBuilder().create();
 	    String result = gsonBuilder.toJson(commentList);
 	    return result;
@@ -79,6 +82,7 @@ public class CommentResponse {
 	@Produces("application/json;charset=utf-8")
 	@GET
 	public Response getAll() throws SQLException {
+		//String query = "SELECT * FROM Comment WHERE 1";
 		String query = "SELECT * FROM Comment WHERE 1";
 		String resource = executeQuery(query, "Select");
 		ResponseBuilder rBuild = Response.ok(resource);
