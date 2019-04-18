@@ -20,7 +20,7 @@ public class Item {
 	public Integer StoryId;
 	public String StorydcTitle;
 	public String StorydcDescription;
-	public String StoryProjectItemUrl;
+	public String StoryProjectStoryUrl;
 	public String StoryDateStartDisplay;
 	public String StoryDateEndDisplay;;
 	public String StoryPlaceName;
@@ -49,8 +49,8 @@ public class Item {
 	public void setStorydcDescription(String storydcDescription) {
 		StorydcDescription = storydcDescription;
 	}
-	public void setStoryProjectItemUrl(String storyProjectItemUrl) {
-		StoryProjectItemUrl = storyProjectItemUrl;
+	public void setStoryProjectStoryUrl(String storyProjectStoryUrl) {
+		StoryProjectStoryUrl = storyProjectStoryUrl;
 	}
 	public void setStoryDateStartDisplay(String storyDateStartDisplay) {
 		StoryDateStartDisplay = storyDateStartDisplay;

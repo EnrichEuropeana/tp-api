@@ -64,7 +64,7 @@ public class StoryResponse {
 			  story.setStoryId(rs.getInt("StoryId")); 
 			  story.setdcTitle(rs.getString("StorydcTitle"));
 			  story.setdcDescription(rs.getString("StorydcDescription"));
-			  story.setProjectItemUrl(rs.getString("StoryProjectItemUrl"));
+			  story.setProjectStoryUrl(rs.getString("StoryProjectStoryUrl"));
 			  story.setDateStartDisplay(rs.getString("StoryDateStartDisplay"));
 			  story.setDateEndDisplay(rs.getString("StoryDateEndDisplay"));
 			  story.setPlaceName(rs.getString("StoryPlaceName"));
@@ -463,12 +463,15 @@ public class StoryResponse {
 	//Get all Entries
 	@Path("/all")
 	@Produces("application/json;charset=utf-8")
-	@GET
-	public Response getAll() throws SQLException {
+	@POST
+	public Response getAll(String body) throws SQLException {
+		JsonParser jsonParser = new JsonParser();
+		JsonElement jsonTree = jsonParser.parse(body);
+		JsonObject bodyObject = jsonTree.getAsJsonObject();
 		String query = "SELECT s.StoryId as StoryId" + 
 				", s.dcTitle as StorydcTitle" +
 				", s.dcDescription as StorydcDescription" +
-				", s.ProjectItemUrl as StoryProjectItemUrl" +
+				", s.ProjectStoryUrl as StoryProjectStoryUrl" +
 				", s.DateStartDisplay as StoryDateStartDisplay" +
 				", s.DateEndDisplay as StoryDateEndDisplay" +
 				", s.PlaceName as StoryPlaceName" +
@@ -688,12 +691,15 @@ public class StoryResponse {
 	//Get entry by id
 	@Path("/{id}")
 	@Produces("application/json;charset=utf-8")
-	@GET
-	public Response getEntry(@PathParam("id") int id) throws SQLException {
+	@POST
+	public Response getEntry(@PathParam("id") int id, String body) throws SQLException {
+		JsonParser jsonParser = new JsonParser();
+		JsonElement jsonTree = jsonParser.parse(body);
+		JsonObject bodyObject = jsonTree.getAsJsonObject();
 		String query = "SELECT s.StoryId as StoryId" + 
 						", s.dcTitle as StorydcTitle" +
 						", s.dcDescription as StorydcDescription" +
-						", s.ProjectItemUrl as StoryProjectItemUrl" +
+						", s.ProjectStoryUrl as StoryProjectStoryUrl" +
 						", s.DateStartDisplay as StoryDateStartDisplay" +
 						", s.DateEndDisplay as StoryDateEndDisplay" +
 						", s.PlaceName as StoryPlaceName" +
@@ -845,13 +851,16 @@ public class StoryResponse {
 	//Search using custom filters
 	@Path("/search")
 	@Produces("application/json;charset=utf-8")
-	@GET
-	public Response search(@Context UriInfo uriInfo) throws SQLException {
+	@POST
+	public Response search(@Context UriInfo uriInfo, String body) throws SQLException {
+		JsonParser jsonParser = new JsonParser();
+		JsonElement jsonTree = jsonParser.parse(body);
+		JsonObject bodyObject = jsonTree.getAsJsonObject();
 		String query = "SELECT * FROM " +
 				"(SELECT s.StoryId as StoryId" + 
 				", s.dcTitle as StorydcTitle" +
 				", s.dcDescription as StorydcDescription" +
-				", s.ProjectItemUrl as StoryProjectItemUrl" +
+				", s.ProjectStoryUrl as StoryProjectStoryUrl" +
 				", s.DateStartDisplay as StoryDateStartDisplay" +
 				", s.DateEndDisplay as StoryDateEndDisplay" +
 				", s.PlaceName as StoryPlaceName" +

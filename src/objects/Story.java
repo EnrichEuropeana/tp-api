@@ -7,7 +7,7 @@ public class Story {
 	public Integer StoryId;
 	public String dcTitle;
 	public String dcDescription;
-	public String ProjectItemUrl;
+	public String ProjectStoryUrl;
 	public String DateStartDisplay;
 	public String DateEndDisplay;;
 	public String PlaceName;
@@ -42,8 +42,8 @@ public class Story {
 	public void setdcDescription(String dcDescription) {
 		this.dcDescription = dcDescription;
 	}
-	public void setProjectItemUrl(String projectItemUrl) {
-		ProjectItemUrl = projectItemUrl;
+	public void setProjectStoryUrl(String projectStoryUrl) {
+		ProjectStoryUrl = projectStoryUrl;
 	}
 	public void setDateStartDisplay(String dateStartDisplay) {
 		DateStartDisplay = dateStartDisplay;

@@ -15,6 +15,7 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import objects.Annotation;
 import objects.Comment;
 import objects.Item;
+import objects.Person;
 import objects.Place;
 import objects.Property;
 import objects.Transcription;
@@ -211,7 +212,7 @@ public class ItemResponse {
 			  item.setStoryId(rs.getInt("s.StoryId"));
 			  item.setStorydcTitle(rs.getString("s.dcTitle"));
 			  item.setStorydcDescription(rs.getString("s.dcDescription"));
-			  item.setStoryProjectItemUrl(rs.getString("s.ProjectItemUrl"));
+			  item.setStoryProjectStoryUrl(rs.getString("s.ProjectStoryUrl"));
 			  item.setStoryDateStartDisplay(rs.getString("s.DateStartDisplay"));
 			  item.setStoryDateEndDisplay(rs.getString("s.DateEndDisplay"));
 			  item.setStoryPlaceName(rs.getString("s.PlaceName"));
@@ -249,8 +250,11 @@ public class ItemResponse {
 	//Get all Entries
 	@Path("/all")
 	@Produces("application/json;charset=utf-8")
-	@GET
-	public Response getAll() throws SQLException {
+	@POST
+	public Response getAll(String body) throws SQLException {
+		JsonParser jsonParser = new JsonParser();
+		JsonElement jsonTree = jsonParser.parse(body);
+		JsonObject bodyObject = jsonTree.getAsJsonObject();
 		String query =  "SELECT * FROM " +
 						"(" +
 							"SELECT * " +
@@ -396,7 +400,7 @@ public class ItemResponse {
 	}
 */
 
-
+/*
 	//Delete entry by id
 	@Path("/{id}")
 	@DELETE
@@ -489,108 +493,114 @@ public class ItemResponse {
 		String resource = executeQuery(query, "Delete");
 		return resource;
 	}
-	
+	*/
 
-	//Get entry by id
-	@Path("/{id}")
-	@Produces("application/json;charset=utf-8")
-	@GET
-	public Response getEntry(@PathParam("id") int id) throws SQLException {
-		String query =  "SELECT * FROM " +
+		//Get entry by id
+		@Path("/{id}")
+		@Produces("application/json;charset=utf-8")
+		@POST
+		public Response getEntryPost(@PathParam("id") int id, String body) throws SQLException {
+			JsonParser jsonParser = new JsonParser();
+			JsonElement jsonTree = jsonParser.parse(body);
+			JsonObject bodyObject = jsonTree.getAsJsonObject();
+			String query =  "SELECT * FROM " +
+								"(" +
+								"SELECT * " +
+								"FROM Item i " + 
+							") i " +
+							"LEFT JOIN " + 
 							"(" +
-							"SELECT * " +
-							"FROM Item i " + 
-						") i " +
-						"LEFT JOIN " + 
-						"(" +
-							"SELECT i.ItemId as ItemId " +
-							", group_concat(p.PropertyId) as PropertyId" +
-							", group_concat(pt.Name) as PropertyTypeName " +
-							", group_concat(p.Value) as PropertyValue " +
-							", group_concat(pt.Editable + 0) as PropertyEditable " +
-							"FROM Item i " + 
-							"LEFT JOIN ItemProperty ip on i.ItemId = ip.ItemId " + 
-							"LEFT JOIN Property p on ip.PropertyId = p.PropertyId " + 
-							"LEFT JOIN PropertyType pt on p.PropertyTypeId = pt.PropertyTypeId " + 
-							"GROUP BY i.ItemId " +
-						") a " +
-						"ON i.ItemId = a.ItemId " +
-						"LEFT JOIN " + 
-						"(" + 
-							"SELECT i.ItemId as ItemId" +
-							", group_concat(c.CommentId) as CommentId " +
-							", group_concat(c.Text) as CommentText " +
-							", group_concat(c.UserId) as CommentUserId " +
-							", group_concat(c.Timestamp) as CommentTimestamp " +
-							"FROM Item i " + 
-							"LEFT JOIN Comment c on i.ItemId = c.ItemId " +  
-							"GROUP BY i.ItemId " +
-						") b " +
-						"ON i.ItemId = b.ItemId " +
-						"LEFT JOIN " + 
-						"(" + 
-							"SELECT i.ItemId as ItemId" +
-							", group_concat(pl.PlaceId) as PlaceId " +
-							", group_concat(pl.Name) as PlaceName " +
-							", group_concat(pl.Latitude) as PlaceLatitude " +
-							", group_concat(pl.Longitude) as PlaceLongitude " +
-							", group_concat(pl.Link) as PlaceLink " +
-							", group_concat(pl.Zoom) as PlaceZoom " +
-							", group_concat(pl.Comment) as PlaceComment " +
-							", group_concat(pl.Accuracy) as PlaceAccuracy " +
-							", group_concat(pl.Editable + 0) as PlaceEditable " +
-							"FROM Item i " + 
-							"LEFT JOIN Place pl on i.ItemId = pl.ItemId " +  
-							"GROUP BY i.ItemId " +
-						") c " + 
-						"ON i.ItemId = c.ItemId " +
-						"LEFT JOIN " + 
-						"(" + 
-							"SELECT i.ItemId as ItemId" +
-							", group_concat(t.TranscriptionId) as TranscriptionId " +
-							", group_concat(t.Text) as TranscriptionText " +
-							", group_concat(t.UserId) as TranscriptionUserId " +
-							", group_concat(t.CurrentVersion + 0) as TranscriptionCurrentVersion " +
-							", group_concat(t.Timestamp) as TranscriptionTimestamp " +
-							"FROM Item i " + 
-							"LEFT JOIN Transcription t on i.ItemId = t.ItemId " +  
-							"GROUP BY i.ItemId " +
-						") d " +
-						"ON i.ItemId = d.ItemId " +
-						"LEFT JOIN " + 
-						"(" + 
-							"SELECT i.ItemId as ItemId" +
-							", group_concat(a.AnnotationId) as AnnotationId " +
-							", group_concat(at.Name) as AnnotationType " +
-							", group_concat(a.Text) as AnnotationText " +
-							", group_concat(a.UserId) as AnnotationUserId " +
-							", group_concat(a.X_Coord) as AnnotationX_Coord " +
-							", group_concat(a.Y_Coord) as AnnotationY_Coord " +
-							", group_concat(a.Width) as AnnotationWidth " +
-							", group_concat(a.Height) as AnnotationHeight " +
-							"FROM Item i " + 
-							"LEFT JOIN Annotation a on i.ItemId = a.ItemId " +
-							"LEFT JOIN AnnotationType at on a.AnnotationTypeId = at.AnnotationTypeId " +  
-							"GROUP BY i.ItemId " +
-						") e " + 
-						"ON i.ItemId = e.ItemId " +
-						"LEFT JOIN " + 
-						"(" +
-							"SELECT * " +
-							"FROM Story " + 
-						") s " +
-						"ON i.StoryId = s.StoryId " +
-						"WHERE i.ItemId = " + id;
-		String resource = executeQuery(query, "Select");
-		ResponseBuilder rBuild = Response.ok(resource);
-        return rBuild.build();
-	}
+								"SELECT i.ItemId as ItemId " +
+								", group_concat(p.PropertyId) as PropertyId" +
+								", group_concat(pt.Name) as PropertyTypeName " +
+								", group_concat(p.Value) as PropertyValue " +
+								", group_concat(pt.Editable + 0) as PropertyEditable " +
+								"FROM Item i " + 
+								"LEFT JOIN ItemProperty ip on i.ItemId = ip.ItemId " + 
+								"LEFT JOIN Property p on ip.PropertyId = p.PropertyId " + 
+								"LEFT JOIN PropertyType pt on p.PropertyTypeId = pt.PropertyTypeId " + 
+								"GROUP BY i.ItemId " +
+							") a " +
+							"ON i.ItemId = a.ItemId " +
+							"LEFT JOIN " + 
+							"(" + 
+								"SELECT i.ItemId as ItemId" +
+								", group_concat(c.CommentId) as CommentId " +
+								", group_concat(c.Text) as CommentText " +
+								", group_concat(c.UserId) as CommentUserId " +
+								", group_concat(c.Timestamp) as CommentTimestamp " +
+								"FROM Item i " + 
+								"LEFT JOIN Comment c on i.ItemId = c.ItemId " +  
+								"GROUP BY i.ItemId " +
+							") b " +
+							"ON i.ItemId = b.ItemId " +
+							"LEFT JOIN " + 
+							"(" + 
+								"SELECT i.ItemId as ItemId" +
+								", group_concat(pl.PlaceId) as PlaceId " +
+								", group_concat(pl.Name) as PlaceName " +
+								", group_concat(pl.Latitude) as PlaceLatitude " +
+								", group_concat(pl.Longitude) as PlaceLongitude " +
+								", group_concat(pl.Link) as PlaceLink " +
+								", group_concat(pl.Zoom) as PlaceZoom " +
+								", group_concat(pl.Comment) as PlaceComment " +
+								", group_concat(pl.Accuracy) as PlaceAccuracy " +
+								", group_concat(pl.Editable + 0) as PlaceEditable " +
+								"FROM Item i " + 
+								"LEFT JOIN Place pl on i.ItemId = pl.ItemId " +  
+								"GROUP BY i.ItemId " +
+							") c " + 
+							"ON i.ItemId = c.ItemId " +
+							"LEFT JOIN " + 
+							"(" + 
+								"SELECT i.ItemId as ItemId" +
+								", group_concat(t.TranscriptionId) as TranscriptionId " +
+								", group_concat(t.Text) as TranscriptionText " +
+								", group_concat(t.UserId) as TranscriptionUserId " +
+								", group_concat(t.CurrentVersion + 0) as TranscriptionCurrentVersion " +
+								", group_concat(t.Timestamp) as TranscriptionTimestamp " +
+								"FROM Item i " + 
+								"LEFT JOIN Transcription t on i.ItemId = t.ItemId " +  
+								"GROUP BY i.ItemId " +
+							") d " +
+							"ON i.ItemId = d.ItemId " +
+							"LEFT JOIN " + 
+							"(" + 
+								"SELECT i.ItemId as ItemId" +
+								", group_concat(a.AnnotationId) as AnnotationId " +
+								", group_concat(at.Name) as AnnotationType " +
+								", group_concat(a.Text) as AnnotationText " +
+								", group_concat(a.UserId) as AnnotationUserId " +
+								", group_concat(a.X_Coord) as AnnotationX_Coord " +
+								", group_concat(a.Y_Coord) as AnnotationY_Coord " +
+								", group_concat(a.Width) as AnnotationWidth " +
+								", group_concat(a.Height) as AnnotationHeight " +
+								"FROM Item i " + 
+								"LEFT JOIN Annotation a on i.ItemId = a.ItemId " +
+								"LEFT JOIN AnnotationType at on a.AnnotationTypeId = at.AnnotationTypeId " +  
+								"GROUP BY i.ItemId " +
+							") e " + 
+							"ON i.ItemId = e.ItemId " +
+							"LEFT JOIN " + 
+							"(" +
+								"SELECT * " +
+								"FROM Story " + 
+							") s " +
+							"ON i.StoryId = s.StoryId " +
+							"WHERE i.ItemId = " + id;
+			String resource = executeQuery(query, "Select");
+			ResponseBuilder rBuild = Response.ok(resource);
+	        return rBuild.build();
+		}
 
 	//Search using custom filters
 	@Path("/search")
 	@Produces("application/json;charset=utf-8")
-	@GET
-	public Response search(@Context UriInfo uriInfo) throws SQLException {
+	@POST
+	public Response search(@Context UriInfo uriInfo, String body) throws SQLException {
+		JsonParser jsonParser = new JsonParser();
+		JsonElement jsonTree = jsonParser.parse(body);
+		JsonObject bodyObject = jsonTree.getAsJsonObject();
 		String query = "SELECT * FROM Item WHERE 1";
 		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
 		
