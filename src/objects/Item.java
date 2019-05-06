@@ -6,7 +6,7 @@ import java.util.List;
 public class Item {
 	public Integer ItemId;
 	public String Title;
-	public Integer CompletionStatusId;
+	public String CompletionStatusName;
 	public Integer ProjectItemId;
 	public Integer ProjectId;
 	public String Description;
@@ -105,8 +105,8 @@ public class Item {
 	public void setTitle(String title) {
 		Title = title;
 	}
-	public void setCompletionStatusId(Integer completionStatusId) {
-		CompletionStatusId = completionStatusId;
+	public void setCompletionStatusName(String completionStatusName) {
+		CompletionStatusName = completionStatusName;
 	}
 	public void setProjectItemId(Integer projectItemId) {
 		ProjectItemId = projectItemId;

@@ -198,7 +198,7 @@ public class ItemResponse {
 			  item.setTranscriptions(TranscriptionList);
 			  item.setAnnotations(AnnotationList);
 			  item.setTitle(rs.getString("i.Title"));
-			  item.setCompletionStatusId(rs.getInt("i.CompletionStatusId"));
+			  item.setCompletionStatusName(rs.getString("i.CompletionStatusName"));
 			  item.setProjectItemId(rs.getInt("i.ProjectItemId"));
 			  item.setProjectId(rs.getInt("i.ProjectId"));
 			  item.setDescription(rs.getString("i.Description"));
@@ -257,8 +257,15 @@ public class ItemResponse {
 		String query =  "SELECT * FROM " +
 						"(" +
 							"SELECT * " +
-							"FROM Item i " + 
-						") i " +
+						    "FROM Item i " +
+						    "LEFT JOIN ( " +
+								"SELECT i.ItemId as CompletionStatusItemId, c.Name as CompletionStatusName " + 
+						        "FROM CompletionStatus c " +
+						        "JOIN Item i " +
+						        "ON i.CompletionStatusId = c.CompletionStatusId " +
+						        ") c  " +
+						        "ON i.ItemId = c.CompletionStatusItemId " +
+							") i " +
 						"LEFT JOIN " + 
 						"(" +
 							"SELECT i.ItemId as ItemId " +
@@ -367,9 +374,8 @@ public class ItemResponse {
 	}
 */
 
-/*
 	//Edit entry by id
-	@Path("/{id}")
+	@Path("/update/{id}")
 	@POST
 	public String update(@PathParam("id") int id, String body) throws SQLException {
 	    GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -397,7 +403,6 @@ public class ItemResponse {
 	    	return "Prohibited change to null";
 	    }
 	}
-*/
 
 /*
 	//Delete entry by id
@@ -505,8 +510,15 @@ public class ItemResponse {
 			String query =  "SELECT * FROM " +
 								"(" +
 								"SELECT * " +
-								"FROM Item i " + 
-							") i " +
+							    "FROM Item i " +
+							    "LEFT JOIN ( " +
+									"SELECT i.ItemId as CompletionStatusItemId, c.Name as CompletionStatusName " + 
+							        "FROM CompletionStatus c " +
+							        "JOIN Item i " +
+							        "ON i.CompletionStatusId = c.CompletionStatusId " +
+							        ") c  " +
+							        "ON i.ItemId = c.CompletionStatusItemId " +
+								") i " +
 							"LEFT JOIN " + 
 							"(" +
 								"SELECT i.ItemId as ItemId " +

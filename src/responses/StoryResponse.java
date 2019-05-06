@@ -86,7 +86,7 @@ public class StoryResponse {
 			  if (rs.getString("ItemId") != null) {
 				  String[] ItemIds = rs.getString("ItemId").split("§~§");
 				  String[] ItemTitles = rs.getString("Title").split("§~§");
-				  String[] ItemCompletionStatusIds = rs.getString("CompletionStatusId").split("§~§");
+				  String[] ItemCompletionStatusNames = rs.getString("CompletionStatusName").split("§~§");
 				  String[] ItemProjectItemIds = rs.getString("ProjectItemId").split("§~§");
 				  String[] ItemProjectIds = rs.getString("ProjectId").split("§~§");
 				  String[] ItemDescriptions = null;
@@ -241,7 +241,7 @@ public class StoryResponse {
 					  Item item = new Item();
 					  item.setItemId(Integer.parseInt(ItemIds[j]));
 					  item.setTitle(ItemTitles[j]);
-					  item.setCompletionStatusId(Integer.parseInt(ItemCompletionStatusIds[j]));
+					  item.setCompletionStatusName(ItemCompletionStatusNames[j]);
 					  if (ItemProjectItemIds != null) {
 						  item.setProjectItemId(Integer.parseInt(ItemProjectItemIds[j]));
 					  }
@@ -489,7 +489,7 @@ public class StoryResponse {
 				", s.OrderIndex as StoryOrderIndex" +
 				", group_concat(i.ItemId SEPARATOR '§~§') as ItemId" +
 				", group_concat(i.Title SEPARATOR '§~§') as Title" +
-				", group_concat(i.CompletionStatusId SEPARATOR '§~§') as CompletionStatusId" +
+				", group_concat(i.CompletionStatusName SEPARATOR '§~§') as CompletionStatusName" +
 				", group_concat(i.ProjectItemId SEPARATOR '§~§') as ProjectItemId" +
 				", group_concat(i.ProjectId SEPARATOR '§~§') as ProjectId" +
 				", group_concat(i.Description SEPARATOR '§~§') as Description" +
@@ -532,7 +532,14 @@ public class StoryResponse {
 				"FROM " +
 				"(" +
 					"SELECT * " +
-					"FROM Item i " + 
+				    "FROM Item i " +
+				    "LEFT JOIN ( " +
+					"SELECT i.ItemId as CompletionStatusItemId, c.Name as CompletionStatusName " + 
+			        "FROM CompletionStatus c " +
+			        "JOIN Item i " +
+			        "ON i.CompletionStatusId = c.CompletionStatusId " +
+			        ") c  " +
+			        "ON i.ItemId = c.CompletionStatusItemId " +
 				") i " +
 				"LEFT JOIN " + 
 				"(" +
@@ -717,7 +724,7 @@ public class StoryResponse {
 						", s.OrderIndex as StoryOrderIndex" +
 						", group_concat(i.ItemId SEPARATOR '§~§') as ItemId" +
 						", group_concat(i.Title SEPARATOR '§~§') as Title" +
-						", group_concat(i.CompletionStatusId SEPARATOR '§~§') as CompletionStatusId" +
+						", group_concat(i.CompletionStatusName SEPARATOR '§~§') as CompletionStatusName" +
 						", group_concat(i.ProjectItemId SEPARATOR '§~§') as ProjectItemId" +
 						", group_concat(i.ProjectId SEPARATOR '§~§') as ProjectId" +
 						", group_concat(i.Description SEPARATOR '§~§') as Description" +
@@ -760,7 +767,14 @@ public class StoryResponse {
 						"FROM " +
 						"(" +
 							"SELECT * " +
-							"FROM Item i " + 
+						    "FROM Item i " +
+						    "LEFT JOIN ( " +
+							"SELECT i.ItemId as CompletionStatusItemId, c.Name as CompletionStatusName " + 
+					        "FROM CompletionStatus c " +
+					        "JOIN Item i " +
+					        "ON i.CompletionStatusId = c.CompletionStatusId " +
+					        ") c  " +
+					        "ON i.ItemId = c.CompletionStatusItemId " +
 						") i " +
 						"LEFT JOIN " + 
 						"(" +
@@ -878,7 +892,7 @@ public class StoryResponse {
 				", s.OrderIndex as StoryOrderIndex" +
 				", group_concat(i.ItemId SEPARATOR '§~§') as ItemId" +
 				", group_concat(i.Title SEPARATOR '§~§') as Title" +
-				", group_concat(i.CompletionStatusId SEPARATOR '§~§') as CompletionStatusId" +
+				", group_concat(i.CompletionStatusName SEPARATOR '§~§') as CompletionStatusName" +
 				", group_concat(i.ProjectItemId SEPARATOR '§~§') as ProjectItemId" +
 				", group_concat(i.ProjectId SEPARATOR '§~§') as ProjectId" +
 				", group_concat(i.Description SEPARATOR '§~§') as Description" +
@@ -919,10 +933,17 @@ public class StoryResponse {
 				", group_concat(e.AnnotationWidth SEPARATOR '§~§') as AnnotationWidth " +
 				", group_concat(e.AnnotationHeight SEPARATOR '§~§') as AnnotationHeight " +
 				"FROM " +
-				"(" +
+					"(" +
 					"SELECT * " +
-					"FROM Item i " + 
-				") i " +
+				    "FROM Item i " +
+				    "LEFT JOIN ( " +
+						"SELECT i.ItemId as CompletionStatusItemId, c.Name as CompletionStatusName " + 
+				        "FROM CompletionStatus c " +
+				        "JOIN Item i " +
+				        "ON i.CompletionStatusId = c.CompletionStatusId " +
+				        ") c  " +
+				        "ON i.ItemId = c.CompletionStatusItemId " +
+					") i " +
 				"LEFT JOIN " + 
 				"(" +
 					"SELECT i.ItemId as ItemId " +
