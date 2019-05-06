@@ -91,7 +91,7 @@ public class ItemResponse {
 				  String[] PlaceZoom = rs.getString("PlaceZoom").split(",");
 				  String[] PlaceComment = rs.getString("PlaceComment").split(",", -1);
 				  String[] PlaceAccuracy = rs.getString("PlaceAccuracy").split(",");
-				  String[] PlaceEditable = rs.getString("PlaceEditable").split(",");
+				  String[] PlaceUserGenerated = rs.getString("PlaceUserGenerated").split(",");
 				  for (int i = 0; i < PlaceIds.length; i++) {
 					  Place place = new Place();
 					  place.setPlaceId(Integer.parseInt(PlaceIds[i]));
@@ -102,7 +102,7 @@ public class ItemResponse {
 					  place.setZoom(Integer.parseInt(PlaceZoom[i]));
 					  place.setComment(PlaceComment[i]);
 					  place.setAccuracy(Integer.parseInt(PlaceAccuracy[i]));
-					  place.setEditable(PlaceEditable[i]);
+					  place.setUserGenerated(PlaceUserGenerated[i]);
 					  PlaceList.add(place);
 				  }
 			  }
@@ -199,7 +199,6 @@ public class ItemResponse {
 			  item.setAnnotations(AnnotationList);
 			  item.setTitle(rs.getString("i.Title"));
 			  item.setCompletionStatusId(rs.getInt("i.CompletionStatusId"));
-			  item.setItemGroupId(rs.getInt("i.StoryID"));
 			  item.setProjectItemId(rs.getInt("i.ProjectItemId"));
 			  item.setProjectId(rs.getInt("i.ProjectId"));
 			  item.setDescription(rs.getString("i.Description"));
@@ -218,7 +217,7 @@ public class ItemResponse {
 			  item.setStoryPlaceName(rs.getString("s.PlaceName"));
 			  item.setStoryPlaceLatitude(rs.getFloat("s.PlaceLatitude"));
 			  item.setStoryPlaceLongitute(rs.getFloat("s.PlaceLongitute"));
-			  item.setStoryPlaceEditable(rs.getString("s.PlaceEditable"));
+			  item.setStoryPlaceUserGenerated(rs.getString("s.PlaceUserGenerated"));
 			  item.setStoryContributor(rs.getString("s.Contributor"));
 			  item.setStoryRights(rs.getString("s.Rights"));
 			  item.setStorySummary(rs.getString("s.Summary"));
@@ -297,7 +296,7 @@ public class ItemResponse {
 							", group_concat(pl.Zoom) as PlaceZoom " +
 							", group_concat(pl.Comment) as PlaceComment " +
 							", group_concat(pl.Accuracy) as PlaceAccuracy " +
-							", group_concat(pl.Editable + 0) as PlaceEditable " +
+							", group_concat(pl.UserGenerated + 0) as PlaceUserGenerated " +
 							"FROM Item i " + 
 							"LEFT JOIN Place pl on i.ItemId = pl.ItemId " +  
 							"GROUP BY i.ItemId " +
@@ -447,7 +446,7 @@ public class ItemResponse {
 					", group_concat(pl.Zoom) as PlaceZoom " +
 					", group_concat(pl.Comment) as PlaceComment " +
 					", group_concat(pl.Accuracy) as PlaceAccuracy " +
-					", group_concat(pl.Editable + 0) as PlaceEditable " +
+					", group_concat(pl.UserGenerated + 0) as PlaceUserGenerated " +
 					"FROM Item i " + 
 					"LEFT JOIN Place pl on i.ItemId = pl.ItemId " +  
 					"GROUP BY i.ItemId " +
@@ -545,7 +544,7 @@ public class ItemResponse {
 								", group_concat(pl.Zoom) as PlaceZoom " +
 								", group_concat(pl.Comment) as PlaceComment " +
 								", group_concat(pl.Accuracy) as PlaceAccuracy " +
-								", group_concat(pl.Editable + 0) as PlaceEditable " +
+								", group_concat(pl.UserGenerated + 0) as PlaceUserGenerated " +
 								"FROM Item i " + 
 								"LEFT JOIN Place pl on i.ItemId = pl.ItemId " +  
 								"GROUP BY i.ItemId " +
@@ -601,11 +600,156 @@ public class ItemResponse {
 		JsonParser jsonParser = new JsonParser();
 		JsonElement jsonTree = jsonParser.parse(body);
 		JsonObject bodyObject = jsonTree.getAsJsonObject();
-		String query = "SELECT * FROM Item WHERE 1";
-		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
+		String query =  "SELECT \r\n" + 
+				"    i.ItemId as ItemId, \r\n" + 
+				"    i.Title as Title, \r\n" + 
+				"    i.CompletionStatusId as CompletionStatusId, \r\n" + 
+				"    i.ProjectItemId as ProjectItemId, \r\n" + 
+				"    i.ProjectId as ProjectId, \r\n" + 
+				"    i.Description as Description, \r\n" + 
+				"    i.DateStart as DateStart, \r\n" + 
+				"    i.DateEnd as DateEnd, \r\n" + 
+				"    i.DatasetId as DatasetId, \r\n" + 
+				"    i.ImageLink as ImageLink, \r\n" + 
+				"    i.OrderIndex as OrderIndex, \r\n" + 
+				"    i.Timestamp as Timestamp,\r\n" + 
+				"    a.PropertyId as PropertyId,\r\n" + 
+				"    a.PropertyTypeName as PropertyTypeName,\r\n" + 
+				"    a.PropertyValue as PropertyValue,\r\n" + 
+				"    a.PropertyEditable as PropertyEditable,\r\n" + 
+				"    b.CommentId as CommentId,\r\n" + 
+				"    b.CommentText as CommentText,\r\n" + 
+				"    b.CommentUserId as CommentUserId,\r\n" + 
+				"    b.CommentTimestamp as CommentTimestamp,\r\n" + 
+				"    c.PlaceId as PlaceId,\r\n" + 
+				"    c.PlaceName as PlaceName,\r\n" + 
+				"    c.PlaceLatitude as PlaceLatitude,\r\n" + 
+				"    c.PlaceLongitude as PlaceLongitude,\r\n" + 
+				"    c.PlaceLink as PlaceLink,\r\n" + 
+				"    c.PlaceZoom as PlaceZoom,\r\n" + 
+				"    c.PlaceComment as PlaceComment,\r\n" + 
+				"    c.PlaceAccuracy as PlaceAccuracy,\r\n" + 
+				"    c.PlaceUserGenerated as PlaceUserGenerated,\r\n" + 
+				"    d.TranscriptionId as TranscriptionId,\r\n" + 
+				"    d.TranscriptionText as TranscriptionText,\r\n" + 
+				"    d.TranscriptionUserId as TranscriptionUserId,\r\n" + 
+				"    d.TranscriptionCurrentVersion as TranscriptionCurrentVersion,\r\n" + 
+				"    d.TranscriptionTimestamp as TranscriptionTimestamp,\r\n" + 
+				"    e.AnnotationId as AnnotationId,\r\n" + 
+				"    e.AnnotationType as AnnotationType,\r\n" + 
+				"    e.AnnotationText as AnnotationText,\r\n" + 
+				"    e.AnnotationUserId as AnnotationUserId,\r\n" + 
+				"    e.AnnotationX_Coord as AnnotationX_Coord,\r\n" + 
+				"    e.AnnotationY_Coord as AnnotationY_Coord,\r\n" + 
+				"    e.AnnotationWidth as AnnotationWidth,\r\n" + 
+				"    e.AnnotationHeight as AnnotationHeight,\r\n" + 
+				"    s.StoryId as StoryId\r\n" + 
+				"	, s.dcTitle as StorydcTitle \r\n" + 
+				"	, s.dcDescription as StorydcDescription \r\n" + 
+				"	, s.ProjectStoryUrl as StoryProjectStoryUrl \r\n" + 
+				"	, s.DateStartDisplay as StoryDateStartDisplay \r\n" + 
+				"	, s.DateEndDisplay as StoryDateEndDisplay \r\n" + 
+				"	, s.PlaceName as StoryPlaceName \r\n" + 
+				"	, s.PlaceLatitude as StoryPlaceLatitude \r\n" + 
+				"	, s.PlaceLongitute as StoryPlaceLongitute \r\n" + 
+				"	, s.PlaceUserGenerated as StoryPlaceUserGenerated \r\n" + 
+				"	, s.Contributor as StoryContributor \r\n" + 
+				"	, s.Rights as StoryRights \r\n" + 
+				"	, s.Summary as StorySummary \r\n" + 
+				"	, s.ParentStory as StoryParentStory \r\n" + 
+				"	, s.Manifest as StoryManifest \r\n" + 
+				"	, s.SearchText as StorySearchText \r\n" + 
+				"	, s.DateStart as StoryDateStart \r\n" + 
+				"	, s.DateEnd as StoryDateEnd \r\n" + 
+				"	, s.OrderIndex as StoryOrderIndex  FROM " +
+				"(" +
+				"SELECT * " +
+				"FROM Item i " + 
+			") i " +
+			"LEFT JOIN " + 
+			"(" +
+				"SELECT i.ItemId as ItemId " +
+				", group_concat(p.PropertyId) as PropertyId" +
+				", group_concat(pt.Name) as PropertyTypeName " +
+				", group_concat(p.Value) as PropertyValue " +
+				", group_concat(pt.Editable + 0) as PropertyEditable " +
+				"FROM Item i " + 
+				"LEFT JOIN ItemProperty ip on i.ItemId = ip.ItemId " + 
+				"LEFT JOIN Property p on ip.PropertyId = p.PropertyId " + 
+				"LEFT JOIN PropertyType pt on p.PropertyTypeId = pt.PropertyTypeId " + 
+				"GROUP BY i.ItemId " +
+			") a " +
+			"ON i.ItemId = a.ItemId " +
+			"LEFT JOIN " + 
+			"(" + 
+				"SELECT i.ItemId as ItemId" +
+				", group_concat(c.CommentId) as CommentId " +
+				", group_concat(c.Text) as CommentText " +
+				", group_concat(c.UserId) as CommentUserId " +
+				", group_concat(c.Timestamp) as CommentTimestamp " +
+				"FROM Item i " + 
+				"LEFT JOIN Comment c on i.ItemId = c.ItemId " +  
+				"GROUP BY i.ItemId " +
+			") b " +
+			"ON i.ItemId = b.ItemId " +
+			"LEFT JOIN " + 
+			"(" + 
+				"SELECT i.ItemId as ItemId" +
+				", group_concat(pl.PlaceId) as PlaceId " +
+				", group_concat(pl.Name) as PlaceName " +
+				", group_concat(pl.Latitude) as PlaceLatitude " +
+				", group_concat(pl.Longitude) as PlaceLongitude " +
+				", group_concat(pl.Link) as PlaceLink " +
+				", group_concat(pl.Zoom) as PlaceZoom " +
+				", group_concat(pl.Comment) as PlaceComment " +
+				", group_concat(pl.Accuracy) as PlaceAccuracy " +
+				", group_concat(pl.UserGenerated + 0) as PlaceUserGenerated " +
+				"FROM Item i " + 
+				"LEFT JOIN Place pl on i.ItemId = pl.ItemId " +  
+				"GROUP BY i.ItemId " +
+			") c " + 
+			"ON i.ItemId = c.ItemId " +
+			"LEFT JOIN " + 
+			"(" + 
+				"SELECT i.ItemId as ItemId" +
+				", group_concat(t.TranscriptionId) as TranscriptionId " +
+				", group_concat(t.Text) as TranscriptionText " +
+				", group_concat(t.UserId) as TranscriptionUserId " +
+				", group_concat(t.CurrentVersion + 0) as TranscriptionCurrentVersion " +
+				", group_concat(t.Timestamp) as TranscriptionTimestamp " +
+				"FROM Item i " + 
+				"LEFT JOIN Transcription t on i.ItemId = t.ItemId " +  
+				"GROUP BY i.ItemId " +
+			") d " +
+			"ON i.ItemId = d.ItemId " +
+			"LEFT JOIN " + 
+			"(" + 
+				"SELECT i.ItemId as ItemId" +
+				", group_concat(a.AnnotationId) as AnnotationId " +
+				", group_concat(at.Name) as AnnotationType " +
+				", group_concat(a.Text) as AnnotationText " +
+				", group_concat(a.UserId) as AnnotationUserId " +
+				", group_concat(a.X_Coord) as AnnotationX_Coord " +
+				", group_concat(a.Y_Coord) as AnnotationY_Coord " +
+				", group_concat(a.Width) as AnnotationWidth " +
+				", group_concat(a.Height) as AnnotationHeight " +
+				"FROM Item i " + 
+				"LEFT JOIN Annotation a on i.ItemId = a.ItemId " +
+				"LEFT JOIN AnnotationType at on a.AnnotationTypeId = at.AnnotationTypeId " +  
+				"GROUP BY i.ItemId " +
+			") e " + 
+			"ON i.ItemId = e.ItemId " +
+			"LEFT JOIN " + 
+			"(" +
+				"SELECT * " +
+				"FROM Story " + 
+			") s " +
+			"ON i.StoryId = s.StoryId " +
+			"WHERE 1";
+		//MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
 		
-		for(String key : queryParams.keySet()){
-			String[] values = queryParams.getFirst(key).split(",");
+		for(String key : bodyObject.keySet()){
+			String[] values = bodyObject.get(key).toString().split(",");
 			query += " AND (";
 		    int valueCount = values.length;
 		    int i = 1;

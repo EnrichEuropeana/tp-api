@@ -10,7 +10,7 @@ public class Place {
 	public Integer Zoom;
 	public String Comment;
 	public Integer Accuracy;
-	public String Editable;
+	public String UserGenerated;
 	
 	public void setPlaceId (Integer PlaceId) {
 		this.PlaceId = PlaceId;
@@ -48,7 +48,7 @@ public class Place {
 		this.Accuracy = Accuracy;
 	}
 	
-	public void setEditable (String Editable) {
-		this.Editable = Editable;
+	public void setUserGenerated (String UserGenerated) {
+		this.UserGenerated = UserGenerated;
 	}
 }

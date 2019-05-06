@@ -60,7 +60,7 @@ public class PlaceResponse {
 			  Place.setZoom(rs.getInt("Zoom"));
 			  Place.setComment(rs.getString("Comment"));
 			  Place.setAccuracy(rs.getInt("Accuracy"));
-			  Place.setEditable(rs.getString("Editable"));
+			  Place.setUserGenerated(rs.getString("UserGenerated"));
 			  placeList.add(Place);
 		   }
 		
@@ -101,7 +101,7 @@ public class PlaceResponse {
 	    
 	    //Check if all mandatory fields are included
 	    if (place.Latitude != null && place.Longitude != null && place.ItemId != null) {
-			String query = "INSERT INTO Place (Name, Latitude, Longitude, ItemId, Link, Zoom, Comment, Accuracy, Editable) "
+			String query = "INSERT INTO Place (Name, Latitude, Longitude, ItemId, Link, Zoom, Comment, Accuracy, UserGenerated) "
 							+ "VALUES ('" + place.Name + "'"
 							+ ", " + place.Latitude
 							+ ", " + place.Longitude
@@ -110,7 +110,7 @@ public class PlaceResponse {
 							+ ", " + place.Zoom
 							+ ", '" + place.Comment + "'"
 							+ ", " + place.Accuracy
-							+ ", '" + place.Editable + "')";
+							+ ", '" + place.UserGenerated + "')";
 			String resource = executeQuery(query, "Insert");
 			return resource;
 	    } else {
@@ -136,7 +136,7 @@ public class PlaceResponse {
 	    if ((changes.get("Latitude") == null || !changes.get("Latitude").isJsonNull())
 	    		&& (changes.get("Longitude") == null || !changes.get("Longitude").isJsonNull())
 	    		&& (changes.get("ItemId") == null || !changes.get("ItemId").isJsonNull())
-	    		&& (changes.get("Editable") == null || !changes.get("Editable").isJsonNull())){
+	    		&& (changes.get("UserGenerated") == null || !changes.get("UserGenerated").isJsonNull())){
 		    String query = "UPDATE Place SET ";
 		    
 		    int keyCount = changes.entrySet().size();

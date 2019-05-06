@@ -13,7 +13,7 @@ public class Story {
 	public String PlaceName;
 	public Float PlaceLatitude;
 	public Float PlaceLongitute;
-	public String PlaceEditable;
+	public String PlaceUserGenerated;
 	public String Contributor;
 	public String Rights;
 	public String Summary;
@@ -60,8 +60,8 @@ public class Story {
 	public void setPlaceLongitute(Float placeLongitute) {
 		PlaceLongitute = placeLongitute;
 	}
-	public void setPlaceEditable(String placeEditable) {
-		PlaceEditable = placeEditable;
+	public void setPlaceUserGenerated(String placeUserGenerated) {
+		PlaceUserGenerated = placeUserGenerated;
 	}
 	public void setContributor(String contributor) {
 		Contributor = contributor;

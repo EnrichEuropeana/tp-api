@@ -7,7 +7,6 @@ public class Item {
 	public Integer ItemId;
 	public String Title;
 	public Integer CompletionStatusId;
-	public Integer ItemGroupId;
 	public Integer ProjectItemId;
 	public Integer ProjectId;
 	public String Description;
@@ -26,7 +25,7 @@ public class Item {
 	public String StoryPlaceName;
 	public Float StoryPlaceLatitude;
 	public Float StoryPlaceLongitute;
-	public String StoryPlaceEditable;
+	public String StoryPlaceUserGenerated;
 	public String StoryContributor;
 	public String StoryRights;
 	public String StorySummary;
@@ -67,8 +66,8 @@ public class Item {
 	public void setStoryPlaceLongitute(Float storyPlaceLongitute) {
 		StoryPlaceLongitute = storyPlaceLongitute;
 	}
-	public void setStoryPlaceEditable(String storyPlaceEditable) {
-		StoryPlaceEditable = storyPlaceEditable;
+	public void setStoryPlaceUserGenerated(String storyPlaceUserGenerated) {
+		StoryPlaceUserGenerated = storyPlaceUserGenerated;
 	}
 	public void setStoryContributor(String storyContributor) {
 		StoryContributor = storyContributor;
@@ -108,9 +107,6 @@ public class Item {
 	}
 	public void setCompletionStatusId(Integer completionStatusId) {
 		CompletionStatusId = completionStatusId;
-	}
-	public void setItemGroupId(Integer itemGroupId) {
-		ItemGroupId = itemGroupId;
 	}
 	public void setProjectItemId(Integer projectItemId) {
 		ProjectItemId = projectItemId;

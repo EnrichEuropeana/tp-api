@@ -70,7 +70,7 @@ public class StoryResponse {
 			  story.setPlaceName(rs.getString("StoryPlaceName"));
 			  story.setPlaceLatitude(rs.getFloat("StoryPlaceLatitude"));
 			  story.setPlaceLongitute(rs.getFloat("StoryPlaceLongitute"));
-			  story.setPlaceEditable(rs.getString("StoryPlaceEditable"));
+			  story.setPlaceUserGenerated(rs.getString("StoryPlaceUserGenerated"));
 			  story.setContributor(rs.getString("StoryContributor"));
 			  story.setRights(rs.getString("StoryRights"));
 			  story.setSummary(rs.getString("StorySummary"));
@@ -153,7 +153,7 @@ public class StoryResponse {
 				  String[] PlaceZoomList = new String[ItemIds.length];
 				  String[] PlaceCommentList = new String[ItemIds.length];
 				  String[] PlaceAccuracyList = new String[ItemIds.length];
-				  String[] PlaceEditableList = new String[ItemIds.length];
+				  String[] PlaceUserGeneratedList = new String[ItemIds.length];
 				  if (rs.getString("PlaceId") != null) {
 					  PlaceIdList = rs.getString("PlaceId").split("§~§");
 				  }
@@ -178,8 +178,8 @@ public class StoryResponse {
 				  if (rs.getString("PlaceAccuracy") != null) {
 					  PlaceAccuracyList = rs.getString("PlaceAccuracy").split("§~§");
 				  }
-				  if (rs.getString("PlaceEditable") != null) {
-					  PlaceEditableList = rs.getString("PlaceEditable").split("§~§");
+				  if (rs.getString("PlaceUserGenerated") != null) {
+					  PlaceUserGeneratedList = rs.getString("PlaceUserGenerated").split("§~§");
 				  }
 				  
 
@@ -320,7 +320,7 @@ public class StoryResponse {
 						  String[] PlaceZoom = PlaceZoomList[j].split("&~&", -1);
 						  String[] PlaceComment = PlaceCommentList[j].split("&~&", -1);
 						  String[] PlaceAccuracy = PlaceAccuracyList[j].split("&~&", -1);
-						  String[] PlaceEditable = PlaceEditableList[j].split("&~&", -1);
+						  String[] PlaceUserGenerated = PlaceUserGeneratedList[j].split("&~&", -1);
 						  for (int i = 0; i < PlaceIds.length; i++) {
 							  if (!isNumeric(PlaceIds[i])) {
 								  continue;
@@ -334,7 +334,7 @@ public class StoryResponse {
 							  place.setZoom(Integer.parseInt(PlaceZoom[i]));
 							  place.setComment(PlaceComment[i]);
 							  place.setAccuracy(Integer.parseInt(PlaceAccuracy[i]));
-							  place.setEditable(PlaceEditable[i]);
+							  place.setUserGenerated(PlaceUserGenerated[i]);
 							  PlaceList.add(place);
 						  }
 					  }
@@ -477,7 +477,7 @@ public class StoryResponse {
 				", s.PlaceName as StoryPlaceName" +
 				", s.PlaceLatitude as StoryPlaceLatitude" +
 				", s.PlaceLongitute as StoryPlaceLongitute" +
-				", s.PlaceEditable as StoryPlaceEditable" +
+				", s.PlaceUserGenerated as StoryPlaceUserGenerated" +
 				", s.Contributor as StoryContributor" +
 				", s.Rights as StoryRights" +
 				", s.Summary as StorySummary" +
@@ -515,7 +515,7 @@ public class StoryResponse {
 				", group_concat(c.PlaceZoom SEPARATOR '§~§') as PlaceZoom " +
 				", group_concat(c.PlaceComment SEPARATOR '§~§') as PlaceComment " +
 				", group_concat(c.PlaceAccuracy SEPARATOR '§~§') as PlaceAccuracy " +
-				", group_concat(c.PlaceEditable SEPARATOR '§~§') as PlaceEditable " +
+				", group_concat(c.PlaceUserGenerated SEPARATOR '§~§') as PlaceUserGenerated " +
 				", group_concat(d.TranscriptionId SEPARATOR '§~§') as TranscriptionId " +
 				", group_concat(d.TranscriptionText SEPARATOR '§~§') as TranscriptionText " +
 				", group_concat(d.TranscriptionUserId SEPARATOR '§~§') as TranscriptionUserId " +
@@ -571,7 +571,7 @@ public class StoryResponse {
 					", group_concat(IFNULL(pl.Zoom, 'NULL') SEPARATOR '&~&') as PlaceZoom " +
 					", group_concat(IFNULL(pl.Comment, 'NULL') SEPARATOR '&~&') as PlaceComment " +
 					", group_concat(IFNULL(pl.Accuracy, 'NULL') SEPARATOR '&~&') as PlaceAccuracy " +
-					", group_concat(IFNULL(pl.Editable + 0, 'NULL') SEPARATOR '&~&') as PlaceEditable " +
+					", group_concat(IFNULL(pl.UserGenerated + 0, 'NULL') SEPARATOR '&~&') as PlaceUserGenerated " +
 					"FROM Item i " + 
 					"LEFT JOIN Place pl on i.ItemId = pl.ItemId " +  
 					"GROUP BY i.ItemId " +
@@ -705,7 +705,7 @@ public class StoryResponse {
 						", s.PlaceName as StoryPlaceName" +
 						", s.PlaceLatitude as StoryPlaceLatitude" +
 						", s.PlaceLongitute as StoryPlaceLongitute" +
-						", s.PlaceEditable as StoryPlaceEditable" +
+						", s.PlaceUserGenerated as StoryPlaceUserGenerated" +
 						", s.Contributor as StoryContributor" +
 						", s.Rights as StoryRights" +
 						", s.Summary as StorySummary" +
@@ -743,7 +743,7 @@ public class StoryResponse {
 						", group_concat(c.PlaceZoom SEPARATOR '§~§') as PlaceZoom " +
 						", group_concat(c.PlaceComment SEPARATOR '§~§') as PlaceComment " +
 						", group_concat(c.PlaceAccuracy SEPARATOR '§~§') as PlaceAccuracy " +
-						", group_concat(c.PlaceEditable SEPARATOR '§~§') as PlaceEditable " +
+						", group_concat(c.PlaceUserGenerated SEPARATOR '§~§') as PlaceUserGenerated " +
 						", group_concat(d.TranscriptionId SEPARATOR '§~§') as TranscriptionId " +
 						", group_concat(d.TranscriptionText SEPARATOR '§~§') as TranscriptionText " +
 						", group_concat(d.TranscriptionUserId SEPARATOR '§~§') as TranscriptionUserId " +
@@ -799,7 +799,7 @@ public class StoryResponse {
 							", group_concat(IFNULL(pl.Zoom, 'NULL') SEPARATOR '&~&') as PlaceZoom " +
 							", group_concat(IFNULL(pl.Comment, 'NULL') SEPARATOR '&~&') as PlaceComment " +
 							", group_concat(IFNULL(pl.Accuracy, 'NULL') SEPARATOR '&~&') as PlaceAccuracy " +
-							", group_concat(IFNULL(pl.Editable + 0, 'NULL') SEPARATOR '&~&') as PlaceEditable " +
+							", group_concat(IFNULL(pl.UserGenerated + 0, 'NULL') SEPARATOR '&~&') as PlaceUserGenerated " +
 							"FROM Item i " + 
 							"LEFT JOIN Place pl on i.ItemId = pl.ItemId " +  
 							"GROUP BY i.ItemId " +
@@ -866,7 +866,7 @@ public class StoryResponse {
 				", s.PlaceName as StoryPlaceName" +
 				", s.PlaceLatitude as StoryPlaceLatitude" +
 				", s.PlaceLongitute as StoryPlaceLongitute" +
-				", s.PlaceEditable as StoryPlaceEditable" +
+				", s.PlaceUserGenerated as StoryPlaceUserGenerated" +
 				", s.Contributor as StoryContributor" +
 				", s.Rights as StoryRights" +
 				", s.Summary as StorySummary" +
@@ -904,7 +904,7 @@ public class StoryResponse {
 				", group_concat(c.PlaceZoom SEPARATOR '§~§') as PlaceZoom " +
 				", group_concat(c.PlaceComment SEPARATOR '§~§') as PlaceComment " +
 				", group_concat(c.PlaceAccuracy SEPARATOR '§~§') as PlaceAccuracy " +
-				", group_concat(c.PlaceEditable SEPARATOR '§~§') as PlaceEditable " +
+				", group_concat(c.PlaceUserGenerated SEPARATOR '§~§') as PlaceUserGenerated " +
 				", group_concat(d.TranscriptionId SEPARATOR '§~§') as TranscriptionId " +
 				", group_concat(d.TranscriptionText SEPARATOR '§~§') as TranscriptionText " +
 				", group_concat(d.TranscriptionUserId SEPARATOR '§~§') as TranscriptionUserId " +
@@ -960,7 +960,7 @@ public class StoryResponse {
 					", group_concat(IFNULL(pl.Zoom, 'NULL') SEPARATOR '&~&') as PlaceZoom " +
 					", group_concat(IFNULL(pl.Comment, 'NULL') SEPARATOR '&~&') as PlaceComment " +
 					", group_concat(IFNULL(pl.Accuracy, 'NULL') SEPARATOR '&~&') as PlaceAccuracy " +
-					", group_concat(IFNULL(pl.Editable + 0, 'NULL') SEPARATOR '&~&') as PlaceEditable " +
+					", group_concat(IFNULL(pl.UserGenerated + 0, 'NULL') SEPARATOR '&~&') as PlaceUserGenerated " +
 					"FROM Item i " + 
 					"LEFT JOIN Place pl on i.ItemId = pl.ItemId " +  
 					"GROUP BY i.ItemId " +
