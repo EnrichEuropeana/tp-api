@@ -7,6 +7,7 @@ public class Item {
 	public Integer ItemId;
 	public String Title;
 	public String CompletionStatusName;
+	public Integer CompletionStatusId;
 	public Integer ProjectItemId;
 	public Integer ProjectId;
 	public String Description;
@@ -107,6 +108,9 @@ public class Item {
 	}
 	public void setCompletionStatusName(String completionStatusName) {
 		CompletionStatusName = completionStatusName;
+	}
+	public void setCompletionStatusId(Integer completionStatusId) {
+		CompletionStatusId = completionStatusId;
 	}
 	public void setProjectItemId(Integer projectItemId) {
 		ProjectItemId = projectItemId;

@@ -199,6 +199,7 @@ public class ItemResponse {
 			  item.setAnnotations(AnnotationList);
 			  item.setTitle(rs.getString("i.Title"));
 			  item.setCompletionStatusName(rs.getString("i.CompletionStatusName"));
+			  item.setCompletionStatusId(rs.getInt("i.CompletionStatusId"));
 			  item.setProjectItemId(rs.getInt("i.ProjectItemId"));
 			  item.setProjectId(rs.getInt("i.ProjectId"));
 			  item.setDescription(rs.getString("i.Description"));
@@ -259,7 +260,8 @@ public class ItemResponse {
 							"SELECT * " +
 						    "FROM Item i " +
 						    "LEFT JOIN ( " +
-								"SELECT i.ItemId as CompletionStatusItemId, c.Name as CompletionStatusName " + 
+								"SELECT i.ItemId as CompletionStatusItemId" +
+								", c.Name as CompletionStatusName " + 
 						        "FROM CompletionStatus c " +
 						        "JOIN Item i " +
 						        "ON i.CompletionStatusId = c.CompletionStatusId " +
@@ -512,7 +514,8 @@ public class ItemResponse {
 								"SELECT * " +
 							    "FROM Item i " +
 							    "LEFT JOIN ( " +
-									"SELECT i.ItemId as CompletionStatusItemId, c.Name as CompletionStatusName " + 
+									"SELECT i.ItemId as CompletionStatusItemId" +
+									", c.Name as CompletionStatusName " +  
 							        "FROM CompletionStatus c " +
 							        "JOIN Item i " +
 							        "ON i.CompletionStatusId = c.CompletionStatusId " +
