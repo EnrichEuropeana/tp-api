@@ -3,6 +3,7 @@ package objects;
 import java.sql.Timestamp;
 
 public class AnnotationExport {
+	public Integer AnnotationId;
 	public String Text;
 	public Timestamp Timestamp;
 	public Float X_Coord;
@@ -14,6 +15,9 @@ public class AnnotationExport {
 	public String StoryUrl;
 	public String StoryId;
 	
+	public void setAnnotationId(Integer annotationId) {
+		AnnotationId = annotationId;
+	}
 	public void setText(String text) {
 		Text = text;
 	}

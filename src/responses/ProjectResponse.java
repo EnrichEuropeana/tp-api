@@ -75,8 +75,12 @@ public class ProjectResponse {
 	//Get all Entries
 	@Path("/all")
 	@Produces("application/json;charset=utf-8")
-	@GET
-	public Response getAll() throws SQLException {
+	@POST
+	public Response getAll(String body) throws SQLException {
+		JsonParser jsonParser = new JsonParser();
+		JsonElement jsonTree = jsonParser.parse(body);
+		JsonObject bodyObject = jsonTree.getAsJsonObject();
+		
 		String query = "SELECT * FROM Project WHERE 1";
 		String resource = executeQuery(query, "Select");
 		ResponseBuilder rBuild = Response.ok(resource);
@@ -152,8 +156,11 @@ public class ProjectResponse {
 	//Get entry by id
 	@Path("/{id}")
 	@Produces("application/json;charset=utf-8")
-	@GET
-	public Response getEntry(@PathParam("id") int id) throws SQLException {
+	@POST
+	public Response getEntry(@PathParam("id") int id, String body) throws SQLException {
+		JsonParser jsonParser = new JsonParser();
+		JsonElement jsonTree = jsonParser.parse(body);
+		JsonObject bodyObject = jsonTree.getAsJsonObject();
 		String resource = executeQuery("SELECT * FROM Project WHERE ProjectId = " + id, "Select");
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
@@ -162,13 +169,16 @@ public class ProjectResponse {
 	//Search using custom filters
 	@Path("/search")
 	@Produces("application/json;charset=utf-8")
-	@GET
-	public Response search(@Context UriInfo uriInfo) throws SQLException {
-		String query = "SELECT * FROM Project WHERE 1";
-		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
+	@POST
+	public Response search(@Context UriInfo uriInfo, String body) throws SQLException {
+		JsonParser jsonParser = new JsonParser();
+		JsonElement jsonTree = jsonParser.parse(body);
+		JsonObject bodyObject = jsonTree.getAsJsonObject();
 		
-		for(String key : queryParams.keySet()){
-			String[] values = queryParams.getFirst(key).split(",");
+		String query = "SELECT * FROM Project WHERE 1";
+		
+		for(String key : bodyObject.keySet()){
+			String[] values = bodyObject.get(key).toString().split(",");
 			query += " AND (";
 		    int valueCount = values.length;
 		    int i = 1;
