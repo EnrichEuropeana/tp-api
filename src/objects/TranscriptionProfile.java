@@ -3,24 +3,16 @@ package objects;
 import java.sql.Timestamp;
 
 public class TranscriptionProfile {
-	public Integer TranscriptionId;
-	public String Text;
 	public Timestamp Timestamp;
 	public Integer UserId;
 	public Integer WP_UserId;
 	public Integer ItemId;
+	public Integer Amount;
 	public String ItemImageLink;
 	public String ItemTitle;
 	public String CompletionStatus;
-	public String CurrentVersion;
+	public String ScoreType;
 	
-	
-	public void setTranscriptionId(Integer transcriptionId) {
-		TranscriptionId = transcriptionId;
-	}
-	public void setText(String text) {
-		Text = text;
-	}
 	public void setTimestamp(Timestamp timestamp) {
 		Timestamp = timestamp;
 	}
@@ -33,8 +25,8 @@ public class TranscriptionProfile {
 	public void setItemId(Integer itemId) {
 		ItemId = itemId;
 	}
-	public void setCurrentVersion(String currentVersion) {
-		CurrentVersion = currentVersion;
+	public void setAmount(Integer amount) {
+		Amount = amount;
 	}
 	public void setItemImageLink(String itemImageLink) {
 		ItemImageLink = itemImageLink;
@@ -44,5 +36,8 @@ public class TranscriptionProfile {
 	}
 	public void setCompletionStatus(String completionStatus) {
 		CompletionStatus = completionStatus;
+	}
+	public void setScoreType(String scoreType) {
+		ScoreType = scoreType;
 	}
 }

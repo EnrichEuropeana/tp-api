@@ -51,16 +51,15 @@ public class TranscriptionProfileResponse {
 		   while(rs.next()){
 		      //Retrieve by column name
 			  TranscriptionProfile transcriptionProfile = new TranscriptionProfile();
-			  transcriptionProfile.setTranscriptionId(rs.getInt("TranscriptionId"));
-			  transcriptionProfile.setText(rs.getString("Text"));
 			  transcriptionProfile.setTimestamp(rs.getTimestamp("Timestamp"));
 			  transcriptionProfile.setUserId(rs.getInt("UserId"));
 			  transcriptionProfile.setWP_UserId(rs.getInt("WP_UserId"));
 			  transcriptionProfile.setItemId(rs.getInt("ItemId"));
-			  transcriptionProfile.setCurrentVersion(rs.getString("CurrentVersion"));
+			  transcriptionProfile.setAmount(rs.getInt("Amount"));
 			  transcriptionProfile.setItemImageLink(rs.getString("ItemImageLink"));
 			  transcriptionProfile.setItemTitle(rs.getString("ItemTitle"));
 			  transcriptionProfile.setCompletionStatus(rs.getString("CompletionStatus"));
+			  transcriptionProfile.setScoreType(rs.getString("ScoreType"));
 			  transcriptionProfileList.add(transcriptionProfile);
 		   }
 		
@@ -87,23 +86,26 @@ public class TranscriptionProfileResponse {
 		JsonParser jsonParser = new JsonParser();
 		JsonElement jsonTree = jsonParser.parse(body);
 		JsonObject bodyObject = jsonTree.getAsJsonObject();
-		String query = "SELECT * FROM ("
-						+ "SELECT "
-						+ "t.TranscriptionId, "
-						+ "t.Text, "
-						+ "t.Timestamp, "
-						+ "t.UserId, "
-						+ "t.ItemId, "
-						+ "t.CurrentVersion, "
-						+ "u.WP_UserId, "
-						+ "i.ImageLink as ItemImageLink, "
-						+ "i.Title as ItemTitle, "
-						+ "c.Name as CompletionStatus "
-						+ "FROM Transcription t "
-						+ "JOIN User u ON t.UserId = u.UserId "
-						+ "JOIN Item i ON t.ItemId = i.ItemId "
-						+ "JOIN CompletionStatus c ON i.CompletionStatusId = c.CompletionStatusId) a "
-						+ "WHERE 1";
+		String query = "SELECT  " + 
+						"    * " + 
+						"FROM " + 
+						"    (SELECT  " + 
+						"			st.Name as ScoreType, " + 
+						"            s.Amount, " + 
+						"            s.Timestamp, " + 
+						"            s.UserId, " + 
+						"            s.ItemId, " + 
+						"            u.WP_UserId, " + 
+						"            i.ImageLink AS ItemImageLink, " + 
+						"            i.Title AS ItemTitle, " + 
+						"            c.Name AS CompletionStatus " + 
+						"    FROM " + 
+						"        Score s " + 
+						"    JOIN ScoreType st ON s.ScoreTypeId = st.ScoreTypeId " + 
+						"    JOIN User u ON s.UserId = u.UserId " + 
+						"    JOIN Item i ON s.ItemId = i.ItemId " + 
+						"    JOIN CompletionStatus c ON i.CompletionStatusId = c.CompletionStatusId) a " + 
+						"WHERE 1";
 		String resource = executeQuery(query, "Select");
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
@@ -118,23 +120,26 @@ public class TranscriptionProfileResponse {
 		JsonElement jsonTree = jsonParser.parse(body);
 		JsonObject bodyObject = jsonTree.getAsJsonObject();
 
-		String query = "SELECT * FROM ("
-						+ "SELECT "
-						+ "t.TranscriptionId, "
-						+ "t.Text, "
-						+ "t.Timestamp, "
-						+ "t.UserId, "
-						+ "t.ItemId, "
-						+ "t.CurrentVersion, "
-						+ "u.WP_UserId, "
-						+ "i.ImageLink as ItemImageLink, "
-						+ "i.Title as ItemTitle, "
-						+ "c.Name as CompletionStatus "
-						+ "FROM Transcription t "
-						+ "JOIN User u ON t.UserId = u.UserId "
-						+ "JOIN Item i ON t.ItemId = i.ItemId "
-						+ "JOIN CompletionStatus c ON i.CompletionStatusId = c.CompletionStatusId) a "
-						+ "WHERE 1";
+		String query = "SELECT  " + 
+						"    * " + 
+						"FROM " + 
+						"    (SELECT  " + 
+						"			st.Name as ScoreType, " + 
+						"            s.Amount, " + 
+						"            s.Timestamp, " + 
+						"            s.UserId, " + 
+						"            s.ItemId, " + 
+						"            u.WP_UserId, " + 
+						"            i.ImageLink AS ItemImageLink, " + 
+						"            i.Title AS ItemTitle, " + 
+						"            c.Name AS CompletionStatus " + 
+						"    FROM " + 
+						"        Score s " + 
+						"    JOIN ScoreType st ON s.ScoreTypeId = st.ScoreTypeId " + 
+						"    JOIN User u ON s.UserId = u.UserId " + 
+						"    JOIN Item i ON s.ItemId = i.ItemId " + 
+						"    JOIN CompletionStatus c ON i.CompletionStatusId = c.CompletionStatusId) a " + 
+						"WHERE 1";
 
 		for(String key : bodyObject.keySet()){
 			String[] values = bodyObject.get(key).toString().split(",");
