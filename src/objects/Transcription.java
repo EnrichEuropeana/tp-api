@@ -1,11 +1,9 @@
 package objects;
 
-import java.sql.Timestamp;
-
 public class Transcription {
 	public Integer TranscriptionId;
 	public String Text;
-	public Timestamp Timestamp;
+	public String Timestamp;
 	public Integer UserId;
 	public Integer WP_UserId;
 	public Integer ItemId;
@@ -18,7 +16,7 @@ public class Transcription {
 	public void setText(String text) {
 		Text = text;
 	}
-	public void setTimestamp(Timestamp timestamp) {
+	public void setTimestamp(String timestamp) {
 		Timestamp = timestamp;
 	}
 	public void setUserId(Integer userId) {

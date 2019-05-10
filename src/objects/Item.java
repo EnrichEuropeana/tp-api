@@ -16,7 +16,7 @@ public class Item {
 	public Integer DatasetId;
 	public String ImageLink;
 	public Integer OrderIndex;
-	public Timestamp Timestamp;
+	public String Timestamp;
 	public Integer StoryId;
 	public String StorydcTitle;
 	public String StorydcDescription;
@@ -136,7 +136,7 @@ public class Item {
 	public void setOrderIndex(Integer orderIndex) {
 		OrderIndex = orderIndex;
 	}
-	public void setTimestamp(Timestamp timestamp) {
+	public void setTimestamp(String timestamp) {
 		Timestamp = timestamp;
 	}
 	public void setPropertyIds(String[] propertyIds) {

@@ -189,17 +189,8 @@ public class StoryResponse {
 					  }
 					  item.setImageLink(ItemImageLinks[j]);
 					  item.setOrderIndex(Integer.parseInt(ItemOrderIndexs[j]));
-					  try {
-				            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-				            Date date = formatter.parse(ItemTimestamps[j]);
-				            Timestamp timeStampDate = new Timestamp(date.getTime());
-				            item.setTimestamp(timeStampDate);
-	
-				        } catch (ParseException e) {
-				            System.out.println("Exception :" + e);
-				            return "Exception :" + e;
-				        }
-					  
+				      item.setTimestamp(ItemTimestamps[j]);
+				            
 					  //Add Places
 					  List<Place> PlaceList = new ArrayList<Place>();
 					  if (rs.getString("PlaceId") != null) {

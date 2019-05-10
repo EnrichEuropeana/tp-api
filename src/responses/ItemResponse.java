@@ -121,18 +121,7 @@ public class ItemResponse {
 					  transcription.setText(TranscriptionTexts[i]);
 					  transcription.setUserId(Integer.parseInt(TranscriptionUserIds[i]));
 					  transcription.setCurrentVersion(TranscriptionCurrentVersions[i]);
-					  
-					  // String to Timestamp conversion
-					  try {
-				            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-				            Date date = formatter.parse(TranscriptionTimestamps[i]);
-				            Timestamp timeStampDate = new Timestamp(date.getTime());
-				            transcription.setTimestamp(timeStampDate);
-	
-				        } catch (ParseException e) {
-				            System.out.println("Exception :" + e);
-				            return null;
-				        }
+				      transcription.setTimestamp(TranscriptionTimestamps[i]);
 					  TranscriptionList.add(transcription);
 				  }
 			  }
@@ -208,7 +197,7 @@ public class ItemResponse {
 			  item.setDatasetId(rs.getInt("i.DatasetId"));
 			  item.setImageLink(rs.getString("i.ImageLink"));
 			  item.setOrderIndex(rs.getInt("i.OrderIndex"));
-			  item.setTimestamp(rs.getTimestamp("i.Timestamp"));
+			  item.setTimestamp(rs.getString("i.Timestamp"));
 			  item.setStoryId(rs.getInt("s.StoryId"));
 			  item.setStorydcTitle(rs.getString("s.dcTitle"));
 			  item.setStorydcDescription(rs.getString("s.dcDescription"));

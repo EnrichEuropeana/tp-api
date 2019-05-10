@@ -16,6 +16,7 @@ import objects.Transcription;
 
 import java.util.*;
 import java.sql.*;
+import java.text.ParseException;
 
 import com.google.gson.*;
 
@@ -23,7 +24,7 @@ import com.google.gson.*;
 public class TranscriptionResponse {
 
 
-	public String executeQuery(String query, String type) throws SQLException{
+	public String executeQuery(String query, String type) throws SQLException, ParseException{
 		final String DB_URL="jdbc:mysql://mysql-db1.man.poznan.pl:3307/transcribathon?serverTimezone=CET";
 		final String USER = "enrichingeuropeana";
 		final String PASS = "Ke;u5De)u8sh";
@@ -53,7 +54,7 @@ public class TranscriptionResponse {
 			  Transcription transcription = new Transcription();
 			  transcription.setTranscriptionId(rs.getInt("TranscriptionId"));
 			  transcription.setText(rs.getString("Text"));
-			  transcription.setTimestamp(rs.getTimestamp("Timestamp"));
+			  transcription.setTimestamp(rs.getString("Timestamp"));
 			  transcription.setUserId(rs.getInt("UserId"));
 			  transcription.setWP_UserId(rs.getInt("WP_UserId"));
 			  transcription.setItemId(rs.getInt("ItemId"));
@@ -80,7 +81,7 @@ public class TranscriptionResponse {
 	@Path("/all")
 	@Produces("application/json;charset=utf-8")
 	@GET
-	public Response getAll() throws SQLException {
+	public Response getAll() throws SQLException, ParseException {
 		String query = "SELECT * FROM ("
 						+ "SELECT "
 						+ "t.TranscriptionId, "
@@ -102,7 +103,7 @@ public class TranscriptionResponse {
 	//Add new entry
 	@Path("/add")
 	@POST
-	public String add(String body) throws SQLException {	
+	public String add(String body) throws SQLException, ParseException {	
 	    GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
 	    Gson gson = gsonBuilder.create();
 	    Transcription transcription = gson.fromJson(body, Transcription.class);
@@ -126,7 +127,7 @@ public class TranscriptionResponse {
 	//Delete entry by id
 	@Path("/{id}")
 	@DELETE
-	public String delete(@PathParam("id") int id) throws SQLException {
+	public String delete(@PathParam("id") int id) throws SQLException, ParseException {
 		String resource = executeQuery("DELETE FROM Transcription WHERE TranscriptionId = " + id, "Delete");
 		return resource;
 	}
@@ -136,7 +137,7 @@ public class TranscriptionResponse {
 	@Path("/{id}")
 	@Produces("application/json;charset=utf-8")
 	@GET
-	public Response getEntry(@PathParam("id") int id) throws SQLException {
+	public Response getEntry(@PathParam("id") int id) throws SQLException, ParseException {
 		String resource = executeQuery("SELECT * FROM Transcription WHERE TranscriptionId = " + id, "Select");
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
@@ -146,7 +147,7 @@ public class TranscriptionResponse {
 	@Path("/search")
 	@Produces("application/json;charset=utf-8")
 	@POST
-	public Response search(@Context UriInfo uriInfo, String body) throws SQLException {
+	public Response search(@Context UriInfo uriInfo, String body) throws SQLException, ParseException {
 		JsonParser jsonParser = new JsonParser();
 		JsonElement jsonTree = jsonParser.parse(body);
 		JsonObject bodyObject = jsonTree.getAsJsonObject();
