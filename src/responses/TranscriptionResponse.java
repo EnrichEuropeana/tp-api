@@ -20,7 +20,7 @@ import java.text.ParseException;
 
 import com.google.gson.*;
 
-@Path("/Transcription")
+@Path("/transcriptions")
 public class TranscriptionResponse {
 
 
@@ -59,6 +59,7 @@ public class TranscriptionResponse {
 			  transcription.setWP_UserId(rs.getInt("WP_UserId"));
 			  transcription.setItemId(rs.getInt("ItemId"));
 			  transcription.setCurrentVersion(rs.getString("CurrentVersion"));
+			  transcription.setEuropeanaAnnotationId(rs.getInt("EuropeanaAnnotationId"));
 			  transcriptionList.add(transcription);
 		   }
 		
@@ -77,31 +78,83 @@ public class TranscriptionResponse {
 	    return result;
 	}
 
-	//Get all Entries
-	@Path("/all")
+	//Get entries
+	@Path("")
 	@Produces("application/json;charset=utf-8")
 	@GET
-	public Response getAll() throws SQLException, ParseException {
+	public Response search(@Context UriInfo uriInfo) throws SQLException, ParseException {		
 		String query = "SELECT * FROM ("
-						+ "SELECT "
-						+ "t.TranscriptionId, "
-						+ "t.Text, "
-						+ "t.Timestamp, "
-						+ "t.UserId, "
-						+ "t.ItemId, "
-						+ "t.CurrentVersion, "
-						+ "u.WP_UserId "
-						+ "FROM Transcription t "
-						+ "JOIN User u ON t.UserId = u.UserId) a "
-						+ "WHERE 1";
+				+ "SELECT "
+				+ "t.TranscriptionId, "
+				+ "t.Text, "
+				+ "t.Timestamp, "
+				+ "t.UserId, "
+				+ "t.ItemId, "
+				+ "t.CurrentVersion, "
+				+ "t.EuropeanaAnnotationId, "
+				+ "u.WP_UserId "
+				+ "FROM Transcription t "
+				+ "JOIN User u ON t.UserId = u.UserId) a "
+				+ "WHERE 1";
+
+		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
+		
+		for(String key : queryParams.keySet()){
+			String[] values = queryParams.getFirst(key).split(",");
+			query += " AND (";
+		    int valueCount = values.length;
+		    int i = 1;
+		    for(String value : values) {
+		    	query += key + " = " + value;
+			    if (i < valueCount) {
+			    	query += " OR ";
+			    }
+			    i++;
+		    }
+		    query += ")";
+		}
 		String resource = executeQuery(query, "Select");
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
 	}
-	
 
+	//Edit entry by id
+	@Path("/{id}")
+	@POST
+	public String update(@PathParam("id") int id, String body) throws SQLException, ParseException {
+	    GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
+	    Gson gson = gsonBuilder.create();
+	    JsonObject changes = gson.fromJson(body, JsonObject.class);
+	    
+	    //Check if field is allowed to be changed
+	    if (changes.get("TranscriptionId") != null || changes.get("Timestamp") != null ) {
+	    	return "Prohibited change attempt";
+	    }
+	    
+	    //Check if NOT NULL field is attempted to be changed to NULL
+	    if ((changes.get("Text") == null || !changes.get("Text").isJsonNull())
+	    		&& (changes.get("UserId") == null || !changes.get("UserId").isJsonNull())
+	    		&& (changes.get("ItemId") == null || !changes.get("ItemId").isJsonNull())) {
+		    String query = "UPDATE Transcription SET ";
+		    int keyCount = changes.entrySet().size();
+		    int i = 1;
+			for(Map.Entry<String, JsonElement> entry : changes.entrySet()) {
+			    query += entry.getKey() + " = " + entry.getValue();
+			    if (i < keyCount) {
+			    	query += ", ";
+			    }
+			    i++;
+			}
+			query += " WHERE TranscriptionId = " + id;
+			String resource = executeQuery(query, "Update");
+			return resource;
+	    } else {
+	    	return "Prohibited change to null";
+	    }
+	}
+	
 	//Add new entry
-	@Path("/add")
+	@Path("")
 	@POST
 	public String add(String body) throws SQLException, ParseException {	
 	    GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -138,20 +191,6 @@ public class TranscriptionResponse {
 	@Produces("application/json;charset=utf-8")
 	@GET
 	public Response getEntry(@PathParam("id") int id) throws SQLException, ParseException {
-		String resource = executeQuery("SELECT * FROM Transcription WHERE TranscriptionId = " + id, "Select");
-		ResponseBuilder rBuild = Response.ok(resource);
-        return rBuild.build();
-	}
-
-	//Search using custom filters
-	@Path("/search")
-	@Produces("application/json;charset=utf-8")
-	@POST
-	public Response search(@Context UriInfo uriInfo, String body) throws SQLException, ParseException {
-		JsonParser jsonParser = new JsonParser();
-		JsonElement jsonTree = jsonParser.parse(body);
-		JsonObject bodyObject = jsonTree.getAsJsonObject();
-		
 		String query = "SELECT * FROM ("
 				+ "SELECT "
 				+ "t.TranscriptionId, "
@@ -160,27 +199,14 @@ public class TranscriptionResponse {
 				+ "t.UserId, "
 				+ "t.ItemId, "
 				+ "t.CurrentVersion, "
+				+ "t.EuropeanaAnnotationId, "
 				+ "u.WP_UserId "
 				+ "FROM Transcription t "
 				+ "JOIN User u ON t.UserId = u.UserId) a "
-				+ "WHERE 1";
-
-		for(String key : bodyObject.keySet()){
-			String[] values = bodyObject.get(key).toString().split(",");
-			query += " AND (";
-		    int valueCount = values.length;
-		    int i = 1;
-		    for(String value : values) {
-		    	query += key + " = " + value;
-			    if (i < valueCount) {
-			    	query += " OR ";
-			    }
-			    i++;
-		    }
-		    query += ")";
-		}
+				+ "WHERE TranscriptionId = " + id;
 		String resource = executeQuery(query, "Select");
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
 	}
+
 }

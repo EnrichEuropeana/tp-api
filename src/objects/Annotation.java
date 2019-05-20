@@ -5,7 +5,7 @@ import java.sql.Timestamp;
 public class Annotation {
 	public Integer AnnotationId;
 	public String Text;
-	public Timestamp Timestamp;
+	public String Timestamp;
 	public Integer UserId;
 	public Integer ItemId;
 	public Float X_Coord;
@@ -13,6 +13,7 @@ public class Annotation {
 	public Float Width;
 	public Float Height;
 	public String AnnotationType;
+	public Integer EuropeanaAnnotationId;
 	
 	
 	public void setAnnotationType(String annotationType) {
@@ -27,7 +28,7 @@ public class Annotation {
 		Text = text;
 	}
 	
-	public void setTimestamp(Timestamp timestamp) {
+	public void setTimestamp(String timestamp) {
 		Timestamp = timestamp;
 	}
 	
@@ -53,6 +54,10 @@ public class Annotation {
 	
 	public void setHeight(Float height) {
 		Height = height;
+	}
+
+	public void setEuropeanaAnnotationId(Integer europeanaAnnotationId) {
+		EuropeanaAnnotationId = europeanaAnnotationId;
 	}
 
 	

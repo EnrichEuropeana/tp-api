@@ -29,8 +29,8 @@ import java.text.SimpleDateFormat;
 
 import com.google.gson.*;
 
-@Path("/stories")
-public class StoryResponse {
+@Path("/storiesMinimal")
+public class StoryMinimalResponse {
 
 
 	public String executeQuery(String query, String type) throws SQLException{
@@ -63,166 +63,21 @@ public class StoryResponse {
 			  Story story = new Story();
 			  story.setStoryId(rs.getInt("StoryId")); 
 			  story.setdcTitle(rs.getString("StorydcTitle"));
-			  story.setdcDescription(rs.getString("StorydcDescription"));
-			  story.setProjectStoryUrl(rs.getString("StoryProjectStoryUrl"));
-			  story.setDateStartDisplay(rs.getString("StoryDateStartDisplay"));
-			  story.setDateEndDisplay(rs.getString("StoryDateEndDisplay"));
-			  story.setPlaceName(rs.getString("StoryPlaceName"));
-			  story.setPlaceLatitude(rs.getFloat("StoryPlaceLatitude"));
-			  story.setPlaceLongitute(rs.getFloat("StoryPlaceLongitute"));
-			  story.setPlaceUserGenerated(rs.getString("StoryPlaceUserGenerated"));
-			  story.setContributor(rs.getString("StoryContributor"));
-			  story.setRights(rs.getString("StoryRights"));
-			  story.setSummary(rs.getString("StorySummary"));
-			  story.setParentStory(rs.getInt("StoryParentStory"));
-			  story.setManifest(rs.getString("StoryManifest"));
-			  story.setSearchText(rs.getString("StorySearchText"));
-			  story.setDateStart(rs.getTimestamp("StoryDateStart"));
-			  story.setDateEnd(rs.getTimestamp("StoryDateEnd"));
-			  story.setOrderIndex(rs.getInt("StoryOrderIndex"));
 			   
 			  // Iterate through Items of the Story
 			  List<Item> ItemList = new ArrayList<Item>();
 			  if (rs.getString("ItemId") != null) {
 				  String[] ItemIds = rs.getString("ItemId").split("§~§");
-				  String[] ItemTitles = rs.getString("Title").split("§~§");
 				  String[] ItemCompletionStatusNames = rs.getString("CompletionStatusName").split("§~§");
 				  String[] ItemCompletionStatusIds = rs.getString("CompletionStatusId").split("§~§");
-				  String[] ItemProjectItemIds = rs.getString("ProjectItemId").split("§~§");
-				  String[] ItemProjectIds = rs.getString("ProjectId").split("§~§");
-				  String[] ItemDescriptions = null;
-				  if (rs.getString("Description") != null) {
-					  ItemDescriptions = rs.getString("Description").split("§~§");
-				  }
-				  String[] ItemDateStarts = null;
-				  if (rs.getString("DateStart") != null) {
-					  ItemDateStarts = rs.getString("DateStart").split("§~§");
-				  }
-				  String[] ItemDateEnds = null;
-				  if (rs.getString("DateEnd") != null) {
-					  ItemDateEnds = rs.getString("DateEnd").split("§~§");
-				  }
-				  String[] ItemDatasetIds = null;
-				  if (rs.getString("DateEnd") != null) {
-					  ItemDatasetIds = rs.getString("DatasetId").split("§~§");
-				  }
-				  String[] ItemImageLinks = rs.getString("ImageLink").split("§~§");
-				  String[] ItemOrderIndexs = rs.getString("OrderIndex").split("§~§");
-				  String[] ItemTimestamps = rs.getString("Timestamp").split("§~§");
-
-				  // Initialize lists split by Stories
-				  String[] PlaceIdList = new String[ItemIds.length];
-				  String[] PlaceNameList = new String[ItemIds.length];
-				  String[] PlaceLatitudeList = new String[ItemIds.length];
-				  String[] PlaceLongitudeList = new String[ItemIds.length];
-				  String[] PlaceLinkList = new String[ItemIds.length];
-				  String[] PlaceZoomList = new String[ItemIds.length];
-				  String[] PlaceCommentList = new String[ItemIds.length];
-				  String[] PlaceAccuracyList = new String[ItemIds.length];
-				  String[] PlaceUserGeneratedList = new String[ItemIds.length];
-				  if (rs.getString("PlaceId") != null) {
-					  PlaceIdList = rs.getString("PlaceId").split("§~§");
-				  }
-				  if (rs.getString("PlaceName") != null) {
-					  PlaceNameList = rs.getString("PlaceName").split("§~§");
-				  }
-				  if (rs.getString("PlaceLatitude") != null) {
-					  PlaceLatitudeList = rs.getString("PlaceLatitude").split("§~§");
-				  }
-				  if (rs.getString("PlaceLongitude") != null) {
-					  PlaceLongitudeList = rs.getString("PlaceLongitude").split("§~§");
-				  }
-				  if (rs.getString("PlaceLink") != null) {
-					  PlaceLinkList = rs.getString("PlaceLink").split("§~§");
-				  }
-				  if (rs.getString("PlaceZoom") != null) {
-					  PlaceZoomList = rs.getString("PlaceZoom").split("§~§");
-				  }
-				  if (rs.getString("PlaceComment") != null) {
-					  PlaceCommentList = rs.getString("PlaceComment").split("§~§");
-				  }
-				  if (rs.getString("PlaceAccuracy") != null) {
-					  PlaceAccuracyList = rs.getString("PlaceAccuracy").split("§~§");
-				  }
-				  if (rs.getString("PlaceUserGenerated") != null) {
-					  PlaceUserGeneratedList = rs.getString("PlaceUserGenerated").split("§~§");
-				  }
 				  
 
 				  for (int j = 0; j < ItemIds.length; j++) {
 					  Item item = new Item();
 					  item.setItemId(Integer.parseInt(ItemIds[j]));
-					  item.setTitle(ItemTitles[j]);
 					  item.setCompletionStatusName(ItemCompletionStatusNames[j]);
 					  item.setCompletionStatusId(Integer.parseInt(ItemCompletionStatusIds[j]));
-					  if (ItemProjectItemIds != null) {
-						  item.setProjectItemId(Integer.parseInt(ItemProjectItemIds[j]));
-					  }
-					  item.setProjectId(Integer.parseInt(ItemProjectIds[j]));
-					  if (ItemDescriptions != null) {
-						  item.setDescription(ItemDescriptions[j]);
-					  }
-					  if (ItemDateStarts != null) {
-						  try {
-					            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-					            Date date = formatter.parse(ItemDateStarts[j]);
-					            Timestamp timeStampDate = new Timestamp(date.getTime());
-					            item.setDateStart(timeStampDate);
-							} catch (ParseException e) {
-							    System.out.println("Exception :" + e);
-							    return "Exception :" + e;
-							}
-					  }
-					  if (ItemDateEnds != null) {
-						  try {
-					            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-					            Date date = formatter.parse(ItemDateEnds[j]);
-					            Timestamp timeStampDate = new Timestamp(date.getTime());
-					            item.setDateEnd(timeStampDate);
-					        } catch (ParseException e) {
-					            System.out.println("Exception :" + e);
-					            return "Exception :" + e;
-					        }
-					  }
-					  if (ItemDatasetIds != null) {
-						  item.setDatasetId(Integer.parseInt(ItemDatasetIds[j]));
-					  }
-					  item.setImageLink(ItemImageLinks[j]);
-					  item.setOrderIndex(Integer.parseInt(ItemOrderIndexs[j]));
-				      item.setTimestamp(ItemTimestamps[j]);
-				            
-					  //Add Places
-					  List<Place> PlaceList = new ArrayList<Place>();
-					  if (rs.getString("PlaceId") != null) {
-						  // Intitialize lists grouped by items
-						  String[] PlaceIds = PlaceIdList[j].split("&~&", -1);
-						  String[] PlaceNames = PlaceNameList[j].split("&~&", -1);
-						  String[] PlaceLatitudes = PlaceLatitudeList[j].split("&~&", -1);
-						  String[] PlaceLongitudes = PlaceLongitudeList[j].split("&~&", -1);
-						  String[] PlaceLink = PlaceLinkList[j].split("&~&", -1);
-						  String[] PlaceZoom = PlaceZoomList[j].split("&~&", -1);
-						  String[] PlaceComment = PlaceCommentList[j].split("&~&", -1);
-						  String[] PlaceAccuracy = PlaceAccuracyList[j].split("&~&", -1);
-						  String[] PlaceUserGenerated = PlaceUserGeneratedList[j].split("&~&", -1);
-						  for (int i = 0; i < PlaceIds.length; i++) {
-							  if (!isNumeric(PlaceIds[i])) {
-								  continue;
-							  }
-							  Place place = new Place();
-							  place.setPlaceId(Integer.parseInt(PlaceIds[i]));
-							  place.setName(PlaceNames[i]);
-							  place.setLatitude(Float.parseFloat(PlaceLatitudes[i]));
-							  place.setLongitude(Float.parseFloat(PlaceLongitudes[i]));
-							  place.setLink(PlaceLink[i]);
-							  place.setZoom(Integer.parseInt(PlaceZoom[i]));
-							  place.setComment(PlaceComment[i]);
-							  place.setAccuracy(Integer.parseInt(PlaceAccuracy[i]));
-							  place.setUserGenerated(PlaceUserGenerated[i]);
-							  PlaceList.add(place);
-						  }
-					  }
-					
-					  item.setPlaces(PlaceList);
+					  
 					  ItemList.add(item);
 				  }
 			  }
@@ -254,45 +109,9 @@ public class StoryResponse {
 		String query = "SELECT * FROM " +
 				"(SELECT s.StoryId as StoryId" + 
 				", s.dcTitle as StorydcTitle" +
-				", s.dcDescription as StorydcDescription" +
-				", s.ProjectStoryUrl as StoryProjectStoryUrl" +
-				", s.DateStartDisplay as StoryDateStartDisplay" +
-				", s.DateEndDisplay as StoryDateEndDisplay" +
-				", s.PlaceName as StoryPlaceName" +
-				", s.PlaceLatitude as StoryPlaceLatitude" +
-				", s.PlaceLongitute as StoryPlaceLongitute" +
-				", s.PlaceUserGenerated as StoryPlaceUserGenerated" +
-				", s.Contributor as StoryContributor" +
-				", s.Rights as StoryRights" +
-				", s.Summary as StorySummary" +
-				", s.ParentStory as StoryParentStory" +
-				", s.Manifest as StoryManifest" +
-				", s.SearchText as StorySearchText" +
-				", s.DateStart as StoryDateStart" +
-				", s.DateEnd as StoryDateEnd" +
-				", s.OrderIndex as StoryOrderIndex" +
 				", group_concat(i.ItemId SEPARATOR '§~§') as ItemId" +
-				", group_concat(i.Title SEPARATOR '§~§') as Title" +
 				", group_concat(i.CompletionStatusName SEPARATOR '§~§') as CompletionStatusName" +
-				", group_concat(i.CompletionStatusId SEPARATOR '§~§') as CompletionStatusId" +
-				", group_concat(i.ProjectItemId SEPARATOR '§~§') as ProjectItemId" +
-				", group_concat(i.ProjectId SEPARATOR '§~§') as ProjectId" +
-				", group_concat(i.Description SEPARATOR '§~§') as Description" +
-				", group_concat(i.DateStart SEPARATOR '§~§') as DateStart" +
-				", group_concat(i.DateEnd SEPARATOR '§~§') as DateEnd" +
-				", group_concat(i.DatasetId SEPARATOR '§~§') as DatasetId" +
-				", group_concat(i.ImageLink SEPARATOR '§~§') as ImageLink" +
-				", group_concat(i.OrderIndex SEPARATOR '§~§') as OrderIndex" +
-				", group_concat(i.Timestamp SEPARATOR '§~§') as Timestamp" +
-				", group_concat(c.PlaceId SEPARATOR '§~§') as PlaceId " +
-				", group_concat(c.PlaceName SEPARATOR '§~§') as PlaceName " +
-				", group_concat(c.PlaceLatitude SEPARATOR '§~§') as PlaceLatitude " +
-				", group_concat(c.PlaceLongitude SEPARATOR '§~§') as PlaceLongitude " +
-				", group_concat(c.PlaceLink SEPARATOR '§~§') as PlaceLink " +
-				", group_concat(c.PlaceZoom SEPARATOR '§~§') as PlaceZoom " +
-				", group_concat(c.PlaceComment SEPARATOR '§~§') as PlaceComment " +
-				", group_concat(c.PlaceAccuracy SEPARATOR '§~§') as PlaceAccuracy " +
-				", group_concat(c.PlaceUserGenerated SEPARATOR '§~§') as PlaceUserGenerated " +
+				", group_concat(i.CompletionStatusId SEPARATOR '§~§') as CompletionStatusId " +
 				"FROM " +
 					"(" +
 					"SELECT * " +
@@ -306,23 +125,6 @@ public class StoryResponse {
 				        ") c  " +
 				        "ON i.ItemId = c.CompletionStatusItemId " +
 					") i " +
-				"LEFT JOIN " + 
-				"(" + 
-					"SELECT i.ItemId as ItemId" +
-					", group_concat(IFNULL(pl.PlaceId, 'NULL') SEPARATOR '&~&') as PlaceId " +
-					", group_concat(IFNULL(pl.Name, 'NULL') SEPARATOR '&~&') as PlaceName " +
-					", group_concat(IFNULL(pl.Latitude, 'NULL') SEPARATOR '&~&') as PlaceLatitude " +
-					", group_concat(IFNULL(pl.Longitude, 'NULL') SEPARATOR '&~&') as PlaceLongitude " +
-					", group_concat(IFNULL(pl.Link, 'NULL') SEPARATOR '&~&') as PlaceLink " +
-					", group_concat(IFNULL(pl.Zoom, 'NULL') SEPARATOR '&~&') as PlaceZoom " +
-					", group_concat(IFNULL(pl.Comment, 'NULL') SEPARATOR '&~&') as PlaceComment " +
-					", group_concat(IFNULL(pl.Accuracy, 'NULL') SEPARATOR '&~&') as PlaceAccuracy " +
-					", group_concat(IFNULL(pl.UserGenerated + 0, 'NULL') SEPARATOR '&~&') as PlaceUserGenerated " +
-					"FROM Item i " + 
-					"LEFT JOIN Place pl on i.ItemId = pl.ItemId " +  
-					"GROUP BY i.ItemId " +
-				") c " + 
-				"ON i.ItemId = c.ItemId " +
 				"LEFT JOIN " + 
 				"(" +
 					"SELECT * " +

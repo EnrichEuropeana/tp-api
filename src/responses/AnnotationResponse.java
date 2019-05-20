@@ -21,7 +21,7 @@ import java.sql.*;
 import com.google.gson.*;
 import com.google.gson.stream.MalformedJsonException;
 
-@Path("/Annotation")
+@Path("/annotations")
 public class AnnotationResponse {
 
 
@@ -55,13 +55,14 @@ public class AnnotationResponse {
 			  Annotation annotation = new Annotation();
 			  annotation.setAnnotationId(rs.getInt("AnnotationId"));
 			  annotation.setText(rs.getString("Text"));
-			  annotation.setTimestamp(rs.getTimestamp("Timestamp"));
+			  annotation.setTimestamp(rs.getString("Timestamp"));
 			  annotation.setUserId(rs.getInt("UserId"));
 			  annotation.setItemId(rs.getInt("ItemId"));
 			  annotation.setX_Coord(rs.getFloat("X_Coord"));
 			  annotation.setY_Coord(rs.getFloat("Y_Coord"));
 			  annotation.setWidth(rs.getFloat("Width"));
 			  annotation.setHeight(rs.getFloat("Height"));
+			  annotation.setEuropeanaAnnotationId(rs.getInt("EuropeanaAnnotationId"));
 			  annotations.add(annotation);
 		   }
 		
@@ -80,19 +81,35 @@ public class AnnotationResponse {
 	    return result;
 	}
 
-	//Get all Entries
-	@Path("/all")
+	//Get entries
+	@Path("")
 	@Produces("application/json;charset=utf-8")
 	@GET
-	public Response getAll() throws SQLException {
+	public Response search(@Context UriInfo uriInfo) throws SQLException {
 		String query = "SELECT * FROM Annotation WHERE 1";
+		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
+		
+		for(String key : queryParams.keySet()){
+			String[] values = queryParams.getFirst(key).split(",");
+			query += " AND (";
+		    int valueCount = values.length;
+		    int i = 1;
+		    for(String value : values) {
+		    	query += key + " = " + value;
+			    if (i < valueCount) {
+			    	query += " OR ";
+			    }
+			    i++;
+		    }
+		    query += ")";
+		}
 		String resource = executeQuery(query, "Select");
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
 	}
 	
 	//Add new entry
-	@Path("/add")
+	@Path("")
 	@POST
 	public String add(String body) throws SQLException {	
 	    GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -176,32 +193,6 @@ public class AnnotationResponse {
         return rBuild.build();
 	}
 	
-	//Search using custom filters
-	@Path("/search")
-	@Produces("application/json;charset=utf-8")
-	@GET
-	public Response search(@Context UriInfo uriInfo) throws SQLException {
-		String query = "SELECT * FROM Annotation WHERE 1";
-		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
-		
-		for(String key : queryParams.keySet()){
-			String[] values = queryParams.getFirst(key).split(",");
-			query += " AND (";
-		    int valueCount = values.length;
-		    int i = 1;
-		    for(String value : values) {
-		    	query += key + " = " + value;
-			    if (i < valueCount) {
-			    	query += " OR ";
-			    }
-			    i++;
-		    }
-		    query += ")";
-		}
-		String resource = executeQuery(query, "Select");
-		ResponseBuilder rBuild = Response.ok(resource);
-        return rBuild.build();
-	}
 }
 
 

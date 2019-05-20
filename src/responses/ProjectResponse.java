@@ -13,6 +13,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
+import objects.Dataset;
 import objects.Project;
 
 import java.util.*;
@@ -20,7 +21,7 @@ import java.sql.*;
 
 import com.google.gson.*;
 
-@Path("/Project")
+@Path("/projects")
 public class ProjectResponse {
 
 
@@ -71,25 +72,86 @@ public class ProjectResponse {
 	    String result = gsonBuilder.toJson(projectList);
 	    return result;
 	}
-
-	//Get all Entries
-	@Path("/all")
-	@Produces("application/json;charset=utf-8")
-	@POST
-	public Response getAll(String body) throws SQLException {
-		JsonParser jsonParser = new JsonParser();
-		JsonElement jsonTree = jsonParser.parse(body);
-		JsonObject bodyObject = jsonTree.getAsJsonObject();
+	
+	public String executeDatasetQuery(String query, String type) throws SQLException{
+		final String DB_URL="jdbc:mysql://mysql-db1.man.poznan.pl:3307/transcribathon?serverTimezone=CET";
+		final String USER = "enrichingeuropeana";
+		final String PASS = "Ke;u5De)u8sh";
+		   List<Dataset> datasetList = new ArrayList<Dataset>();
+		   // Register JDBC driver
+		   try {
+			Class.forName("com.mysql.jdbc.Driver");
 		
+		   // Open a connection
+		   Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		   // Execute SQL query
+		   Statement stmt = conn.createStatement();
+		   if (type != "Select") {
+			   int success = stmt.executeUpdate(query);
+			   if (success > 0) {
+				   return type +" succesful";
+			   }
+			   else {
+				   return type +" could not be executed";
+			   }
+		   }
+		   ResultSet rs = stmt.executeQuery(query);
+		   
+		   // Extract data from result set
+		   while(rs.next()){
+		      //Retrieve by column name
+			  Dataset Dataset = new Dataset();
+			  Dataset.setDatasetId(rs.getInt("DatasetId"));
+			  Dataset.setName(rs.getString("Name"));
+			  Dataset.setProjectId(rs.getInt("ProjectId"));
+			  datasetList.add(Dataset);
+		   }
+		
+		   // Clean-up environment
+		   rs.close();
+		   stmt.close();
+		   conn.close();
+		   } catch(SQLException se) {
+		       //Handle errors for JDBC
+			   se.printStackTrace();
+		   } catch (ClassNotFoundException e) {
+			   e.printStackTrace();
+		}
+	    Gson gsonBuilder = new GsonBuilder().create();
+	    String result = gsonBuilder.toJson(datasetList);
+	    return result;
+	}
+	
+	//Get Entries
+	@Path("")
+	@Produces("application/json;charset=utf-8")
+	@GET
+	public Response search(@Context UriInfo uriInfo, String body) throws SQLException {
 		String query = "SELECT * FROM Project WHERE 1";
+
+		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
+		
+		for(String key : queryParams.keySet()){
+			String[] values = queryParams.getFirst(key).split(",");
+			query += " AND (";
+		    int valueCount = values.length;
+		    int i = 1;
+		    for(String value : values) {
+		    	query += key + " = " + value;
+			    if (i < valueCount) {
+			    	query += " OR ";
+			    }
+			    i++;
+		    }
+		    query += ")";
+		}
 		String resource = executeQuery(query, "Select");
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
 	}
 	
-
 	//Add new entry
-	@Path("/add")
+	@Path("")
 	@POST
 	public String add(String body) throws SQLException {	
 	    GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -151,50 +213,29 @@ public class ProjectResponse {
 		String resource = executeQuery("DELETE FROM Project WHERE ProjectId = " + id, "Delete");
 		return resource;
 	}
-	
+
 
 	//Get entry by id
 	@Path("/{id}")
 	@Produces("application/json;charset=utf-8")
-	@POST
+	@GET
 	public Response getEntry(@PathParam("id") int id, String body) throws SQLException {
-		JsonParser jsonParser = new JsonParser();
-		JsonElement jsonTree = jsonParser.parse(body);
-		JsonObject bodyObject = jsonTree.getAsJsonObject();
 		String resource = executeQuery("SELECT * FROM Project WHERE ProjectId = " + id, "Select");
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
 	}
 
-	//Search using custom filters
-	@Path("/search")
+	//Get entry by id
+	@Path("/{project_id}/datasets")
 	@Produces("application/json;charset=utf-8")
-	@POST
-	public Response search(@Context UriInfo uriInfo, String body) throws SQLException {
-		JsonParser jsonParser = new JsonParser();
-		JsonElement jsonTree = jsonParser.parse(body);
-		JsonObject bodyObject = jsonTree.getAsJsonObject();
-		
-		String query = "SELECT * FROM Project WHERE 1";
-		
-		for(String key : bodyObject.keySet()){
-			String[] values = bodyObject.get(key).toString().split(",");
-			query += " AND (";
-		    int valueCount = values.length;
-		    int i = 1;
-		    for(String value : values) {
-		    	query += key + " = " + value;
-			    if (i < valueCount) {
-			    	query += " OR ";
-			    }
-			    i++;
-		    }
-		    query += ")";
-		}
-		String resource = executeQuery(query, "Select");
+	@GET
+	public Response getDatasets(@PathParam("project_id") int projectId, String body) throws SQLException {
+		String query = "SELECT * FROM Dataset WHERE ProjectId = " + projectId;
+		String resource = executeDatasetQuery(query, "Select");
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
 	}
+
 }
 
 

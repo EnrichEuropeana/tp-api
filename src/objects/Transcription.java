@@ -8,6 +8,7 @@ public class Transcription {
 	public Integer WP_UserId;
 	public Integer ItemId;
 	public String CurrentVersion;
+	public Integer EuropeanaAnnotationId;
 	
 	
 	public void setTranscriptionId(Integer transcriptionId) {
@@ -30,5 +31,8 @@ public class Transcription {
 	}
 	public void setCurrentVersion(String currentVersion) {
 		CurrentVersion = currentVersion;
+	}
+	public void setEuropeanaAnnotationId(Integer europeanaAnnotationId) {
+		EuropeanaAnnotationId = europeanaAnnotationId;
 	}
 }

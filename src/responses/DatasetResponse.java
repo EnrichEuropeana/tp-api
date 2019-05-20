@@ -20,7 +20,7 @@ import java.sql.*;
 
 import com.google.gson.*;
 
-@Path("/Dataset")
+@Path("/datasets")
 public class DatasetResponse {
 
 
@@ -73,16 +73,29 @@ public class DatasetResponse {
 	    return result;
 	}
 
-	//Get all Entries
-	@Path("/all")
+	//Get entries
+	@Path("")
 	@Produces("application/json;charset=utf-8")
-	@POST
-	public Response getAll(String body) throws SQLException {
-		JsonParser jsonParser = new JsonParser();
-		JsonElement jsonTree = jsonParser.parse(body);
-		JsonObject bodyObject = jsonTree.getAsJsonObject();
-		
+	@GET
+	public Response search(@Context UriInfo uriInfo, String body) throws SQLException {
 		String query = "SELECT * FROM Dataset WHERE 1";
+		
+		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
+		
+		for(String key : queryParams.keySet()){
+			String[] values = queryParams.getFirst(key).split(",");
+			query += " AND (";
+		    int valueCount = values.length;
+		    int i = 1;
+		    for(String value : values) {
+		    	query += key + " = " + value;
+			    if (i < valueCount) {
+			    	query += " OR ";
+			    }
+			    i++;
+		    }
+		    query += ")";
+		}
 		String resource = executeQuery(query, "Select");
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
@@ -90,7 +103,7 @@ public class DatasetResponse {
 	
 
 	//Add new entry
-	@Path("/add")
+	@Path("")
 	@POST
 	public String add(String body) throws SQLException {	
 	    GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -158,43 +171,9 @@ public class DatasetResponse {
 	//Get entry by id
 	@Path("/{id}")
 	@Produces("application/json;charset=utf-8")
-	@POST
+	@GET
 	public Response getEntry(@PathParam("id") int id, String body) throws SQLException {
-		JsonParser jsonParser = new JsonParser();
-		JsonElement jsonTree = jsonParser.parse(body);
-		JsonObject bodyObject = jsonTree.getAsJsonObject();
-		
 		String resource = executeQuery("SELECT * FROM Dataset WHERE DatasetId = " + id, "Select");
-		ResponseBuilder rBuild = Response.ok(resource);
-        return rBuild.build();
-	}
-
-	//Search using custom filters
-	@Path("/search")
-	@Produces("application/json;charset=utf-8")
-	@POST
-	public Response search(@Context UriInfo uriInfo, String body) throws SQLException {
-		JsonParser jsonParser = new JsonParser();
-		JsonElement jsonTree = jsonParser.parse(body);
-		JsonObject bodyObject = jsonTree.getAsJsonObject();
-		
-		String query = "SELECT * FROM Dataset WHERE 1";
-		
-		for(String key : bodyObject.keySet()){
-			String[] values = bodyObject.get(key).toString().split(",");
-			query += " AND (";
-		    int valueCount = values.length;
-		    int i = 1;
-		    for(String value : values) {
-		    	query += key + " = " + value;
-			    if (i < valueCount) {
-			    	query += " OR ";
-			    }
-			    i++;
-		    }
-		    query += ")";
-		}
-		String resource = executeQuery(query, "Select");
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
 	}

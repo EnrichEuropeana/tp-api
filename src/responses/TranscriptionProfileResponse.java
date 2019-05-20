@@ -19,7 +19,7 @@ import java.sql.*;
 
 import com.google.gson.*;
 
-@Path("/TranscriptionProfile")
+@Path("/transcriptionProfile")
 public class TranscriptionProfileResponse {
 
 
@@ -78,48 +78,12 @@ public class TranscriptionProfileResponse {
 	    return result;
 	}
 
-	//Get all Entries
-	@Path("/all")
-	@Produces("application/json;charset=utf-8")
-	@POST
-	public Response getAll(String body) throws SQLException {
-		JsonParser jsonParser = new JsonParser();
-		JsonElement jsonTree = jsonParser.parse(body);
-		JsonObject bodyObject = jsonTree.getAsJsonObject();
-		String query = "SELECT  " + 
-						"    * " + 
-						"FROM " + 
-						"    (SELECT  " + 
-						"			st.Name as ScoreType, " + 
-						"            s.Amount, " + 
-						"            s.Timestamp, " + 
-						"            s.UserId, " + 
-						"            s.ItemId, " + 
-						"            u.WP_UserId, " + 
-						"            i.ImageLink AS ItemImageLink, " + 
-						"            i.Title AS ItemTitle, " + 
-						"            c.Name AS CompletionStatus " + 
-						"    FROM " + 
-						"        Score s " + 
-						"    JOIN ScoreType st ON s.ScoreTypeId = st.ScoreTypeId " + 
-						"    JOIN User u ON s.UserId = u.UserId " + 
-						"    JOIN Item i ON s.ItemId = i.ItemId " + 
-						"    JOIN CompletionStatus c ON i.CompletionStatusId = c.CompletionStatusId) a " + 
-						"WHERE 1";
-		String resource = executeQuery(query, "Select");
-		ResponseBuilder rBuild = Response.ok(resource);
-        return rBuild.build();
-	}
 	
 	//Search using custom filters
-	@Path("/search")
+	@Path("")
 	@Produces("application/json;charset=utf-8")
-	@POST
-	public Response search(@Context UriInfo uriInfo, String body) throws SQLException {
-		JsonParser jsonParser = new JsonParser();
-		JsonElement jsonTree = jsonParser.parse(body);
-		JsonObject bodyObject = jsonTree.getAsJsonObject();
-
+	@GET
+	public Response search(@Context UriInfo uriInfo) throws SQLException {
 		String query = "SELECT  " + 
 						"    * " + 
 						"FROM " + 
@@ -141,8 +105,10 @@ public class TranscriptionProfileResponse {
 						"    JOIN CompletionStatus c ON i.CompletionStatusId = c.CompletionStatusId) a " + 
 						"WHERE 1";
 
-		for(String key : bodyObject.keySet()){
-			String[] values = bodyObject.get(key).toString().split(",");
+		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
+		
+		for(String key : queryParams.keySet()){
+			String[] values = queryParams.getFirst(key).split(",");
 			query += " AND (";
 		    int valueCount = values.length;
 		    int i = 1;
