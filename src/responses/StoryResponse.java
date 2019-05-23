@@ -86,6 +86,7 @@ public class StoryResponse {
 			  if (rs.getString("ItemId") != null) {
 				  String[] ItemIds = rs.getString("ItemId").split("§~§");
 				  String[] ItemTitles = rs.getString("Title").split("§~§");
+				  String[] ItemCompletionStatusColorCodes = rs.getString("CompletionStatusColorcode").split("§~§");
 				  String[] ItemCompletionStatusNames = rs.getString("CompletionStatusName").split("§~§");
 				  String[] ItemCompletionStatusIds = rs.getString("CompletionStatusId").split("§~§");
 				  String[] ItemProjectItemIds = rs.getString("ProjectItemId").split("§~§");
@@ -153,6 +154,7 @@ public class StoryResponse {
 					  Item item = new Item();
 					  item.setItemId(Integer.parseInt(ItemIds[j]));
 					  item.setTitle(ItemTitles[j]);
+					  item.setCompletionStatusColorCode(ItemCompletionStatusColorCodes[j]);
 					  item.setCompletionStatusName(ItemCompletionStatusNames[j]);
 					  item.setCompletionStatusId(Integer.parseInt(ItemCompletionStatusIds[j]));
 					  if (ItemProjectItemIds != null) {
@@ -273,6 +275,7 @@ public class StoryResponse {
 				", s.OrderIndex as StoryOrderIndex" +
 				", group_concat(i.ItemId SEPARATOR '§~§') as ItemId" +
 				", group_concat(i.Title SEPARATOR '§~§') as Title" +
+				", group_concat(i.CompletionStatusColorCode SEPARATOR '§~§') as CompletionStatusColorCode" +
 				", group_concat(i.CompletionStatusName SEPARATOR '§~§') as CompletionStatusName" +
 				", group_concat(i.CompletionStatusId SEPARATOR '§~§') as CompletionStatusId" +
 				", group_concat(i.ProjectItemId SEPARATOR '§~§') as ProjectItemId" +
@@ -300,6 +303,7 @@ public class StoryResponse {
 				    "LEFT JOIN ( " +
 						"SELECT i.ItemId as CompletionStatusItemId" +
 						", c.Name as CompletionStatusName " + 
+						", c.ColorCode as CompletionStatusColorCode " + 
 				        "FROM CompletionStatus c " +
 				        "JOIN Item i " +
 				        "ON i.CompletionStatusId = c.CompletionStatusId " +
@@ -450,6 +454,7 @@ public class StoryResponse {
 						", s.OrderIndex as StoryOrderIndex" +
 						", group_concat(i.ItemId SEPARATOR '§~§') as ItemId" +
 						", group_concat(i.Title SEPARATOR '§~§') as Title" +
+						", group_concat(i.CompletionStatusColorCode SEPARATOR '§~§') as CompletionStatusColorCode" +
 						", group_concat(i.CompletionStatusName SEPARATOR '§~§') as CompletionStatusName" +
 						", group_concat(i.CompletionStatusId SEPARATOR '§~§') as CompletionStatusId" +
 						", group_concat(i.ProjectItemId SEPARATOR '§~§') as ProjectItemId" +
@@ -477,6 +482,7 @@ public class StoryResponse {
 						    "LEFT JOIN ( " +
 							"SELECT i.ItemId as CompletionStatusItemId" +
 							", c.Name as CompletionStatusName " +  
+							", c.ColorCode as CompletionStatusColorCode " +  
 					        "FROM CompletionStatus c " +
 					        "JOIN Item i " +
 					        "ON i.CompletionStatusId = c.CompletionStatusId " +

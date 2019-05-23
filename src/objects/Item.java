@@ -6,8 +6,24 @@ import java.util.List;
 public class Item {
 	public Integer ItemId;
 	public String Title;
+	public String CompletionStatusColorCode;
 	public String CompletionStatusName;
 	public Integer CompletionStatusId;
+	public String TranscriptionStatusColorCode;
+	public String TranscriptionStatusName;
+	public Integer TranscriptionStatusId;
+	public String DescriptionStatusColorCode;
+	public String DescriptionStatusName;
+	public Integer DescriptionStatusId;
+	public String LocationStatusColorCode;
+	public String LocationStatusName;
+	public Integer LocationStatusId;
+	public String TaggingStatusColorCode;
+	public String TaggingStatusName;
+	public Integer TaggingStatusId;
+	public String AutomaticEnrichmentStatusColorCode;
+	public String AutomaticEnrichmentStatusName;
+	public Integer AutomaticEnrichmentStatusId;
 	public Integer ProjectItemId;
 	public Integer ProjectId;
 	public String Description;
@@ -106,11 +122,59 @@ public class Item {
 	public void setTitle(String title) {
 		Title = title;
 	}
+	public void setCompletionStatusColorCode(String completionStatusColorCode) {
+		CompletionStatusColorCode = completionStatusColorCode;
+	}
 	public void setCompletionStatusName(String completionStatusName) {
 		CompletionStatusName = completionStatusName;
 	}
 	public void setCompletionStatusId(Integer completionStatusId) {
 		CompletionStatusId = completionStatusId;
+	}
+	public void setTranscriptionStatusColorCode(String transcriptionStatusColorCode) {
+		TranscriptionStatusColorCode = transcriptionStatusColorCode;
+	}
+	public void setTranscriptionStatusName(String transcriptionStatusName) {
+		TranscriptionStatusName = transcriptionStatusName;
+	}
+	public void setTranscriptionStatusId(Integer transcriptionStatusId) {
+		TranscriptionStatusId = transcriptionStatusId;
+	}
+	public void setDescriptionStatusColorCode(String descriptionStatusColorCode) {
+		DescriptionStatusColorCode = descriptionStatusColorCode;
+	}
+	public void setDescriptionStatusName(String descriptionStatusName) {
+		DescriptionStatusName = descriptionStatusName;
+	}
+	public void setDescriptionStatusId(Integer descriptionStatusId) {
+		DescriptionStatusId = descriptionStatusId;
+	}
+	public void setLocationStatusColorCode(String locationStatusColorCode) {
+		LocationStatusColorCode = locationStatusColorCode;
+	}
+	public void setLocationStatusName(String locationStatusName) {
+		LocationStatusName = locationStatusName;
+	}
+	public void setLocationStatusId(Integer locationStatusId) {
+		LocationStatusId = locationStatusId;
+	}
+	public void setTaggingStatusColorCode(String taggingStatusColorCode) {
+		TaggingStatusColorCode = taggingStatusColorCode;
+	}
+	public void setTaggingStatusName(String taggingStatusName) {
+		TaggingStatusName = taggingStatusName;
+	}
+	public void setTaggingStatusId(Integer taggingStatusId) {
+		TaggingStatusId = taggingStatusId;
+	}
+	public void setAutomaticEnrichmentStatusColorCode(String automaticEnrichmentStatusColorCode) {
+		AutomaticEnrichmentStatusColorCode = automaticEnrichmentStatusColorCode;
+	}
+	public void setAutomaticEnrichmentStatusName(String automaticEnrichmentStatusName) {
+		AutomaticEnrichmentStatusName = automaticEnrichmentStatusName;
+	}
+	public void setAutomaticEnrichmentStatusId(Integer automaticEnrichmentStatusId) {
+		AutomaticEnrichmentStatusId = automaticEnrichmentStatusId;
 	}
 	public void setProjectItemId(Integer projectItemId) {
 		ProjectItemId = projectItemId;

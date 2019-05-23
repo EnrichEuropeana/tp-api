@@ -19,7 +19,7 @@ import java.sql.*;
 
 import com.google.gson.*;
 
-@Path("/CompletionStatus")
+@Path("/completionStatus")
 public class CompletionStatusResponse {
 
 
@@ -53,6 +53,7 @@ public class CompletionStatusResponse {
 			  CompletionStatus CompletionStatus = new CompletionStatus();
 			  CompletionStatus.setCompletionStatusId(rs.getInt("CompletionStatusId"));
 			  CompletionStatus.setName(rs.getString("Name"));
+			  CompletionStatus.setColorCode(rs.getString("ColorCode"));
 			  completionStatusList.add(CompletionStatus);
 		   }
 		
@@ -71,20 +72,35 @@ public class CompletionStatusResponse {
 	    return result;
 	}
 
-	//Get all Entries
-	@Path("/all")
+	// Get entries
+	@Path("")
 	@Produces("application/json;charset=utf-8")
 	@GET
-	public Response getAll() throws SQLException {
+	public Response search(@Context UriInfo uriInfo) throws SQLException {
 		String query = "SELECT * FROM CompletionStatus WHERE 1";
+		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
+		
+		for(String key : queryParams.keySet()){
+			String[] values = queryParams.getFirst(key).split(",");
+			query += " AND (";
+		    int valueCount = values.length;
+		    int i = 1;
+		    for(String value : values) {
+		    	query += key + " = " + value;
+			    if (i < valueCount) {
+			    	query += " OR ";
+			    }
+			    i++;
+		    }
+		    query += ")";
+		}
 		String resource = executeQuery(query, "Select");
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
 	}
-	
 
 	//Add new entry
-	@Path("/add")
+	@Path("")
 	@POST
 	public String add(String body) throws SQLException {	
 	    GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -154,33 +170,6 @@ public class CompletionStatusResponse {
 	@GET
 	public Response getEntry(@PathParam("id") int id) throws SQLException {
 		String resource = executeQuery("SELECT * FROM CompletionStatus WHERE CompletionStatusId = " + id, "Select");
-		ResponseBuilder rBuild = Response.ok(resource);
-        return rBuild.build();
-	}
-
-	//Search using custom filters
-	@Path("/search")
-	@Produces("application/json;charset=utf-8")
-	@GET
-	public Response search(@Context UriInfo uriInfo) throws SQLException {
-		String query = "SELECT * FROM CompletionStatus WHERE 1";
-		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
-		
-		for(String key : queryParams.keySet()){
-			String[] values = queryParams.getFirst(key).split(",");
-			query += " AND (";
-		    int valueCount = values.length;
-		    int i = 1;
-		    for(String value : values) {
-		    	query += key + " = " + value;
-			    if (i < valueCount) {
-			    	query += " OR ";
-			    }
-			    i++;
-		    }
-		    query += ")";
-		}
-		String resource = executeQuery(query, "Select");
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
 	}
