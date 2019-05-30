@@ -33,6 +33,7 @@ public class Item {
 	public String ImageLink;
 	public Integer OrderIndex;
 	public String Timestamp;
+	public String Manifest;
 	public Integer StoryId;
 	public String StorydcTitle;
 	public String StorydcDescription;
@@ -43,11 +44,23 @@ public class Item {
 	public Float StoryPlaceLatitude;
 	public Float StoryPlaceLongitute;
 	public String StoryPlaceUserGenerated;
-	public String StoryContributor;
-	public String StoryRights;
+	public String StorydcCreator;
+	public String StorydcSource;
+	public String StoryedmCountry;
+	public String StoryedmDataProvider;
+	public String StoryedmProvider;
+	public String StoryedmYear;
+	public String StorydcPublisher;
+	public String StorydcCoverage;
+	public String StorydcDate;
+	public String StorydcType;
+	public String StorydcRelation;
+	public String StorydctermsMedium;
+	public String StoryedmDatasetName;
+	public String StorydcContributor;
+	public String StoryedmRights;
 	public String StorySummary;
 	public Integer StoryParentStory;
-	public String StoryManifest;
 	public String StorySearchText;
 	public Timestamp StoryDateStart;
 	public Timestamp StoryDateEnd;
@@ -86,20 +99,56 @@ public class Item {
 	public void setStoryPlaceUserGenerated(String storyPlaceUserGenerated) {
 		StoryPlaceUserGenerated = storyPlaceUserGenerated;
 	}
-	public void setStoryContributor(String storyContributor) {
-		StoryContributor = storyContributor;
+	public void setStorydcCreator(String storydcCreator) {
+		StorydcCreator = storydcCreator;
 	}
-	public void setStoryRights(String storyRights) {
-		StoryRights = storyRights;
+	public void setStorydcSource(String storydcSource) {
+		StorydcSource = storydcSource;
+	}
+	public void setStoryedmCountry(String storyedmCountry) {
+		StoryedmCountry = storyedmCountry;
+	}
+	public void setStoryedmDataProvider(String storyedmDataProvider) {
+		StoryedmDataProvider = storyedmDataProvider;
+	}
+	public void setStoryedmProvider(String storyedmProvider) {
+		StoryedmProvider = storyedmProvider;
+	}
+	public void setStoryedmYear(String storyedmYear) {
+		StoryedmYear = storyedmYear;
+	}
+	public void setStorydcPublisher(String storydcPublisher) {
+		StorydcPublisher = storydcPublisher;
+	}
+	public void setStorydcCoverage(String storydcCoverage) {
+		StorydcCoverage = storydcCoverage;
+	}
+	public void setStorydcDate(String storydcDate) {
+		StorydcDate = storydcDate;
+	}
+	public void setStorydcType(String storydcType) {
+		StorydcType = storydcType;
+	}
+	public void setStorydcRelation(String storydcRelation) {
+		StorydcRelation = storydcRelation;
+	}
+	public void setStorydctermsMedium(String storydctermsMedium) {
+		StorydctermsMedium = storydctermsMedium;
+	}
+	public void setStoryedmDatasetName(String storyedmDatasetName) {
+		StoryedmDatasetName = storyedmDatasetName;
+	}
+	public void setStorydcContributor(String storyDcContributor) {
+		StorydcContributor = storyDcContributor;
+	}
+	public void setStoryedmRights(String storyEdmRights) {
+		StoryedmRights = storyEdmRights;
 	}
 	public void setStorySummary(String storySummary) {
 		StorySummary = storySummary;
 	}
 	public void setStoryParentStory(Integer storyParentStory) {
 		StoryParentStory = storyParentStory;
-	}
-	public void setStoryManifest(String storyManifest) {
-		StoryManifest = storyManifest;
 	}
 	public void setStorySearchText(String storySearchText) {
 		StorySearchText = storySearchText;
@@ -202,6 +251,9 @@ public class Item {
 	}
 	public void setTimestamp(String timestamp) {
 		Timestamp = timestamp;
+	}
+	public void setManifest(String manifest) {
+		Manifest = manifest;
 	}
 	public void setPropertyIds(String[] propertyIds) {
 		PropertyIds = propertyIds;

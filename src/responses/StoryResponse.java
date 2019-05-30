@@ -71,11 +71,24 @@ public class StoryResponse {
 			  story.setPlaceLatitude(rs.getFloat("StoryPlaceLatitude"));
 			  story.setPlaceLongitute(rs.getFloat("StoryPlaceLongitute"));
 			  story.setPlaceUserGenerated(rs.getString("StoryPlaceUserGenerated"));
-			  story.setContributor(rs.getString("StoryContributor"));
-			  story.setRights(rs.getString("StoryRights"));
+			  story.setdcCreator(rs.getString("StorydcCreator"));
+			  story.setdcSource(rs.getString("StoryedmRights"));
+			  story.setdcSource(rs.getString("StorydcSource"));
+			  story.setedmCountry(rs.getString("StoryedmCountry"));
+			  story.setedmDataProvider(rs.getString("StoryedmDataProvider"));
+			  story.setedmProvider(rs.getString("StoryedmProvider"));
+			  story.setedmYear(rs.getString("StoryedmYear"));
+			  story.setdcPublisher(rs.getString("StorydcPublisher"));
+			  story.setdcCoverage(rs.getString("StorydcCoverage"));
+			  story.setdcDate(rs.getString("StorydcDate"));
+			  story.setdcType(rs.getString("StorydcType"));
+			  story.setdcRelation(rs.getString("StorydcRelation"));
+			  story.setdctermsMedium(rs.getString("StorydctermsMedium"));
+			  story.setedmDatasetName(rs.getString("StoryedmDatasetName"));
+			  story.setdcContributor(rs.getString("StorydcContributor"));
+			  story.setedmRights(rs.getString("StoryedmRights"));
 			  story.setSummary(rs.getString("StorySummary"));
 			  story.setParentStory(rs.getInt("StoryParentStory"));
-			  story.setManifest(rs.getString("StoryManifest"));
 			  story.setSearchText(rs.getString("StorySearchText"));
 			  story.setDateStart(rs.getTimestamp("StoryDateStart"));
 			  story.setDateEnd(rs.getTimestamp("StoryDateEnd"));
@@ -255,8 +268,8 @@ public class StoryResponse {
 	public Response search(@Context UriInfo uriInfo, String body) throws SQLException {
 		String query = "SELECT * FROM " +
 				"(SELECT s.StoryId as StoryId" + 
-				", s.dcTitle as StorydcTitle" +
-				", s.dcDescription as StorydcDescription" +
+				", s.`dc:Title` as StorydcTitle" +
+				", s.`dc:description` as StorydcDescription" +
 				", s.ProjectStoryUrl as StoryProjectStoryUrl" +
 				", s.DateStartDisplay as StoryDateStartDisplay" +
 				", s.DateEndDisplay as StoryDateEndDisplay" +
@@ -264,11 +277,23 @@ public class StoryResponse {
 				", s.PlaceLatitude as StoryPlaceLatitude" +
 				", s.PlaceLongitute as StoryPlaceLongitute" +
 				", s.PlaceUserGenerated as StoryPlaceUserGenerated" +
-				", s.Contributor as StoryContributor" +
-				", s.Rights as StoryRights" +
+				", s.`dc:creator` as StorydcCreator" +
+				", s.`dc:source` as StorydcSource" +
+				", s.`edm:country` as StoryedmCountry" +
+				", s.`edm:dataProvider` as StoryedmDataProvider" +
+				", s.`edm:provider` as StoryedmProvider" +
+				", s.`edm:year` as StoryedmYear" +
+				", s.`dc:publisher` as StorydcPublisher" +
+				", s.`dc:coverage` as StorydcCoverage" +
+				", s.`dc:date` as StorydcDate" +
+				", s.`dc:type` as StorydcType" +
+				", s.`dc:relation` as StorydcRelation" +
+				", s.`dcterms:medium` as StorydctermsMedium" +
+				", s.`edm:datasetName` as StoryedmDatasetName" +
+				", s.`dc:contributor` as StorydcContributor" +
+				", s.`edm:rights` as StoryedmRights" +
 				", s.Summary as StorySummary" +
 				", s.ParentStory as StoryParentStory" +
-				", s.Manifest as StoryManifest" +
 				", s.SearchText as StorySearchText" +
 				", s.DateStart as StoryDateStart" +
 				", s.DateEnd as StoryDateEnd" +
@@ -433,87 +458,100 @@ public class StoryResponse {
 	@Produces("application/json;charset=utf-8")
 	@GET
 	public Response getEntry(@PathParam("id") int id, String body) throws SQLException {
-		String query = "SELECT s.StoryId as StoryId" + 
-						", s.dcTitle as StorydcTitle" +
-						", s.dcDescription as StorydcDescription" +
-						", s.ProjectStoryUrl as StoryProjectStoryUrl" +
-						", s.DateStartDisplay as StoryDateStartDisplay" +
-						", s.DateEndDisplay as StoryDateEndDisplay" +
-						", s.PlaceName as StoryPlaceName" +
-						", s.PlaceLatitude as StoryPlaceLatitude" +
-						", s.PlaceLongitute as StoryPlaceLongitute" +
-						", s.PlaceUserGenerated as StoryPlaceUserGenerated" +
-						", s.Contributor as StoryContributor" +
-						", s.Rights as StoryRights" +
-						", s.Summary as StorySummary" +
-						", s.ParentStory as StoryParentStory" +
-						", s.Manifest as StoryManifest" +
-						", s.SearchText as StorySearchText" +
-						", s.DateStart as StoryDateStart" +
-						", s.DateEnd as StoryDateEnd" +
-						", s.OrderIndex as StoryOrderIndex" +
-						", group_concat(i.ItemId SEPARATOR '§~§') as ItemId" +
-						", group_concat(i.Title SEPARATOR '§~§') as Title" +
-						", group_concat(i.CompletionStatusColorCode SEPARATOR '§~§') as CompletionStatusColorCode" +
-						", group_concat(i.CompletionStatusName SEPARATOR '§~§') as CompletionStatusName" +
-						", group_concat(i.CompletionStatusId SEPARATOR '§~§') as CompletionStatusId" +
-						", group_concat(i.ProjectItemId SEPARATOR '§~§') as ProjectItemId" +
-						", group_concat(i.ProjectId SEPARATOR '§~§') as ProjectId" +
-						", group_concat(i.Description SEPARATOR '§~§') as Description" +
-						", group_concat(i.DateStart SEPARATOR '§~§') as DateStart" +
-						", group_concat(i.DateEnd SEPARATOR '§~§') as DateEnd" +
-						", group_concat(i.DatasetId SEPARATOR '§~§') as DatasetId" +
-						", group_concat(i.ImageLink SEPARATOR '§~§') as ImageLink" +
-						", group_concat(i.OrderIndex SEPARATOR '§~§') as OrderIndex" +
-						", group_concat(i.Timestamp SEPARATOR '§~§') as Timestamp" +
-						", group_concat(c.PlaceId SEPARATOR '§~§') as PlaceId " +
-						", group_concat(c.PlaceName SEPARATOR '§~§') as PlaceName " +
-						", group_concat(c.PlaceLatitude SEPARATOR '§~§') as PlaceLatitude " +
-						", group_concat(c.PlaceLongitude SEPARATOR '§~§') as PlaceLongitude " +
-						", group_concat(c.PlaceLink SEPARATOR '§~§') as PlaceLink " +
-						", group_concat(c.PlaceZoom SEPARATOR '§~§') as PlaceZoom " +
-						", group_concat(c.PlaceComment SEPARATOR '§~§') as PlaceComment " +
-						", group_concat(c.PlaceAccuracy SEPARATOR '§~§') as PlaceAccuracy " +
-						", group_concat(c.PlaceUserGenerated SEPARATOR '§~§') as PlaceUserGenerated " +
-						"FROM " +
-						"(" +
-							"SELECT * " +
-						    "FROM Item i " +
-						    "LEFT JOIN ( " +
-							"SELECT i.ItemId as CompletionStatusItemId" +
-							", c.Name as CompletionStatusName " +  
-							", c.ColorCode as CompletionStatusColorCode " +  
-					        "FROM CompletionStatus c " +
-					        "JOIN Item i " +
-					        "ON i.CompletionStatusId = c.CompletionStatusId " +
-					        ") c  " +
-					        "ON i.ItemId = c.CompletionStatusItemId " +
-						") i " +
-						"LEFT JOIN " + 
-						"(" + 
-							"SELECT i.ItemId as ItemId" +
-							", group_concat(IFNULL(pl.PlaceId, 'NULL') SEPARATOR '&~&') as PlaceId " +
-							", group_concat(IFNULL(pl.Name, 'NULL') SEPARATOR '&~&') as PlaceName " +
-							", group_concat(IFNULL(pl.Latitude, 'NULL') SEPARATOR '&~&') as PlaceLatitude " +
-							", group_concat(IFNULL(pl.Longitude, 'NULL') SEPARATOR '&~&') as PlaceLongitude " +
-							", group_concat(IFNULL(pl.Link, 'NULL') SEPARATOR '&~&') as PlaceLink " +
-							", group_concat(IFNULL(pl.Zoom, 'NULL') SEPARATOR '&~&') as PlaceZoom " +
-							", group_concat(IFNULL(pl.Comment, 'NULL') SEPARATOR '&~&') as PlaceComment " +
-							", group_concat(IFNULL(pl.Accuracy, 'NULL') SEPARATOR '&~&') as PlaceAccuracy " +
-							", group_concat(IFNULL(pl.UserGenerated + 0, 'NULL') SEPARATOR '&~&') as PlaceUserGenerated " +
-							"FROM Item i " + 
-							"LEFT JOIN Place pl on i.ItemId = pl.ItemId " +  
-							"GROUP BY i.ItemId " +
-						") c " + 
-						"ON i.ItemId = c.ItemId " +
-						"LEFT JOIN " + 
-						"(" +
-							"SELECT * " +
-							"FROM Story " + 
-						") s " +
-						"ON i.StoryId = s.StoryId " +
-						"WHERE s.StoryId = " + id + " " +
-						"GROUP BY s.StoryId ";
+		String query = "SELECT * FROM " +
+				"(SELECT s.StoryId as StoryId" + 
+				", s.`dc:Title` as StorydcTitle" +
+				", s.`dc:description` as StorydcDescription" +
+				", s.ProjectStoryUrl as StoryProjectStoryUrl" +
+				", s.DateStartDisplay as StoryDateStartDisplay" +
+				", s.DateEndDisplay as StoryDateEndDisplay" +
+				", s.PlaceName as StoryPlaceName" +
+				", s.PlaceLatitude as StoryPlaceLatitude" +
+				", s.PlaceLongitute as StoryPlaceLongitute" +
+				", s.PlaceUserGenerated as StoryPlaceUserGenerated" +
+				", s.`dc:creator` as StorydcCreator" +
+				", s.`dc:source` as StorydcSource" +
+				", s.`edm:country` as StoryedmCountry" +
+				", s.`edm:dataProvider` as StoryedmDataProvider" +
+				", s.`edm:provider` as StoryedmProvider" +
+				", s.`edm:year` as StoryedmYear" +
+				", s.`dc:publisher` as StorydcPublisher" +
+				", s.`dc:coverage` as StorydcCoverage" +
+				", s.`dc:date` as StorydcDate" +
+				", s.`dc:type` as StorydcType" +
+				", s.`dc:relation` as StorydcRelation" +
+				", s.`dcterms:medium` as StorydctermsMedium" +
+				", s.`edm:datasetName` as StoryedmDatasetName" +
+				", s.`dc:contributor` as StorydcContributor" +
+				", s.`edm:rights` as StoryedmRights" +
+				", s.Summary as StorySummary" +
+				", s.ParentStory as StoryParentStory" +
+				", s.SearchText as StorySearchText" +
+				", s.DateStart as StoryDateStart" +
+				", s.DateEnd as StoryDateEnd" +
+				", s.OrderIndex as StoryOrderIndex" +
+				", group_concat(i.ItemId SEPARATOR '§~§') as ItemId" +
+				", group_concat(i.Title SEPARATOR '§~§') as Title" +
+				", group_concat(i.CompletionStatusColorCode SEPARATOR '§~§') as CompletionStatusColorCode" +
+				", group_concat(i.CompletionStatusName SEPARATOR '§~§') as CompletionStatusName" +
+				", group_concat(i.CompletionStatusId SEPARATOR '§~§') as CompletionStatusId" +
+				", group_concat(i.ProjectItemId SEPARATOR '§~§') as ProjectItemId" +
+				", group_concat(i.ProjectId SEPARATOR '§~§') as ProjectId" +
+				", group_concat(i.Description SEPARATOR '§~§') as Description" +
+				", group_concat(i.DateStart SEPARATOR '§~§') as DateStart" +
+				", group_concat(i.DateEnd SEPARATOR '§~§') as DateEnd" +
+				", group_concat(i.DatasetId SEPARATOR '§~§') as DatasetId" +
+				", group_concat(i.ImageLink SEPARATOR '§~§') as ImageLink" +
+				", group_concat(i.OrderIndex SEPARATOR '§~§') as OrderIndex" +
+				", group_concat(i.Timestamp SEPARATOR '§~§') as Timestamp" +
+				", group_concat(c.PlaceId SEPARATOR '§~§') as PlaceId " +
+				", group_concat(c.PlaceName SEPARATOR '§~§') as PlaceName " +
+				", group_concat(c.PlaceLatitude SEPARATOR '§~§') as PlaceLatitude " +
+				", group_concat(c.PlaceLongitude SEPARATOR '§~§') as PlaceLongitude " +
+				", group_concat(c.PlaceLink SEPARATOR '§~§') as PlaceLink " +
+				", group_concat(c.PlaceZoom SEPARATOR '§~§') as PlaceZoom " +
+				", group_concat(c.PlaceComment SEPARATOR '§~§') as PlaceComment " +
+				", group_concat(c.PlaceAccuracy SEPARATOR '§~§') as PlaceAccuracy " +
+				", group_concat(c.PlaceUserGenerated SEPARATOR '§~§') as PlaceUserGenerated " +
+				"FROM " +
+					"(" +
+					"SELECT * " +
+				    "FROM Item i " +
+				    "LEFT JOIN ( " +
+						"SELECT i.ItemId as CompletionStatusItemId" +
+						", c.Name as CompletionStatusName " + 
+						", c.ColorCode as CompletionStatusColorCode " + 
+				        "FROM CompletionStatus c " +
+				        "JOIN Item i " +
+				        "ON i.CompletionStatusId = c.CompletionStatusId " +
+				        ") c  " +
+				        "ON i.ItemId = c.CompletionStatusItemId " +
+					") i " +
+				"LEFT JOIN " + 
+				"(" + 
+					"SELECT i.ItemId as ItemId" +
+					", group_concat(IFNULL(pl.PlaceId, 'NULL') SEPARATOR '&~&') as PlaceId " +
+					", group_concat(IFNULL(pl.Name, 'NULL') SEPARATOR '&~&') as PlaceName " +
+					", group_concat(IFNULL(pl.Latitude, 'NULL') SEPARATOR '&~&') as PlaceLatitude " +
+					", group_concat(IFNULL(pl.Longitude, 'NULL') SEPARATOR '&~&') as PlaceLongitude " +
+					", group_concat(IFNULL(pl.Link, 'NULL') SEPARATOR '&~&') as PlaceLink " +
+					", group_concat(IFNULL(pl.Zoom, 'NULL') SEPARATOR '&~&') as PlaceZoom " +
+					", group_concat(IFNULL(pl.Comment, 'NULL') SEPARATOR '&~&') as PlaceComment " +
+					", group_concat(IFNULL(pl.Accuracy, 'NULL') SEPARATOR '&~&') as PlaceAccuracy " +
+					", group_concat(IFNULL(pl.UserGenerated + 0, 'NULL') SEPARATOR '&~&') as PlaceUserGenerated " +
+					"FROM Item i " + 
+					"LEFT JOIN Place pl on i.ItemId = pl.ItemId " +  
+					"GROUP BY i.ItemId " +
+				") c " + 
+				"ON i.ItemId = c.ItemId " +
+				"LEFT JOIN " + 
+				"(" +
+					"SELECT * " +
+					"FROM Story " + 
+				") s " +
+				"ON i.StoryId = s.StoryId " +
+				"GROUP BY s.StoryId) s " +
+				"WHERE s.StoryId = " + id;
 		String resource = executeQuery(query, "Select");
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();

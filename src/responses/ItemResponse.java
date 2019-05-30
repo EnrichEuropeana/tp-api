@@ -214,6 +214,7 @@ public class ItemResponse {
 			  item.setImageLink(rs.getString("ImageLink"));
 			  item.setOrderIndex(rs.getInt("OrderIndex"));
 			  item.setTimestamp(rs.getString("Timestamp"));
+			  item.setManifest(rs.getString("Manifest"));
 			  item.setStoryId(rs.getInt("StoryId"));
 			  item.setStorydcTitle(rs.getString("StorydcTitle"));
 			  item.setStorydcDescription(rs.getString("StorydcDescription"));
@@ -224,11 +225,24 @@ public class ItemResponse {
 			  item.setStoryPlaceLatitude(rs.getFloat("StoryPlaceLatitude"));
 			  item.setStoryPlaceLongitute(rs.getFloat("StoryPlaceLongitute"));
 			  item.setStoryPlaceUserGenerated(rs.getString("StoryPlaceUserGenerated"));
-			  item.setStoryContributor(rs.getString("StoryContributor"));
-			  item.setStoryRights(rs.getString("StoryRights"));
+			  item.setStorydcCreator(rs.getString("StorydcCreator"));
+			  item.setStorydcSource(rs.getString("StoryedmRights"));
+			  item.setStorydcSource(rs.getString("StorydcSource"));
+			  item.setStoryedmCountry(rs.getString("StoryedmCountry"));
+			  item.setStoryedmDataProvider(rs.getString("StoryedmDataProvider"));
+			  item.setStoryedmProvider(rs.getString("StoryedmProvider"));
+			  item.setStoryedmYear(rs.getString("StoryedmYear"));
+			  item.setStorydcPublisher(rs.getString("StorydcPublisher"));
+			  item.setStorydcCoverage(rs.getString("StorydcCoverage"));
+			  item.setStorydcDate(rs.getString("StorydcDate"));
+			  item.setStorydcType(rs.getString("StorydcType"));
+			  item.setStorydcRelation(rs.getString("StorydcRelation"));
+			  item.setStorydctermsMedium(rs.getString("StorydctermsMedium"));
+			  item.setStoryedmDatasetName(rs.getString("StoryedmDatasetName"));
+			  item.setStorydcContributor(rs.getString("StorydcContributor"));
+			  item.setStoryedmRights(rs.getString("StoryedmRights"));
 			  item.setStorySummary(rs.getString("StorySummary"));
 			  item.setStoryParentStory(rs.getInt("StoryParentStory"));
-			  item.setStoryManifest(rs.getString("StoryManifest"));
 			  item.setStorySearchText(rs.getString("StorySearchText"));
 			  item.setStoryDateStart(rs.getTimestamp("StoryDateStart"));
 			  item.setStoryDateEnd(rs.getTimestamp("StoryDateEnd"));
@@ -264,6 +278,21 @@ public class ItemResponse {
 				"    i.CompletionStatusId as CompletionStatusId, \r\n" + 
 				"    i.CompletionStatusName as CompletionStatusName, \r\n" + 
 				"    i.CompletionStatusColorCode as CompletionStatusColorCode, \r\n" + 
+				"    i.TranscriptionStatusId as TranscriptionStatusId, \r\n" + 
+				"    i.TranscriptionStatusName as TranscriptionStatusName, \r\n" + 
+				"    i.TranscriptionStatusColorCode as TranscriptionStatusColorCode, \r\n" + 
+				"    i.DescriptionStatusId as DescriptionStatusId, \r\n" + 
+				"    i.DescriptionStatusName as DescriptionStatusName, \r\n" + 
+				"    i.DescriptionStatusColorCode as DescriptionStatusColorCode, \r\n" + 
+				"    i.LocationStatusId as LocationStatusId, \r\n" + 
+				"    i.LocationStatusName as LocationStatusName, \r\n" + 
+				"    i.LocationStatusColorCode as LocationStatusColorCode, \r\n" + 
+				"    i.TaggingStatusId as TaggingStatusId, \r\n" + 
+				"    i.TaggingStatusName as TaggingStatusName, \r\n" + 
+				"    i.TaggingStatusColorCode as TaggingStatusColorCode, \r\n" + 
+				"    i.AutomaticEnrichmentStatusId as AutomaticEnrichmentStatusId, \r\n" + 
+				"    i.AutomaticEnrichmentStatusName as AutomaticEnrichmentStatusName, \r\n" + 
+				"    i.AutomaticEnrichmentStatusColorCode as AutomaticEnrichmentStatusColorCode, \r\n" + 
 				"    i.ProjectItemId as ProjectItemId, \r\n" + 
 				"    i.ProjectId as ProjectId, \r\n" + 
 				"    i.Description as Description, \r\n" + 
@@ -273,6 +302,7 @@ public class ItemResponse {
 				"    i.ImageLink as ImageLink, \r\n" + 
 				"    i.OrderIndex as OrderIndex, \r\n" + 
 				"    i.Timestamp as Timestamp,\r\n" + 
+				"    i.Manifest as Manifest,\r\n" + 
 				"    a.PropertyId as PropertyId,\r\n" + 
 				"    a.PropertyTypeName as PropertyTypeName,\r\n" + 
 				"    a.PropertyValue as PropertyValue,\r\n" + 
@@ -304,8 +334,8 @@ public class ItemResponse {
 				"    e.AnnotationWidth as AnnotationWidth,\r\n" + 
 				"    e.AnnotationHeight as AnnotationHeight,\r\n" + 
 				"    s.StoryId as StoryId\r\n" + 
-				"	, s.dcTitle as StorydcTitle \r\n" + 
-				"	, s.dcDescription as StorydcDescription \r\n" + 
+				"	, s.`dc:title` as StorydcTitle \r\n" + 
+				"	, s.`dc:description` as StorydcDescription \r\n" + 
 				"	, s.ProjectStoryUrl as StoryProjectStoryUrl \r\n" + 
 				"	, s.DateStartDisplay as StoryDateStartDisplay \r\n" + 
 				"	, s.DateEndDisplay as StoryDateEndDisplay \r\n" + 
@@ -313,11 +343,23 @@ public class ItemResponse {
 				"	, s.PlaceLatitude as StoryPlaceLatitude \r\n" + 
 				"	, s.PlaceLongitute as StoryPlaceLongitute \r\n" + 
 				"	, s.PlaceUserGenerated as StoryPlaceUserGenerated \r\n" + 
-				"	, s.Contributor as StoryContributor \r\n" + 
-				"	, s.Rights as StoryRights \r\n" + 
+				", s.`dc:creator` as StorydcCreator" +
+				", s.`dc:source` as StorydcSource" +
+				", s.`edm:country` as StoryedmCountry" +
+				", s.`edm:dataProvider` as StoryedmDataProvider" +
+				", s.`edm:provider` as StoryedmProvider" +
+				", s.`edm:year` as StoryedmYear" +
+				", s.`dc:publisher` as StorydcPublisher" +
+				", s.`dc:coverage` as StorydcCoverage" +
+				", s.`dc:date` as StorydcDate" +
+				", s.`dc:type` as StorydcType" +
+				", s.`dc:relation` as StorydcRelation" +
+				", s.`dcterms:medium` as StorydctermsMedium" +
+				", s.`edm:datasetName` as StoryedmDatasetName" +
+				"	, s.`dc:contributor` as StorydcContributor \r\n" + 
+				"	, s.`edm:rights` as StoryedmRights \r\n" + 
 				"	, s.Summary as StorySummary \r\n" + 
 				"	, s.ParentStory as StoryParentStory \r\n" + 
-				"	, s.Manifest as StoryManifest \r\n" + 
 				"	, s.SearchText as StorySearchText \r\n" + 
 				"	, s.DateStart as StoryDateStart \r\n" + 
 				"	, s.DateEnd as StoryDateEnd \r\n" + 
@@ -332,8 +374,53 @@ public class ItemResponse {
 			        "FROM CompletionStatus c " +
 			        "JOIN Item i " +
 			        "ON i.CompletionStatusId = c.CompletionStatusId " +
-			        ") c  " +
-			        "ON i.ItemId = c.CompletionStatusItemId " +
+			        ") status  " +
+			    "ON i.ItemId = status.CompletionStatusItemId " +
+			    "LEFT JOIN ( " +
+					"SELECT i.ItemId as TranscriptionStatusItemId" +
+					", c.Name as TranscriptionStatusName " + 
+					", c.ColorCode as TranscriptionStatusColorCode " + 
+			        "FROM CompletionStatus c " +
+			        "JOIN Item i " +
+			        "ON i.TranscriptionStatusId = c.CompletionStatusId " +
+			        ") trStatus  " +
+			    "ON i.ItemId = trStatus.TranscriptionStatusItemId " +
+			    "LEFT JOIN ( " +
+					"SELECT i.ItemId as DescriptionStatusItemId" +
+					", c.Name as DescriptionStatusName " + 
+					", c.ColorCode as DescriptionStatusColorCode " + 
+			        "FROM CompletionStatus c " +
+			        "JOIN Item i " +
+			        "ON i.DescriptionStatusId = c.CompletionStatusId " +
+			        ") deStatus  " +
+			    "ON i.ItemId = deStatus.DescriptionStatusItemId " +
+			    "LEFT JOIN ( " +
+					"SELECT i.ItemId as LocationStatusItemId" +
+					", c.Name as LocationStatusName " + 
+					", c.ColorCode as LocationStatusColorCode " + 
+			        "FROM CompletionStatus c " +
+			        "JOIN Item i " +
+			        "ON i.LocationStatusId = c.CompletionStatusId " +
+			        ") loStatus  " +
+			    "ON i.ItemId = loStatus.LocationStatusItemId " +
+			    "LEFT JOIN ( " +
+					"SELECT i.ItemId as TaggingStatusItemId" +
+					", c.Name as TaggingStatusName " + 
+					", c.ColorCode as TaggingStatusColorCode " + 
+			        "FROM CompletionStatus c " +
+			        "JOIN Item i " +
+			        "ON i.TaggingStatusId = c.CompletionStatusId " +
+			        ") taStatus  " +
+			    "ON i.ItemId = taStatus.TaggingStatusItemId " +
+			    "LEFT JOIN ( " +
+					"SELECT i.ItemId as AutomaticEnrichmentStatusItemId" +
+					", c.Name as AutomaticEnrichmentStatusName " + 
+					", c.ColorCode as AutomaticEnrichmentStatusColorCode " + 
+			        "FROM CompletionStatus c " +
+			        "JOIN Item i " +
+			        "ON i.AutomaticEnrichmentStatusId = c.CompletionStatusId " +
+			        ") auStatus  " +
+			    "ON i.ItemId = auStatus.AutomaticEnrichmentStatusItemId " +
 				") i " +
 			"LEFT JOIN " + 
 			"(" +
@@ -538,6 +625,7 @@ public class ItemResponse {
 					"    i.ImageLink as ImageLink, \r\n" + 
 					"    i.OrderIndex as OrderIndex, \r\n" + 
 					"    i.Timestamp as Timestamp,\r\n" + 
+					"    i.Manifest as Manifest,\r\n" + 
 					"    a.PropertyId as PropertyId,\r\n" + 
 					"    a.PropertyTypeName as PropertyTypeName,\r\n" + 
 					"    a.PropertyValue as PropertyValue,\r\n" + 
@@ -569,8 +657,8 @@ public class ItemResponse {
 					"    e.AnnotationWidth as AnnotationWidth,\r\n" + 
 					"    e.AnnotationHeight as AnnotationHeight,\r\n" + 
 					"    s.StoryId as StoryId\r\n" + 
-					"	, s.dcTitle as StorydcTitle \r\n" + 
-					"	, s.dcDescription as StorydcDescription \r\n" + 
+					"	, s.`dc:title` as StorydcTitle \r\n" + 
+					"	, s.`dc:description` as StorydcDescription \r\n" + 
 					"	, s.ProjectStoryUrl as StoryProjectStoryUrl \r\n" + 
 					"	, s.DateStartDisplay as StoryDateStartDisplay \r\n" + 
 					"	, s.DateEndDisplay as StoryDateEndDisplay \r\n" + 
@@ -578,11 +666,23 @@ public class ItemResponse {
 					"	, s.PlaceLatitude as StoryPlaceLatitude \r\n" + 
 					"	, s.PlaceLongitute as StoryPlaceLongitute \r\n" + 
 					"	, s.PlaceUserGenerated as StoryPlaceUserGenerated \r\n" + 
-					"	, s.Contributor as StoryContributor \r\n" + 
-					"	, s.Rights as StoryRights \r\n" + 
+					", s.`dc:creator` as StorydcCreator" +
+					", s.`dc:source` as StorydcSource" +
+					", s.`edm:country` as StoryedmCountry" +
+					", s.`edm:dataProvider` as StoryedmDataProvider" +
+					", s.`edm:provider` as StoryedmProvider" +
+					", s.`edm:year` as StoryedmYear" +
+					", s.`dc:publisher` as StorydcPublisher" +
+					", s.`dc:coverage` as StorydcCoverage" +
+					", s.`dc:date` as StorydcDate" +
+					", s.`dc:type` as StorydcType" +
+					", s.`dc:relation` as StorydcRelation" +
+					", s.`dcterms:medium` as StorydctermsMedium" +
+					", s.`edm:datasetName` as StoryedmDatasetName" +
+					"	, s.`dc:contributor` as StorydcContributor \r\n" + 
+					"	, s.`edm:rights` as StoryedmRights \r\n" + 
 					"	, s.Summary as StorySummary \r\n" + 
 					"	, s.ParentStory as StoryParentStory \r\n" + 
-					"	, s.Manifest as StoryManifest \r\n" + 
 					"	, s.SearchText as StorySearchText \r\n" + 
 					"	, s.DateStart as StoryDateStart \r\n" + 
 					"	, s.DateEnd as StoryDateEnd \r\n" + 

@@ -14,11 +14,23 @@ public class Story {
 	public Float PlaceLatitude;
 	public Float PlaceLongitute;
 	public String PlaceUserGenerated;
-	public String Contributor;
-	public String Rights;
+	public String dcCreator;
+	public String dcSource;
+	public String edmCountry;
+	public String edmDataProvider;
+	public String edmProvider;
+	public String edmYear;
+	public String dcPublisher;
+	public String dcCoverage;
+	public String dcDate;
+	public String dcType;
+	public String dcRelation;
+	public String dctermsMedium;
+	public String edmDatasetName;
+	public String dcContributor;
+	public String edmRights;
 	public String Summary;
 	public Integer ParentStory;
-	public String Manifest;
 	public String SearchText;
 	public Timestamp DateStart;
 	public Timestamp DateEnd;
@@ -63,20 +75,56 @@ public class Story {
 	public void setPlaceUserGenerated(String placeUserGenerated) {
 		PlaceUserGenerated = placeUserGenerated;
 	}
-	public void setContributor(String contributor) {
-		Contributor = contributor;
+	public void setdcCreator(String dcCreator) {
+		this.dcCreator = dcCreator;
 	}
-	public void setRights(String rights) {
-		Rights = rights;
+	public void setdcSource(String dcSource) {
+		this.dcSource = dcSource;
+	}
+	public void setedmCountry(String edmCountry) {
+		this.edmCountry = edmCountry;
+	}
+	public void setedmDataProvider(String edmDataProvider) {
+		this.edmDataProvider = edmDataProvider;
+	}
+	public void setedmProvider(String edmProvider) {
+		this.edmProvider = edmProvider;
+	}
+	public void setedmYear(String edmYear) {
+		this.edmYear = edmYear;
+	}
+	public void setdcPublisher(String dcPublisher) {
+		this.dcPublisher = dcPublisher;
+	}
+	public void setdcCoverage(String dcCoverage) {
+		this.dcCoverage = dcCoverage;
+	}
+	public void setdcDate(String dcDate) {
+		this.dcDate = dcDate;
+	}
+	public void setdcType(String dcType) {
+		this.dcType = dcType;
+	}
+	public void setdcRelation(String dcRelation) {
+		this.dcRelation = dcRelation;
+	}
+	public void setdctermsMedium(String dctermsMedium) {
+		this.dctermsMedium = dctermsMedium;
+	}
+	public void setedmDatasetName(String edmDatasetName) {
+		this.edmDatasetName = edmDatasetName;
+	}
+	public void setdcContributor(String dcContributor) {
+		this.dcContributor = dcContributor;
+	}
+	public void setedmRights(String edmRights) {
+		this.edmRights = edmRights;
 	}
 	public void setSummary(String summary) {
 		Summary = summary;
 	}
 	public void setParentStory(Integer parentStory) {
 		ParentStory = parentStory;
-	}
-	public void setManifest(String manifest) {
-		Manifest = manifest;
 	}
 	public void setSearchText(String searchText) {
 		SearchText = searchText;

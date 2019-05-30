@@ -108,7 +108,7 @@ public class StoryMinimalResponse {
 	public Response search(@Context UriInfo uriInfo, String body) throws SQLException {
 		String query = "SELECT * FROM " +
 				"(SELECT s.StoryId as StoryId" + 
-				", s.dcTitle as StorydcTitle" +
+				", s.`dc:title` as StorydcTitle" +
 				", group_concat(i.ItemId SEPARATOR '§~§') as ItemId" +
 				", group_concat(i.CompletionStatusName SEPARATOR '§~§') as CompletionStatusName" +
 				", group_concat(i.CompletionStatusId SEPARATOR '§~§') as CompletionStatusId " +
@@ -232,8 +232,8 @@ public class StoryMinimalResponse {
 	@GET
 	public Response getEntry(@PathParam("id") int id, String body) throws SQLException {
 		String query = "SELECT s.StoryId as StoryId" + 
-						", s.dcTitle as StorydcTitle" +
-						", s.dcDescription as StorydcDescription" +
+						", s.`dc:title` as StorydcTitle" +
+						", s.`dc:description` as StorydcDescription" +
 						", s.ProjectStoryUrl as StoryProjectStoryUrl" +
 						", s.DateStartDisplay as StoryDateStartDisplay" +
 						", s.DateEndDisplay as StoryDateEndDisplay" +
@@ -241,8 +241,8 @@ public class StoryMinimalResponse {
 						", s.PlaceLatitude as StoryPlaceLatitude" +
 						", s.PlaceLongitute as StoryPlaceLongitute" +
 						", s.PlaceUserGenerated as StoryPlaceUserGenerated" +
-						", s.Contributor as StoryContributor" +
-						", s.Rights as StoryRights" +
+						", s.`dc:contributor` as StoryContributor" +
+						", s.`edm:rights` as StoryRights" +
 						", s.Summary as StorySummary" +
 						", s.ParentStory as StoryParentStory" +
 						", s.Manifest as StoryManifest" +
