@@ -385,17 +385,51 @@ public class StoryResponse {
 	@Path("")
 	@POST
 	public Response add(String body) throws SQLException {	
-	    /*
-	    GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
-	    Gson gson = gsonBuilder.create();
-	    Story story = gson.fromJson(body, Story.class);
+		JsonObject data = new JsonParser().parse(body).getAsJsonObject();
+		JsonArray dataArray = data.getAsJsonObject().get("@graph").getAsJsonArray();
+		List<String> fields = new ArrayList<String>();
+		fields.add("dc:title");
+		fields.add("dc:description");
+		fields.add("dc:creator");
+		fields.add("dc:source");
+		fields.add("edm:country");
+		fields.add("edm:dataProvider");
+		fields.add("edm:provider");
+		fields.add("edm:rights");
+		fields.add("dc:contributor");
+		fields.add("edm:year");
+		fields.add("dc:publisher");
+		fields.add("dc:coverage");
+		fields.add("dc:date");
+		fields.add("dc:type");
+		fields.add("dc:relation");
+		fields.add("dcterms:medium");
+		fields.add("edm:datasetName");
+	    int keyCount = dataArray.size();
+		String response = "";
+		/*
+		for(Map.Entry<String, JsonElement> entry : data.entrySet()) {
+			if (Arrays.asList(fields).contains(entry.getKey())) {
+		     response += entry.getKey() + " = " + entry.getValue();
+			}*/
+		for (int i = 0; i < keyCount; i++) {
+			for(Map.Entry<String, JsonElement> entry : dataArray.get(i).getAsJsonObject().entrySet()) {
+				if (fields.contains(entry.getKey())) {
+					response += entry.getKey() + " = " + entry.getValue();
+				}
+			}
+		    if (i < keyCount) {
+		    	response += ", ";
+		    }
+		}
 	    //Check if all mandatory fields are included
-	    if (item.Name != null &~&&~& item.Public != null) {
+	    /*
+	    if (story.Name != null && story.Public != null) {
 			String query = "INSERT INTO Item (Name, Start, End, Public) "
-							+ "VALUES ('" + item.Name + "'"
-								+ ", '" + item.Start + "'"
-								+ ", '" + item.End + "'"
-								+ ", " + item.Public + ")";
+							+ "VALUES ('" + story.Name + "'"
+								+ ", '" + story.Start + "'"
+								+ ", '" + story.End + "'"
+								+ ", " + story.Public + ")";
 			String resource = executeQuery(query, "Insert");
 			return resource;
 	    } else {
@@ -403,7 +437,7 @@ public class StoryResponse {
 	    }
 	    */
 		//String resource = executeQuery(query, "Select");
-		ResponseBuilder rBuild = Response.ok("");
+		ResponseBuilder rBuild = Response.ok(response);
         return rBuild.build();
 	}
 
