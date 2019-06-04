@@ -406,38 +406,57 @@ public class StoryResponse {
 		fields.add("dcterms:medium");
 		fields.add("edm:datasetName");
 	    int keyCount = dataArray.size();
-		String response = "";
-		/*
-		for(Map.Entry<String, JsonElement> entry : data.entrySet()) {
-			if (Arrays.asList(fields).contains(entry.getKey())) {
-		     response += entry.getKey() + " = " + entry.getValue();
-			}*/
+
+		List<String> keys = new ArrayList<String>();
+		List<String> values = new ArrayList<String>();
+
 		for (int i = 0; i < keyCount; i++) {
 			for(Map.Entry<String, JsonElement> entry : dataArray.get(i).getAsJsonObject().entrySet()) {
 				if (fields.contains(entry.getKey())) {
-					response += entry.getKey() + " = " + entry.getValue();
+					if (!entry.getValue().isJsonObject()) {
+						if (!keys.contains(entry.getKey())) {
+							keys.add(entry.getKey());
+							values.add(entry.getValue().toString());
+						}
+					}
+					else {
+						if (entry.getValue().getAsJsonObject().has("@value")) {
+							if (!keys.contains(entry.getKey())) {
+								keys.add(entry.getKey());
+								values.add(entry.getValue().getAsJsonObject().get("@value").toString());
+							}
+						}
+						else if (entry.getValue().getAsJsonObject().has("@id")) {
+							if (!keys.contains(entry.getKey())) {
+								keys.add(entry.getKey());
+								values.add(entry.getValue().getAsJsonObject().get("@id").toString());
+							}
+						}
+					}
 				}
 			}
-		    if (i < keyCount) {
-		    	response += ", ";
-		    }
 		}
-	    //Check if all mandatory fields are included
-	    /*
-	    if (story.Name != null && story.Public != null) {
-			String query = "INSERT INTO Item (Name, Start, End, Public) "
-							+ "VALUES ('" + story.Name + "'"
-								+ ", '" + story.Start + "'"
-								+ ", '" + story.End + "'"
-								+ ", " + story.Public + ")";
-			String resource = executeQuery(query, "Insert");
-			return resource;
-	    } else {
-	    	return "Fields missing";
-	    }
-	    */
-		//String resource = executeQuery(query, "Select");
-		ResponseBuilder rBuild = Response.ok(response);
+		String query = "";
+		query += "INSERT INTO Story (";
+
+		Iterator<String> keysIterator = keys.iterator();
+	    while (keysIterator.hasNext()) {
+			query += "`" + keysIterator.next() + "`";
+	        if (keysIterator.hasNext()) {
+	        	query += ", ";
+	        }
+		}
+	    query += ") VALUES (";
+		Iterator<String> valuesIterator = values.iterator();
+	    while (valuesIterator.hasNext()) {
+			query += valuesIterator.next();
+	        if (valuesIterator.hasNext()) {
+	        	query += ", ";
+	        }
+		}
+	    query += ")";
+		String resource = executeQuery(query, "Update");
+		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
 	}
 
