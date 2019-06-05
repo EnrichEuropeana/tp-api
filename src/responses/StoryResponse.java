@@ -386,7 +386,7 @@ public class StoryResponse {
 	//Add new entry
 	@Path("")
 	@POST
-	public Response add(String body) throws SQLException {	
+	public String add(String body) throws SQLException {	
 		JsonObject data = new JsonParser().parse(body).getAsJsonObject();
 		JsonArray dataArray = data.getAsJsonObject().get("@graph").getAsJsonArray();
 		List<String> fields = new ArrayList<String>();
@@ -418,7 +418,7 @@ public class StoryResponse {
 					if (!entry.getValue().isJsonObject()) {
 						if (!keys.contains(entry.getKey())) {
 							keys.add(entry.getKey());
-							values.add(entry.getValue().toString());
+							values.add("\"" + entry.getValue().toString().replace(",", " | ").replaceAll("[\"{}\\[\\]]", "") + "\"");
 						}
 					}
 					else {
@@ -433,6 +433,23 @@ public class StoryResponse {
 								keys.add(entry.getKey());
 								values.add(entry.getValue().getAsJsonObject().get("@id").toString());
 							}
+						}
+					}
+				}
+				else {
+					if (entry.getKey().equals("@type") && entry.getValue().getAsString().equals("edm:Place")) {
+						keys.add("test");
+						values.add("test");
+						if (dataArray.get(i).getAsJsonObject().keySet().contains("geo:lat")
+								&& dataArray.get(i).getAsJsonObject().keySet().contains("geo:long")) {
+							keys.add("PlaceLatitude");
+							keys.add("PlaceLongitude");
+							values.add(dataArray.get(i).getAsJsonObject().get("geo:lat").toString());
+							values.add(dataArray.get(i).getAsJsonObject().get("geo:long").toString());
+						}
+						if (dataArray.get(i).getAsJsonObject().keySet().contains("skos:prefLabel")) {
+							keys.add("PlaceName");
+							values.add(dataArray.get(i).getAsJsonObject().get("skos:prefLabel").toString());
 						}
 					}
 				}
@@ -459,7 +476,8 @@ public class StoryResponse {
 	    query += ")";
 		String resource = executeQuery(query, "Update");
 		ResponseBuilder rBuild = Response.ok(resource);
-        return rBuild.build();
+        //return rBuild.build();
+		return query;
 	}
 
 
