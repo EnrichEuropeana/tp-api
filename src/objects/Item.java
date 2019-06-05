@@ -37,7 +37,8 @@ public class Item {
 	public Integer StoryId;
 	public String StorydcTitle;
 	public String StorydcDescription;
-	public String StoryProjectStoryUrl;
+	public String StoryedmLandingPage;
+	public String StoryExternalRecordId;
 	public String StoryDateStartDisplay;
 	public String StoryDateEndDisplay;;
 	public String StoryPlaceName;
@@ -78,8 +79,11 @@ public class Item {
 	public void setStorydcDescription(String storydcDescription) {
 		StorydcDescription = storydcDescription;
 	}
-	public void setStoryProjectStoryUrl(String storyProjectStoryUrl) {
-		StoryProjectStoryUrl = storyProjectStoryUrl;
+	public void setStoryedmLandingPage(String storyedmLandingPage) {
+		StoryedmLandingPage = storyedmLandingPage;
+	}
+	public void setStoryExternalRecordId(String storyExternalRecordId) {
+		StoryExternalRecordId = storyExternalRecordId;
 	}
 	public void setStoryDateStartDisplay(String storyDateStartDisplay) {
 		StoryDateStartDisplay = storyDateStartDisplay;

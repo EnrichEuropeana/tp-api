@@ -218,7 +218,8 @@ public class ItemResponse {
 			  item.setStoryId(rs.getInt("StoryId"));
 			  item.setStorydcTitle(rs.getString("StorydcTitle"));
 			  item.setStorydcDescription(rs.getString("StorydcDescription"));
-			  item.setStoryProjectStoryUrl(rs.getString("StoryProjectStoryUrl"));
+			  item.setStoryedmLandingPage(rs.getString("StoryedmLandingPage"));
+			  item.setStoryExternalRecordId(rs.getString("StoryExternalRecordId"));
 			  item.setStoryDateStartDisplay(rs.getString("StoryDateStartDisplay"));
 			  item.setStoryDateEndDisplay(rs.getString("StoryDateEndDisplay"));
 			  item.setStoryPlaceName(rs.getString("StoryPlaceName"));
@@ -336,7 +337,8 @@ public class ItemResponse {
 				"    s.StoryId as StoryId\r\n" + 
 				"	, s.`dc:title` as StorydcTitle \r\n" + 
 				"	, s.`dc:description` as StorydcDescription \r\n" + 
-				"	, s.ProjectStoryUrl as StoryProjectStoryUrl \r\n" + 
+				"	, s.`edm:landingPage` as StoryedmLandingPage \r\n" + 
+				"	, s.ExternalRecordId as StoryExternalRecordId \r\n" + 
 				"	, s.DateStartDisplay as StoryDateStartDisplay \r\n" + 
 				"	, s.DateEndDisplay as StoryDateEndDisplay \r\n" + 
 				"	, s.PlaceName as StoryPlaceName \r\n" + 
@@ -659,7 +661,8 @@ public class ItemResponse {
 					"    s.StoryId as StoryId\r\n" + 
 					"	, s.`dc:title` as StorydcTitle \r\n" + 
 					"	, s.`dc:description` as StorydcDescription \r\n" + 
-					"	, s.ProjectStoryUrl as StoryProjectStoryUrl \r\n" + 
+					"	, s.`edm:landingPage` as StoryedmLandingPage \r\n" + 
+					"	, s.ExternalRecordId as StoryExternalRecordId \r\n" + 
 					"	, s.DateStartDisplay as StoryDateStartDisplay \r\n" + 
 					"	, s.DateEndDisplay as StoryDateEndDisplay \r\n" + 
 					"	, s.PlaceName as StoryPlaceName \r\n" + 

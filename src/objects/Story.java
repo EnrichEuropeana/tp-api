@@ -7,7 +7,8 @@ public class Story {
 	public Integer StoryId;
 	public String dcTitle;
 	public String dcDescription;
-	public String ProjectStoryUrl;
+	public String edmLandingPage;
+	public String ExternalRecordId;
 	public String DateStartDisplay;
 	public String DateEndDisplay;;
 	public String PlaceName;
@@ -54,8 +55,11 @@ public class Story {
 	public void setdcDescription(String dcDescription) {
 		this.dcDescription = dcDescription;
 	}
-	public void setProjectStoryUrl(String projectStoryUrl) {
-		ProjectStoryUrl = projectStoryUrl;
+	public void setedmLandingPage(String edmLandingPage) {
+		this.edmLandingPage = edmLandingPage;
+	}
+	public void setExternalRecordId(String externalRecordId) {
+		ExternalRecordId = externalRecordId;
 	}
 	public void setDateStartDisplay(String dateStartDisplay) {
 		DateStartDisplay = dateStartDisplay;

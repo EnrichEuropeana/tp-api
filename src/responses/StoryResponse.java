@@ -64,7 +64,8 @@ public class StoryResponse {
 			  story.setStoryId(rs.getInt("StoryId")); 
 			  story.setdcTitle(rs.getString("StorydcTitle"));
 			  story.setdcDescription(rs.getString("StorydcDescription"));
-			  story.setProjectStoryUrl(rs.getString("StoryProjectStoryUrl"));
+			  story.setedmLandingPage(rs.getString("StoryedmLandingPage"));
+			  story.setExternalRecordId(rs.getString("StoryExternalRecordId"));
 			  story.setDateStartDisplay(rs.getString("StoryDateStartDisplay"));
 			  story.setDateEndDisplay(rs.getString("StoryDateEndDisplay"));
 			  story.setPlaceName(rs.getString("StoryPlaceName"));
@@ -270,7 +271,8 @@ public class StoryResponse {
 				"(SELECT s.StoryId as StoryId" + 
 				", s.`dc:Title` as StorydcTitle" +
 				", s.`dc:description` as StorydcDescription" +
-				", s.ProjectStoryUrl as StoryProjectStoryUrl" +
+				", s.`edm:landingPage` as StoryedmLandingPage" +
+				", s.ExternalRecordId as StoryExternalRecordId" +
 				", s.DateStartDisplay as StoryDateStartDisplay" +
 				", s.DateEndDisplay as StoryDateEndDisplay" +
 				", s.PlaceName as StoryPlaceName" +
@@ -515,7 +517,8 @@ public class StoryResponse {
 				"(SELECT s.StoryId as StoryId" + 
 				", s.`dc:Title` as StorydcTitle" +
 				", s.`dc:description` as StorydcDescription" +
-				", s.ProjectStoryUrl as StoryProjectStoryUrl" +
+				", s.`edm:landingPage` as StoryedmLandingPage" +
+				", s.ExternalRecordId as StoryExternalRecordId" +
 				", s.DateStartDisplay as StoryDateStartDisplay" +
 				", s.DateEndDisplay as StoryDateEndDisplay" +
 				", s.PlaceName as StoryPlaceName" +
