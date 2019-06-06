@@ -70,7 +70,7 @@ public class StoryResponse {
 			  story.setDateEndDisplay(rs.getString("StoryDateEndDisplay"));
 			  story.setPlaceName(rs.getString("StoryPlaceName"));
 			  story.setPlaceLatitude(rs.getFloat("StoryPlaceLatitude"));
-			  story.setPlaceLongitute(rs.getFloat("StoryPlaceLongitute"));
+			  story.setPlaceLongitude(rs.getFloat("StoryPlaceLongitude"));
 			  story.setPlaceUserGenerated(rs.getString("StoryPlaceUserGenerated"));
 			  story.setdcCreator(rs.getString("StorydcCreator"));
 			  story.setdcSource(rs.getString("StoryedmRights"));
@@ -277,7 +277,7 @@ public class StoryResponse {
 				", s.DateEndDisplay as StoryDateEndDisplay" +
 				", s.PlaceName as StoryPlaceName" +
 				", s.PlaceLatitude as StoryPlaceLatitude" +
-				", s.PlaceLongitute as StoryPlaceLongitute" +
+				", s.PlaceLongitude as StoryPlaceLongitude" +
 				", s.PlaceUserGenerated as StoryPlaceUserGenerated" +
 				", s.`dc:creator` as StorydcCreator" +
 				", s.`dc:source` as StorydcSource" +
@@ -438,8 +438,6 @@ public class StoryResponse {
 				}
 				else {
 					if (entry.getKey().equals("@type") && entry.getValue().getAsString().equals("edm:Place")) {
-						keys.add("test");
-						values.add("test");
 						if (dataArray.get(i).getAsJsonObject().keySet().contains("geo:lat")
 								&& dataArray.get(i).getAsJsonObject().keySet().contains("geo:long")) {
 							keys.add("PlaceLatitude");
@@ -474,7 +472,7 @@ public class StoryResponse {
 	        }
 		}
 	    query += ")";
-		String resource = executeQuery(query, "Update");
+		String resource = executeQuery(query, "Insert");
 		ResponseBuilder rBuild = Response.ok(resource);
         //return rBuild.build();
 		return query;
@@ -541,7 +539,7 @@ public class StoryResponse {
 				", s.DateEndDisplay as StoryDateEndDisplay" +
 				", s.PlaceName as StoryPlaceName" +
 				", s.PlaceLatitude as StoryPlaceLatitude" +
-				", s.PlaceLongitute as StoryPlaceLongitute" +
+				", s.PlaceLongitude as StoryPlaceLongitude" +
 				", s.PlaceUserGenerated as StoryPlaceUserGenerated" +
 				", s.`dc:creator` as StorydcCreator" +
 				", s.`dc:source` as StorydcSource" +

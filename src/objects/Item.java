@@ -43,7 +43,7 @@ public class Item {
 	public String StoryDateEndDisplay;;
 	public String StoryPlaceName;
 	public Float StoryPlaceLatitude;
-	public Float StoryPlaceLongitute;
+	public Float StoryPlaceLongitude;
 	public String StoryPlaceUserGenerated;
 	public String StorydcCreator;
 	public String StorydcSource;
@@ -97,8 +97,8 @@ public class Item {
 	public void setStoryPlaceLatitude(Float storyPlaceLatitude) {
 		StoryPlaceLatitude = storyPlaceLatitude;
 	}
-	public void setStoryPlaceLongitute(Float storyPlaceLongitute) {
-		StoryPlaceLongitute = storyPlaceLongitute;
+	public void setStoryPlaceLongitude(Float storyPlaceLongitude) {
+		StoryPlaceLongitude = storyPlaceLongitude;
 	}
 	public void setStoryPlaceUserGenerated(String storyPlaceUserGenerated) {
 		StoryPlaceUserGenerated = storyPlaceUserGenerated;

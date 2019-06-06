@@ -224,7 +224,7 @@ public class ItemResponse {
 			  item.setStoryDateEndDisplay(rs.getString("StoryDateEndDisplay"));
 			  item.setStoryPlaceName(rs.getString("StoryPlaceName"));
 			  item.setStoryPlaceLatitude(rs.getFloat("StoryPlaceLatitude"));
-			  item.setStoryPlaceLongitute(rs.getFloat("StoryPlaceLongitute"));
+			  item.setStoryPlaceLongitude(rs.getFloat("StoryPlaceLongitude"));
 			  item.setStoryPlaceUserGenerated(rs.getString("StoryPlaceUserGenerated"));
 			  item.setStorydcCreator(rs.getString("StorydcCreator"));
 			  item.setStorydcSource(rs.getString("StoryedmRights"));
@@ -343,7 +343,7 @@ public class ItemResponse {
 				"	, s.DateEndDisplay as StoryDateEndDisplay \r\n" + 
 				"	, s.PlaceName as StoryPlaceName \r\n" + 
 				"	, s.PlaceLatitude as StoryPlaceLatitude \r\n" + 
-				"	, s.PlaceLongitute as StoryPlaceLongitute \r\n" + 
+				"	, s.PlaceLongitude as StoryPlaceLongitude \r\n" + 
 				"	, s.PlaceUserGenerated as StoryPlaceUserGenerated \r\n" + 
 				", s.`dc:creator` as StorydcCreator" +
 				", s.`dc:source` as StorydcSource" +
@@ -667,7 +667,7 @@ public class ItemResponse {
 					"	, s.DateEndDisplay as StoryDateEndDisplay \r\n" + 
 					"	, s.PlaceName as StoryPlaceName \r\n" + 
 					"	, s.PlaceLatitude as StoryPlaceLatitude \r\n" + 
-					"	, s.PlaceLongitute as StoryPlaceLongitute \r\n" + 
+					"	, s.PlaceLongitude as StoryPlaceLongitude \r\n" + 
 					"	, s.PlaceUserGenerated as StoryPlaceUserGenerated \r\n" + 
 					", s.`dc:creator` as StorydcCreator" +
 					", s.`dc:source` as StorydcSource" +

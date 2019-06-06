@@ -13,7 +13,7 @@ public class Story {
 	public String DateEndDisplay;;
 	public String PlaceName;
 	public Float PlaceLatitude;
-	public Float PlaceLongitute;
+	public Float PlaceLongitude;
 	public String PlaceUserGenerated;
 	public String dcCreator;
 	public String dcSource;
@@ -73,8 +73,8 @@ public class Story {
 	public void setPlaceLatitude(Float placeLatitude) {
 		PlaceLatitude = placeLatitude;
 	}
-	public void setPlaceLongitute(Float placeLongitute) {
-		PlaceLongitute = placeLongitute;
+	public void setPlaceLongitude(Float placeLongitude) {
+		PlaceLongitude = placeLongitude;
 	}
 	public void setPlaceUserGenerated(String placeUserGenerated) {
 		PlaceUserGenerated = placeUserGenerated;
