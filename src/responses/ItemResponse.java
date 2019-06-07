@@ -220,8 +220,6 @@ public class ItemResponse {
 			  item.setStorydcDescription(rs.getString("StorydcDescription"));
 			  item.setStoryedmLandingPage(rs.getString("StoryedmLandingPage"));
 			  item.setStoryExternalRecordId(rs.getString("StoryExternalRecordId"));
-			  item.setStoryDateStartDisplay(rs.getString("StoryDateStartDisplay"));
-			  item.setStoryDateEndDisplay(rs.getString("StoryDateEndDisplay"));
 			  item.setStoryPlaceName(rs.getString("StoryPlaceName"));
 			  item.setStoryPlaceLatitude(rs.getFloat("StoryPlaceLatitude"));
 			  item.setStoryPlaceLongitude(rs.getFloat("StoryPlaceLongitude"));
@@ -242,6 +240,8 @@ public class ItemResponse {
 			  item.setStoryedmDatasetName(rs.getString("StoryedmDatasetName"));
 			  item.setStorydcContributor(rs.getString("StorydcContributor"));
 			  item.setStoryedmRights(rs.getString("StoryedmRights"));
+			  item.setStoryedmBegin(rs.getString("StoryedmBegin"));
+			  item.setStoryedmEnd(rs.getString("StoryedmEnd"));
 			  item.setStorySummary(rs.getString("StorySummary"));
 			  item.setStoryParentStory(rs.getInt("StoryParentStory"));
 			  item.setStorySearchText(rs.getString("StorySearchText"));
@@ -339,8 +339,6 @@ public class ItemResponse {
 				"	, s.`dc:description` as StorydcDescription \r\n" + 
 				"	, s.`edm:landingPage` as StoryedmLandingPage \r\n" + 
 				"	, s.ExternalRecordId as StoryExternalRecordId \r\n" + 
-				"	, s.DateStartDisplay as StoryDateStartDisplay \r\n" + 
-				"	, s.DateEndDisplay as StoryDateEndDisplay \r\n" + 
 				"	, s.PlaceName as StoryPlaceName \r\n" + 
 				"	, s.PlaceLatitude as StoryPlaceLatitude \r\n" + 
 				"	, s.PlaceLongitude as StoryPlaceLongitude \r\n" + 
@@ -360,6 +358,8 @@ public class ItemResponse {
 				", s.`edm:datasetName` as StoryedmDatasetName" +
 				"	, s.`dc:contributor` as StorydcContributor \r\n" + 
 				"	, s.`edm:rights` as StoryedmRights \r\n" + 
+				"	, s.`edm:begin` as StoryedmBegin \r\n" + 
+				"	, s.`edm:end` as StoryedmEnd \r\n" + 
 				"	, s.Summary as StorySummary \r\n" + 
 				"	, s.ParentStory as StoryParentStory \r\n" + 
 				"	, s.SearchText as StorySearchText \r\n" + 
@@ -663,8 +663,6 @@ public class ItemResponse {
 					"	, s.`dc:description` as StorydcDescription \r\n" + 
 					"	, s.`edm:landingPage` as StoryedmLandingPage \r\n" + 
 					"	, s.ExternalRecordId as StoryExternalRecordId \r\n" + 
-					"	, s.DateStartDisplay as StoryDateStartDisplay \r\n" + 
-					"	, s.DateEndDisplay as StoryDateEndDisplay \r\n" + 
 					"	, s.PlaceName as StoryPlaceName \r\n" + 
 					"	, s.PlaceLatitude as StoryPlaceLatitude \r\n" + 
 					"	, s.PlaceLongitude as StoryPlaceLongitude \r\n" + 
@@ -684,6 +682,8 @@ public class ItemResponse {
 					", s.`edm:datasetName` as StoryedmDatasetName" +
 					"	, s.`dc:contributor` as StorydcContributor \r\n" + 
 					"	, s.`edm:rights` as StoryedmRights \r\n" + 
+					"	, s.`edm:begin` as StoryedmBegin \r\n" + 
+					"	, s.`edm:end` as StoryedmEnd \r\n" + 
 					"	, s.Summary as StorySummary \r\n" + 
 					"	, s.ParentStory as StoryParentStory \r\n" + 
 					"	, s.SearchText as StorySearchText \r\n" + 

@@ -60,6 +60,8 @@ public class Item {
 	public String StoryedmDatasetName;
 	public String StorydcContributor;
 	public String StoryedmRights;
+	public String StoryedmBegin;
+	public String StoryedmEnd;
 	public String StorySummary;
 	public Integer StoryParentStory;
 	public String StorySearchText;
@@ -147,6 +149,12 @@ public class Item {
 	}
 	public void setStoryedmRights(String storyEdmRights) {
 		StoryedmRights = storyEdmRights;
+	}
+	public void setStoryedmBegin(String storyedmBegin) {
+		StoryedmBegin = storyedmBegin;
+	}
+	public void setStoryedmEnd(String storyedmEnd) {
+		StoryedmEnd = storyedmEnd;
 	}
 	public void setStorySummary(String storySummary) {
 		StorySummary = storySummary;

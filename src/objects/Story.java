@@ -30,6 +30,8 @@ public class Story {
 	public String edmDatasetName;
 	public String dcContributor;
 	public String edmRights;
+	public String edmBegin;
+	public String edmEnd;
 	public String Summary;
 	public Integer ParentStory;
 	public String SearchText;
@@ -123,6 +125,12 @@ public class Story {
 	}
 	public void setedmRights(String edmRights) {
 		this.edmRights = edmRights;
+	}
+	public void setedmBegin(String edmBegin) {
+		this.edmBegin = edmBegin;
+	}
+	public void setedmEnd(String edmEnd) {
+		this.edmEnd = edmEnd;
 	}
 	public void setSummary(String summary) {
 		Summary = summary;

@@ -66,8 +66,6 @@ public class StoryResponse {
 			  story.setdcDescription(rs.getString("StorydcDescription"));
 			  story.setedmLandingPage(rs.getString("StoryedmLandingPage"));
 			  story.setExternalRecordId(rs.getString("StoryExternalRecordId"));
-			  story.setDateStartDisplay(rs.getString("StoryDateStartDisplay"));
-			  story.setDateEndDisplay(rs.getString("StoryDateEndDisplay"));
 			  story.setPlaceName(rs.getString("StoryPlaceName"));
 			  story.setPlaceLatitude(rs.getFloat("StoryPlaceLatitude"));
 			  story.setPlaceLongitude(rs.getFloat("StoryPlaceLongitude"));
@@ -88,6 +86,8 @@ public class StoryResponse {
 			  story.setedmDatasetName(rs.getString("StoryedmDatasetName"));
 			  story.setdcContributor(rs.getString("StorydcContributor"));
 			  story.setedmRights(rs.getString("StoryedmRights"));
+			  story.setedmBegin(rs.getString("StoryedmBegin"));
+			  story.setedmEnd(rs.getString("StoryedmEnd"));
 			  story.setSummary(rs.getString("StorySummary"));
 			  story.setParentStory(rs.getInt("StoryParentStory"));
 			  story.setSearchText(rs.getString("StorySearchText"));
@@ -273,8 +273,6 @@ public class StoryResponse {
 				", s.`dc:description` as StorydcDescription" +
 				", s.`edm:landingPage` as StoryedmLandingPage" +
 				", s.ExternalRecordId as StoryExternalRecordId" +
-				", s.DateStartDisplay as StoryDateStartDisplay" +
-				", s.DateEndDisplay as StoryDateEndDisplay" +
 				", s.PlaceName as StoryPlaceName" +
 				", s.PlaceLatitude as StoryPlaceLatitude" +
 				", s.PlaceLongitude as StoryPlaceLongitude" +
@@ -294,6 +292,8 @@ public class StoryResponse {
 				", s.`edm:datasetName` as StoryedmDatasetName" +
 				", s.`dc:contributor` as StorydcContributor" +
 				", s.`edm:rights` as StoryedmRights" +
+				", s.`edm:begin` as StoryedmBegin" +
+				", s.`edm:end` as StoryedmEnd" +
 				", s.Summary as StorySummary" +
 				", s.ParentStory as StoryParentStory" +
 				", s.SearchText as StorySearchText" +
@@ -398,6 +398,8 @@ public class StoryResponse {
 		fields.add("edm:dataProvider");
 		fields.add("edm:provider");
 		fields.add("edm:rights");
+		fields.add("edm:begin");
+		fields.add("edm:end");
 		fields.add("dc:contributor");
 		fields.add("edm:year");
 		fields.add("dc:publisher");
@@ -407,6 +409,7 @@ public class StoryResponse {
 		fields.add("dc:relation");
 		fields.add("dcterms:medium");
 		fields.add("edm:datasetName");
+		boolean placeAdded = false;
 	    int keyCount = dataArray.size();
 
 		List<String> keys = new ArrayList<String>();
@@ -437,7 +440,7 @@ public class StoryResponse {
 					}
 				}
 				else {
-					if (entry.getKey().equals("@type") && entry.getValue().getAsString().equals("edm:Place")) {
+					if (entry.getKey().equals("@type") && entry.getValue().getAsString().equals("edm:Place") && placeAdded == false) {
 						if (dataArray.get(i).getAsJsonObject().keySet().contains("geo:lat")
 								&& dataArray.get(i).getAsJsonObject().keySet().contains("geo:long")) {
 							keys.add("PlaceLatitude");
@@ -446,13 +449,31 @@ public class StoryResponse {
 							values.add(dataArray.get(i).getAsJsonObject().get("geo:long").toString());
 						}
 						if (dataArray.get(i).getAsJsonObject().keySet().contains("skos:prefLabel")) {
+							JsonArray placeName = new JsonArray();
+							if (dataArray.get(i).getAsJsonObject().get("skos:prefLabel").isJsonArray()) {
+								
+								placeName = dataArray.get(i).getAsJsonObject().get("skos:prefLabel").getAsJsonArray();
+								for (int j = 0; j < placeName.size(); j++) {
+									if (placeName.get(j) instanceof JsonObject && placeName.get(j).getAsJsonObject().get("@language").toString() == "en") {
+										keys.add("PlaceName");
+										values.add(placeName.get(j).getAsJsonObject().get("@value").toString());
+									}
+								}
+							}
+							/*
 							keys.add("PlaceName");
+							
 							values.add(dataArray.get(i).getAsJsonObject().get("skos:prefLabel").toString());
+							*/
 						}
 					}
 				}
 			}
 		}
+
+		keys.add("PlaceUserGenerated");
+		values.add("1");
+		
 		String query = "";
 		query += "INSERT INTO Story (";
 
@@ -535,8 +556,6 @@ public class StoryResponse {
 				", s.`dc:description` as StorydcDescription" +
 				", s.`edm:landingPage` as StoryedmLandingPage" +
 				", s.ExternalRecordId as StoryExternalRecordId" +
-				", s.DateStartDisplay as StoryDateStartDisplay" +
-				", s.DateEndDisplay as StoryDateEndDisplay" +
 				", s.PlaceName as StoryPlaceName" +
 				", s.PlaceLatitude as StoryPlaceLatitude" +
 				", s.PlaceLongitude as StoryPlaceLongitude" +
@@ -556,6 +575,8 @@ public class StoryResponse {
 				", s.`edm:datasetName` as StoryedmDatasetName" +
 				", s.`dc:contributor` as StorydcContributor" +
 				", s.`edm:rights` as StoryedmRights" +
+				", s.`edm:begin` as StoryedmBegin" +
+				", s.`edm:end` as StoryedmEnd" +
 				", s.Summary as StorySummary" +
 				", s.ParentStory as StoryParentStory" +
 				", s.SearchText as StorySearchText" +
