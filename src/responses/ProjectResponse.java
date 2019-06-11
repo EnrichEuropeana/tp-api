@@ -15,6 +15,7 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 
 import objects.Dataset;
 import objects.Project;
+import objects.Story;
 
 import java.util.*;
 import java.sql.*;
@@ -232,6 +233,154 @@ public class ProjectResponse {
 	public Response getDatasets(@PathParam("project_id") int projectId, String body) throws SQLException {
 		String query = "SELECT * FROM Dataset WHERE ProjectId = " + projectId;
 		String resource = executeDatasetQuery(query, "Select");
+		ResponseBuilder rBuild = Response.ok(resource);
+        return rBuild.build();
+	}
+	
+
+	public String executeStoryInsertQuery(String query, String type) throws SQLException{
+		final String DB_URL="jdbc:mysql://mysql-db1.man.poznan.pl:3307/transcribathon?allowMultiQueries=true&serverTimezone=CET";
+		final String USER = "enrichingeuropeana";
+		final String PASS = "Ke;u5De)u8sh";
+		   List<Story> storyList = new ArrayList<Story>();
+		   // Register JDBC driver
+		   try {
+				Class.forName("com.mysql.jdbc.Driver");
+			
+			   // Open a connection
+			   Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+			   // Execute SQL query
+			   Statement stmt = conn.createStatement();
+			   if (type != "Select") {
+				   int success = stmt.executeUpdate(query);
+				   if (success > 0) {
+					   return type +" succesful";
+				   }
+				   else {
+					   return type +" could not be executed";
+				   }
+			   }
+		   } catch(SQLException se) {
+		       //Handle errors for JDBC
+			   se.printStackTrace();
+		   } catch (ClassNotFoundException e) {
+			   e.printStackTrace();
+		   }
+		   return "test";
+	}
+	
+	//Get entry by id
+	@Path("/{project_id}/stories")
+	@Produces("application/json;charset=utf-8")
+	@POST
+	public Response insertStory(@PathParam("project_id") int projectId, @Context UriInfo uriInfo, String body) throws SQLException {
+		JsonObject data = new JsonParser().parse(body).getAsJsonObject();
+		JsonArray dataArray = data.getAsJsonObject().get("@graph").getAsJsonArray();
+		List<String> fields = new ArrayList<String>();
+		fields.add("dc:title");
+		fields.add("dc:description");
+		fields.add("dc:creator");
+		fields.add("dc:source");
+		fields.add("edm:country");
+		fields.add("edm:dataProvider");
+		fields.add("edm:provider");
+		fields.add("edm:rights");
+		fields.add("edm:begin");
+		fields.add("edm:end");
+		fields.add("dc:contributor");
+		fields.add("edm:year");
+		fields.add("dc:publisher");
+		fields.add("dc:coverage");
+		fields.add("dc:date");
+		fields.add("dc:type");
+		fields.add("dc:relation");
+		fields.add("dcterms:medium");
+		fields.add("edm:datasetName");
+		boolean placeAdded = false;
+	    int keyCount = dataArray.size();
+
+		List<String> keys = new ArrayList<String>();
+		List<String> values = new ArrayList<String>();
+
+		for (int i = 0; i < keyCount; i++) {
+			for(Map.Entry<String, JsonElement> entry : dataArray.get(i).getAsJsonObject().entrySet()) {
+				if (fields.contains(entry.getKey())) {
+					if (!entry.getValue().isJsonObject()) {
+						if (!keys.contains(entry.getKey())) {
+							keys.add(entry.getKey());
+							values.add("\"" + entry.getValue().toString().replace(",", " | ").replaceAll("[\"{}\\[\\]]", "") + "\"");
+						}
+					}
+					else {
+						if (entry.getValue().getAsJsonObject().has("@value")) {
+							if (!keys.contains(entry.getKey())) {
+								keys.add(entry.getKey());
+								values.add(entry.getValue().getAsJsonObject().get("@value").toString());
+							}
+						}
+						else if (entry.getValue().getAsJsonObject().has("@id")) {
+							if (!keys.contains(entry.getKey())) {
+								keys.add(entry.getKey());
+								values.add(entry.getValue().getAsJsonObject().get("@id").toString());
+							}
+						}
+					}
+				}
+				else {
+					if (entry.getKey().equals("@type") && entry.getValue().getAsString().equals("edm:Place") && placeAdded == false) {
+						if (dataArray.get(i).getAsJsonObject().keySet().contains("geo:lat")
+								&& dataArray.get(i).getAsJsonObject().keySet().contains("geo:long")) {
+							keys.add("PlaceLatitude");
+							keys.add("PlaceLongitude");
+							values.add(dataArray.get(i).getAsJsonObject().get("geo:lat").toString());
+							values.add(dataArray.get(i).getAsJsonObject().get("geo:long").toString());
+						}
+						if (dataArray.get(i).getAsJsonObject().keySet().contains("skos:prefLabel")) {
+							JsonArray placeName = new JsonArray();
+							if (dataArray.get(i).getAsJsonObject().get("skos:prefLabel").isJsonArray()) {
+								
+								placeName = dataArray.get(i).getAsJsonObject().get("skos:prefLabel").getAsJsonArray();
+								for (int j = 0; j < placeName.size(); j++) {
+									if (placeName.get(j) instanceof JsonObject && placeName.get(j).getAsJsonObject().get("@language").toString() == "en") {
+										keys.add("PlaceName");
+										values.add(placeName.get(j).getAsJsonObject().get("@value").toString());
+									}
+								}
+							}
+							/*
+							keys.add("PlaceName");
+							
+							values.add(dataArray.get(i).getAsJsonObject().get("skos:prefLabel").toString());
+							*/
+						}
+					}
+				}
+			}
+		}
+
+		keys.add("PlaceUserGenerated");
+		values.add("1");
+		
+		String query = "";
+		query += "INSERT INTO Story (";
+
+		Iterator<String> keysIterator = keys.iterator();
+	    while (keysIterator.hasNext()) {
+			query += "`" + keysIterator.next() + "`";
+	        if (keysIterator.hasNext()) {
+	        	query += ", ";
+	        }
+		}
+	    query += ") VALUES (";
+		Iterator<String> valuesIterator = values.iterator();
+	    while (valuesIterator.hasNext()) {
+			query += valuesIterator.next();
+	        if (valuesIterator.hasNext()) {
+	        	query += ", ";
+	        }
+		}
+	    query += ")";
+		String resource = executeStoryInsertQuery(query, "Insert");
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
 	}

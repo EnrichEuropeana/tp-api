@@ -386,7 +386,7 @@ public class StoryResponse {
 	//Add new entry
 	@Path("")
 	@POST
-	public String add(String body) throws SQLException {	
+	public Response add(String body) throws SQLException {	
 		JsonObject data = new JsonParser().parse(body).getAsJsonObject();
 		JsonArray dataArray = data.getAsJsonObject().get("@graph").getAsJsonArray();
 		List<String> fields = new ArrayList<String>();
@@ -495,8 +495,7 @@ public class StoryResponse {
 	    query += ")";
 		String resource = executeQuery(query, "Insert");
 		ResponseBuilder rBuild = Response.ok(resource);
-        //return rBuild.build();
-		return query;
+        return rBuild.build();
 	}
 
 
