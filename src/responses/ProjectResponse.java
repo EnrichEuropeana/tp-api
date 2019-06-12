@@ -1,5 +1,20 @@
 package responses;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -7,20 +22,24 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.UriInfo;
+
+import org.apache.commons.text.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtilsTest;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import objects.Dataset;
 import objects.Project;
 import objects.Story;
-
-import java.util.*;
-import java.sql.*;
-
-import com.google.gson.*;
 
 @Path("/projects")
 public class ProjectResponse {
@@ -272,7 +291,7 @@ public class ProjectResponse {
 	//Get entry by id
 	@Path("/{project_id}/stories")
 	@POST
-	public Response insertStory(@PathParam("project_id") int projectId, @Context UriInfo uriInfo, String body) throws SQLException {
+	public String insertStory(@PathParam("project_id") int projectId, @Context UriInfo uriInfo, String body) throws Exception {
 		JsonObject data = new JsonParser().parse(body).getAsJsonObject();
 		JsonArray dataArray = data.getAsJsonObject().get("@graph").getAsJsonArray();
 		List<String> fields = new ArrayList<String>();
@@ -300,6 +319,8 @@ public class ProjectResponse {
 
 		List<String> keys = new ArrayList<String>();
 		List<String> values = new ArrayList<String>();
+		
+		String manifestUrl = "";
 
 		for (int i = 0; i < keyCount; i++) {
 			for(Map.Entry<String, JsonElement> entry : dataArray.get(i).getAsJsonObject().entrySet()) {
@@ -351,6 +372,16 @@ public class ProjectResponse {
 							}
 						}
 					}
+					else {
+						if (entry.getKey().equals("@type") && entry.getValue().getAsString().equals("edm:WebResource")) {
+							if (dataArray.get(i).getAsJsonObject().keySet().contains("dcterms:isReferencedBy")){
+								if (dataArray.get(i).getAsJsonObject().get("dcterms:isReferencedBy").isJsonObject()
+										&& dataArray.get(i).getAsJsonObject().get("dcterms:isReferencedBy").getAsJsonObject().get("@id").getAsString().endsWith("manifest.json")) {
+									manifestUrl = dataArray.get(i).getAsJsonObject().get("dcterms:isReferencedBy").getAsJsonObject().get("@id").getAsString();
+								}
+							}
+						}
+					}
 				}
 			}
 		}
@@ -378,8 +409,60 @@ public class ProjectResponse {
 		}
 	    query += ")";
 		String resource = executeStoryInsertQuery(query, "Insert");
+		
+		URL url = new URL(manifestUrl);
+		HttpURLConnection con = (HttpURLConnection) url.openConnection();
+		String redirect = con.getHeaderField("Location");
+		URL url2 = new URL(redirect);
+		if (redirect != null){
+			con = (HttpURLConnection) new URL(redirect).openConnection();
+		}
+		con.setRequestMethod("GET");
+		con.setRequestProperty("Content-Type", "application/json");
+		int status = con.getResponseCode();
+		BufferedReader in = new BufferedReader(
+		  new InputStreamReader(url2.openStream(), "UTF-8"));
+		String inputLine;
+		StringBuffer content = new StringBuffer();
+		while ((inputLine = in.readLine()) != null) {
+		    content.append(inputLine);
+		}
+		in.close();
+		con.disconnect();
+		
+		//String json = readUrl(manifestUrl);
+		/*
+		JsonObject manifest = (JsonObject) new JsonParser().parse(StringEscapeUtils.escapeJson(content.toString()));
+		JsonArray imageArray = manifest.get("sequences").getAsJsonObject().get("canvases").getAsJsonArray();
+		int imageCount = imageArray.size();
+		String test = "";
+		for (int i = 0; i < imageCount; i++) {
+			test = imageArray.get(i).getAsJsonObject().get("images").getAsJsonObject().get("resource").getAsJsonObject().get("@id").getAsString();
+			break;
+		}*/
+		
+		
 		ResponseBuilder rBuild = Response.ok(resource);
-        return rBuild.build();
+        //return rBuild.build();
+		return StringEscapeUtils.escapeJson(content.toString());
+	}
+	
+	private static String readUrl(String urlString) throws Exception {
+	    BufferedReader reader = null;
+	    try {
+	        URL url = new URL(urlString);
+	        reader = new BufferedReader(new InputStreamReader(url.openStream()));
+	        StringBuffer buffer = new StringBuffer();
+	        int read;
+	        char[] chars = new char[1024];
+	        while ((read = reader.read(chars)) != -1)
+	            buffer.append(chars, 0, read); 
+
+	        return buffer.toString();
+	    } finally {
+	        if (reader != null)
+	            reader.close();
+	    }
 	}
 
 }
