@@ -443,28 +443,26 @@ public class StoryResponse {
 					if (entry.getKey().equals("@type") && entry.getValue().getAsString().equals("edm:Place") && placeAdded == false) {
 						if (dataArray.get(i).getAsJsonObject().keySet().contains("geo:lat")
 								&& dataArray.get(i).getAsJsonObject().keySet().contains("geo:long")) {
-							keys.add("PlaceLatitude");
-							keys.add("PlaceLongitude");
-							values.add(dataArray.get(i).getAsJsonObject().get("geo:lat").toString());
-							values.add(dataArray.get(i).getAsJsonObject().get("geo:long").toString());
+							if (!keys.contains("PlaceLatitude")) {
+								keys.add("PlaceLatitude");
+								keys.add("PlaceLongitude");
+								values.add(dataArray.get(i).getAsJsonObject().get("geo:lat").toString());
+								values.add(dataArray.get(i).getAsJsonObject().get("geo:long").toString());
+							}
 						}
 						if (dataArray.get(i).getAsJsonObject().keySet().contains("skos:prefLabel")) {
 							JsonArray placeName = new JsonArray();
 							if (dataArray.get(i).getAsJsonObject().get("skos:prefLabel").isJsonArray()) {
-								
-								placeName = dataArray.get(i).getAsJsonObject().get("skos:prefLabel").getAsJsonArray();
-								for (int j = 0; j < placeName.size(); j++) {
-									if (placeName.get(j) instanceof JsonObject && placeName.get(j).getAsJsonObject().get("@language").toString() == "en") {
-										keys.add("PlaceName");
-										values.add(placeName.get(j).getAsJsonObject().get("@value").toString());
+								if (!keys.contains("PlaceName")) {
+									placeName = dataArray.get(i).getAsJsonObject().get("skos:prefLabel").getAsJsonArray();
+									for (int j = 0; j < placeName.size(); j++) {
+										if (placeName.get(j) instanceof JsonObject && placeName.get(j).getAsJsonObject().get("@language").toString() == "en") {
+											keys.add("PlaceName");
+											values.add(placeName.get(j).getAsJsonObject().get("@value").toString());
+										}
 									}
 								}
 							}
-							/*
-							keys.add("PlaceName");
-							
-							values.add(dataArray.get(i).getAsJsonObject().get("skos:prefLabel").toString());
-							*/
 						}
 					}
 				}
