@@ -32,6 +32,7 @@ public class Story {
 	public String edmRights;
 	public String edmBegin;
 	public String edmEnd;
+	public Integer ProjectId;
 	public String Summary;
 	public Integer ParentStory;
 	public String SearchText;
@@ -131,6 +132,9 @@ public class Story {
 	}
 	public void setedmEnd(String edmEnd) {
 		this.edmEnd = edmEnd;
+	}
+	public void setProjectId(Integer projectId) {
+		ProjectId = projectId;
 	}
 	public void setSummary(String summary) {
 		Summary = summary;

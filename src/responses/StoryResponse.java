@@ -88,6 +88,7 @@ public class StoryResponse {
 			  story.setedmRights(rs.getString("StoryedmRights"));
 			  story.setedmBegin(rs.getString("StoryedmBegin"));
 			  story.setedmEnd(rs.getString("StoryedmEnd"));
+			  story.setProjectId(rs.getInt("StoryProjectId"));
 			  story.setSummary(rs.getString("StorySummary"));
 			  story.setParentStory(rs.getInt("StoryParentStory"));
 			  story.setSearchText(rs.getString("StorySearchText"));
@@ -104,7 +105,6 @@ public class StoryResponse {
 				  String[] ItemCompletionStatusNames = rs.getString("CompletionStatusName").split("§~§");
 				  String[] ItemCompletionStatusIds = rs.getString("CompletionStatusId").split("§~§");
 				  String[] ItemProjectItemIds = rs.getString("ProjectItemId").split("§~§");
-				  String[] ItemProjectIds = rs.getString("ProjectId").split("§~§");
 				  String[] ItemDescriptions = null;
 				  if (rs.getString("Description") != null) {
 					  ItemDescriptions = rs.getString("Description").split("§~§");
@@ -174,7 +174,6 @@ public class StoryResponse {
 					  if (ItemProjectItemIds != null) {
 						  item.setProjectItemId(Integer.parseInt(ItemProjectItemIds[j]));
 					  }
-					  item.setProjectId(Integer.parseInt(ItemProjectIds[j]));
 					  if (ItemDescriptions != null) {
 						  item.setDescription(ItemDescriptions[j]);
 					  }
@@ -294,6 +293,7 @@ public class StoryResponse {
 				", s.`edm:rights` as StoryedmRights" +
 				", s.`edm:begin` as StoryedmBegin" +
 				", s.`edm:end` as StoryedmEnd" +
+				", s.ProjectId as StoryProjectId" +
 				", s.Summary as StorySummary" +
 				", s.ParentStory as StoryParentStory" +
 				", s.SearchText as StorySearchText" +
@@ -306,7 +306,6 @@ public class StoryResponse {
 				", group_concat(i.CompletionStatusName SEPARATOR '§~§') as CompletionStatusName" +
 				", group_concat(i.CompletionStatusId SEPARATOR '§~§') as CompletionStatusId" +
 				", group_concat(i.ProjectItemId SEPARATOR '§~§') as ProjectItemId" +
-				", group_concat(i.ProjectId SEPARATOR '§~§') as ProjectId" +
 				", group_concat(i.Description SEPARATOR '§~§') as Description" +
 				", group_concat(i.DateStart SEPARATOR '§~§') as DateStart" +
 				", group_concat(i.DateEnd SEPARATOR '§~§') as DateEnd" +
@@ -574,6 +573,7 @@ public class StoryResponse {
 				", s.`edm:rights` as StoryedmRights" +
 				", s.`edm:begin` as StoryedmBegin" +
 				", s.`edm:end` as StoryedmEnd" +
+				", s.ProjectId as StoryProjectId" +
 				", s.Summary as StorySummary" +
 				", s.ParentStory as StoryParentStory" +
 				", s.SearchText as StorySearchText" +
@@ -586,7 +586,6 @@ public class StoryResponse {
 				", group_concat(i.CompletionStatusName SEPARATOR '§~§') as CompletionStatusName" +
 				", group_concat(i.CompletionStatusId SEPARATOR '§~§') as CompletionStatusId" +
 				", group_concat(i.ProjectItemId SEPARATOR '§~§') as ProjectItemId" +
-				", group_concat(i.ProjectId SEPARATOR '§~§') as ProjectId" +
 				", group_concat(i.Description SEPARATOR '§~§') as Description" +
 				", group_concat(i.DateStart SEPARATOR '§~§') as DateStart" +
 				", group_concat(i.DateEnd SEPARATOR '§~§') as DateEnd" +

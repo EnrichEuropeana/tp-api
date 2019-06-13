@@ -25,7 +25,6 @@ public class Item {
 	public String AutomaticEnrichmentStatusName;
 	public Integer AutomaticEnrichmentStatusId;
 	public Integer ProjectItemId;
-	public Integer ProjectId;
 	public String Description;
 	public Timestamp DateStart;
 	public Timestamp DateEnd;
@@ -62,6 +61,7 @@ public class Item {
 	public String StoryedmRights;
 	public String StoryedmBegin;
 	public String StoryedmEnd;
+	public Integer StoryProjectId;
 	public String StorySummary;
 	public Integer StoryParentStory;
 	public String StorySearchText;
@@ -156,6 +156,9 @@ public class Item {
 	public void setStoryedmEnd(String storyedmEnd) {
 		StoryedmEnd = storyedmEnd;
 	}
+	public void setStoryProjectId(Integer storyProjectId) {
+		StoryProjectId = storyProjectId;
+	}
 	public void setStorySummary(String storySummary) {
 		StorySummary = storySummary;
 	}
@@ -239,9 +242,6 @@ public class Item {
 	}
 	public void setProjectItemId(Integer projectItemId) {
 		ProjectItemId = projectItemId;
-	}
-	public void setProjectId(Integer projectId) {
-		ProjectId = projectId;
 	}
 	public void setDescription(String description) {
 		Description = description;

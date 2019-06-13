@@ -257,41 +257,41 @@ public class ProjectResponse {
 	}
 	
 
-	public String executeStoryInsertQuery(String query, String type) throws SQLException{
+	public String executeInsertQuery(String query, String type) throws SQLException{
 		final String DB_URL="jdbc:mysql://mysql-db1.man.poznan.pl:3307/transcribathon?allowMultiQueries=true&serverTimezone=CET";
 		final String USER = "enrichingeuropeana";
 		final String PASS = "Ke;u5De)u8sh";
-		   List<Story> storyList = new ArrayList<Story>();
-		   // Register JDBC driver
-		   try {
-				Class.forName("com.mysql.jdbc.Driver");
-			
-			   // Open a connection
-			   Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
-			   // Execute SQL query
-			   Statement stmt = conn.createStatement();
-			   if (type != "Select") {
-				   int success = stmt.executeUpdate(query);
-				   if (success > 0) {
-					   return type +" succesful";
-				   }
-				   else {
-					   return type +" could not be executed";
-				   }
+		
+	   // Register JDBC driver
+	   try {
+			Class.forName("com.mysql.jdbc.Driver");
+		
+		   // Open a connection
+		   Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		   // Execute SQL query
+		   Statement stmt = conn.createStatement();
+		   if (type != "Select") {
+			   int success = stmt.executeUpdate(query);
+			   if (success > 0) {
+				   return type +" succesful";
 			   }
-		   } catch(SQLException se) {
-		       //Handle errors for JDBC
-			   se.printStackTrace();
-		   } catch (ClassNotFoundException e) {
-			   e.printStackTrace();
+			   else {
+				   return type +" could not be executed";
+			   }
 		   }
-		   return "test";
+	   } catch(SQLException se) {
+	       //Handle errors for JDBC
+		   se.printStackTrace();
+	   } catch (ClassNotFoundException e) {
+		   e.printStackTrace();
+	   }
+	   return "test";
 	}
 	
 	//Get entry by id
 	@Path("/{project_id}/stories")
 	@POST
-	public String insertStory(@PathParam("project_id") int projectId, @Context UriInfo uriInfo, String body) throws Exception {
+	public Response insertStory(@PathParam("project_id") int projectId, @Context UriInfo uriInfo, String body) throws Exception {
 		JsonObject data = new JsonParser().parse(body).getAsJsonObject();
 		JsonArray dataArray = data.getAsJsonObject().get("@graph").getAsJsonArray();
 		List<String> fields = new ArrayList<String>();
@@ -321,6 +321,7 @@ public class ProjectResponse {
 		List<String> values = new ArrayList<String>();
 		
 		String manifestUrl = "";
+		String storyTitle = "";
 
 		for (int i = 0; i < keyCount; i++) {
 			for(Map.Entry<String, JsonElement> entry : dataArray.get(i).getAsJsonObject().entrySet()) {
@@ -329,6 +330,9 @@ public class ProjectResponse {
 						if (!keys.contains(entry.getKey())) {
 							keys.add(entry.getKey());
 							values.add("\"" + entry.getValue().toString().replace(",", " | ").replaceAll("[\"{}\\[\\]]", "") + "\"");
+							if (entry.getKey().equals("dc:title")) {
+								storyTitle = entry.getValue().toString();
+							}
 						}
 					}
 					else {
@@ -336,12 +340,18 @@ public class ProjectResponse {
 							if (!keys.contains(entry.getKey())) {
 								keys.add(entry.getKey());
 								values.add(entry.getValue().getAsJsonObject().get("@value").toString());
+								if (entry.getKey().equals("dc:title")) {
+									storyTitle = entry.getValue().toString();
+								}
 							}
 						}
 						else if (entry.getValue().getAsJsonObject().has("@id")) {
 							if (!keys.contains(entry.getKey())) {
 								keys.add(entry.getKey());
 								values.add(entry.getValue().getAsJsonObject().get("@id").toString());
+								if (entry.getKey().equals("dc:title")) {
+									storyTitle = entry.getValue().toString();
+								}
 							}
 						}
 					}
@@ -388,6 +398,8 @@ public class ProjectResponse {
 
 		keys.add("PlaceUserGenerated");
 		values.add("1");
+		keys.add("ProjectId");
+		values.add("" + projectId);
 		
 		String query = "";
 		query += "INSERT INTO Story (";
@@ -408,7 +420,7 @@ public class ProjectResponse {
 	        }
 		}
 	    query += ")";
-		String resource = executeStoryInsertQuery(query, "Insert");
+		String resource = executeInsertQuery(query, "Insert");
 		
 		URL url = new URL(manifestUrl);
 		HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -419,7 +431,6 @@ public class ProjectResponse {
 		}
 		con.setRequestMethod("GET");
 		con.setRequestProperty("Content-Type", "application/json");
-		int status = con.getResponseCode();
 		BufferedReader in = new BufferedReader(
 		  new InputStreamReader(url2.openStream(), "UTF-8"));
 		String inputLine;
@@ -431,40 +442,36 @@ public class ProjectResponse {
 		con.disconnect();
 		
 		//String json = readUrl(manifestUrl);
-		/*
-		JsonObject manifest = (JsonObject) new JsonParser().parse(StringEscapeUtils.escapeJson(content.toString()));
-		JsonArray imageArray = manifest.get("sequences").getAsJsonObject().get("canvases").getAsJsonArray();
+		JsonObject manifest = (JsonObject) new JsonParser().parse(content.toString());
+		
+		JsonArray imageArray = manifest.get("sequences").getAsJsonArray().get(0).getAsJsonObject().get("canvases").getAsJsonArray();
 		int imageCount = imageArray.size();
-		String test = "";
-		for (int i = 0; i < imageCount; i++) {
-			test = imageArray.get(i).getAsJsonObject().get("images").getAsJsonObject().get("resource").getAsJsonObject().get("@id").getAsString();
+		String imageLink = "";
+		for (int i = 1; i <= imageCount; i++) {
+			imageLink = imageArray.get(i).getAsJsonObject().get("images").getAsJsonArray().get(0).getAsJsonObject().get("resource").getAsJsonObject().get("@id").getAsString();
+			String itemQuery = "";
+			
+			query += "INSERT INTO Item ("
+					+ "Title, "
+					+ "StoryId, "
+					+ "ImageLink, "
+					+ "OrderIndex, "
+					+ "Manifest"
+					+ ") "
+					+ "VALUES ("
+					+ storyTitle + ", "
+					+ "" + 1 + ", "
+					+ imageLink + ", "
+					+ i + ", "
+					+ manifestUrl + ")";
+			String itemResponse = executeInsertQuery(query, "Insert");
 			break;
-		}*/
+		}
 		
 		
 		ResponseBuilder rBuild = Response.ok(resource);
-        //return rBuild.build();
-		return StringEscapeUtils.escapeJson(content.toString());
+        return rBuild.build();
 	}
-	
-	private static String readUrl(String urlString) throws Exception {
-	    BufferedReader reader = null;
-	    try {
-	        URL url = new URL(urlString);
-	        reader = new BufferedReader(new InputStreamReader(url.openStream()));
-	        StringBuffer buffer = new StringBuffer();
-	        int read;
-	        char[] chars = new char[1024];
-	        while ((read = reader.read(chars)) != -1)
-	            buffer.append(chars, 0, read); 
-
-	        return buffer.toString();
-	    } finally {
-	        if (reader != null)
-	            reader.close();
-	    }
-	}
-
 }
 
 

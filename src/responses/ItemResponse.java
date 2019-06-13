@@ -206,7 +206,6 @@ public class ItemResponse {
 			  item.setAutomaticEnrichmentStatusName(rs.getString("AutomaticEnrichmentStatusName"));
 			  item.setAutomaticEnrichmentStatusId(rs.getInt("AutomaticEnrichmentStatusId"));
 			  item.setProjectItemId(rs.getInt("ProjectItemId"));
-			  item.setProjectId(rs.getInt("ProjectId"));
 			  item.setDescription(rs.getString("Description"));
 			  item.setDateStart(rs.getTimestamp("DateStart"));
 			  item.setDateEnd(rs.getTimestamp("DateEnd"));
@@ -242,6 +241,7 @@ public class ItemResponse {
 			  item.setStoryedmRights(rs.getString("StoryedmRights"));
 			  item.setStoryedmBegin(rs.getString("StoryedmBegin"));
 			  item.setStoryedmEnd(rs.getString("StoryedmEnd"));
+			  item.setStoryProjectId(rs.getInt("StoryProjectId"));
 			  item.setStorySummary(rs.getString("StorySummary"));
 			  item.setStoryParentStory(rs.getInt("StoryParentStory"));
 			  item.setStorySearchText(rs.getString("StorySearchText"));
@@ -295,7 +295,6 @@ public class ItemResponse {
 				"    i.AutomaticEnrichmentStatusName as AutomaticEnrichmentStatusName, \r\n" + 
 				"    i.AutomaticEnrichmentStatusColorCode as AutomaticEnrichmentStatusColorCode, \r\n" + 
 				"    i.ProjectItemId as ProjectItemId, \r\n" + 
-				"    i.ProjectId as ProjectId, \r\n" + 
 				"    i.Description as Description, \r\n" + 
 				"    i.DateStart as DateStart, \r\n" + 
 				"    i.DateEnd as DateEnd, \r\n" + 
@@ -360,6 +359,7 @@ public class ItemResponse {
 				"	, s.`edm:rights` as StoryedmRights \r\n" + 
 				"	, s.`edm:begin` as StoryedmBegin \r\n" + 
 				"	, s.`edm:end` as StoryedmEnd \r\n" + 
+				"	, s.ProjectId as StoryProjectId \r\n" + 
 				"	, s.Summary as StorySummary \r\n" + 
 				"	, s.ParentStory as StoryParentStory \r\n" + 
 				"	, s.SearchText as StorySearchText \r\n" + 
@@ -619,7 +619,6 @@ public class ItemResponse {
 					"    i.AutomaticEnrichmentStatusName as AutomaticEnrichmentStatusName, \r\n" + 
 					"    i.AutomaticEnrichmentStatusColorCode as AutomaticEnrichmentStatusColorCode, \r\n" + 
 					"    i.ProjectItemId as ProjectItemId, \r\n" + 
-					"    i.ProjectId as ProjectId, \r\n" + 
 					"    i.Description as Description, \r\n" + 
 					"    i.DateStart as DateStart, \r\n" + 
 					"    i.DateEnd as DateEnd, \r\n" + 
@@ -684,6 +683,7 @@ public class ItemResponse {
 					"	, s.`edm:rights` as StoryedmRights \r\n" + 
 					"	, s.`edm:begin` as StoryedmBegin \r\n" + 
 					"	, s.`edm:end` as StoryedmEnd \r\n" + 
+					"	, s.ProjectId as StoryProjectId \r\n" + 
 					"	, s.Summary as StorySummary \r\n" + 
 					"	, s.ParentStory as StoryParentStory \r\n" + 
 					"	, s.SearchText as StorySearchText \r\n" + 
