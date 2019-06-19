@@ -104,7 +104,10 @@ public class StoryResponse {
 				  String[] ItemCompletionStatusColorCodes = rs.getString("CompletionStatusColorcode").split("§~§");
 				  String[] ItemCompletionStatusNames = rs.getString("CompletionStatusName").split("§~§");
 				  String[] ItemCompletionStatusIds = rs.getString("CompletionStatusId").split("§~§");
-				  String[] ItemProjectItemIds = rs.getString("ProjectItemId").split("§~§");
+				  String[] ItemProjectItemIds = null;
+				  if (rs.getString("ProjectItemId") != null) {
+					  ItemProjectItemIds = rs.getString("ProjectItemId").split("§~§");
+				  }
 				  String[] ItemDescriptions = null;
 				  if (rs.getString("Description") != null) {
 					  ItemDescriptions = rs.getString("Description").split("§~§");

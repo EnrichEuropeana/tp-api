@@ -273,11 +273,17 @@ public class ProjectResponse {
 		   if (type != "Select") {
 			   int success = stmt.executeUpdate(query);
 			   if (success > 0) {
+				   conn.close();
 				   return type +" succesful";
 			   }
 			   else {
+				   conn.close();
 				   return type +" could not be executed";
 			   }
+		   }
+		   else {
+			   conn.close();
+			   return "test2";
 		   }
 	   } catch(SQLException se) {
 	       //Handle errors for JDBC
@@ -322,6 +328,7 @@ public class ProjectResponse {
 		
 		String manifestUrl = "";
 		String storyTitle = "";
+		String imageLink = "";
 
 		for (int i = 0; i < keyCount; i++) {
 			for(Map.Entry<String, JsonElement> entry : dataArray.get(i).getAsJsonObject().entrySet()) {
@@ -331,7 +338,7 @@ public class ProjectResponse {
 							keys.add(entry.getKey());
 							values.add("\"" + entry.getValue().toString().replace(",", " | ").replaceAll("[\"{}\\[\\]]", "") + "\"");
 							if (entry.getKey().equals("dc:title")) {
-								storyTitle = entry.getValue().toString();
+								storyTitle = "\"" + entry.getValue().toString().replace(",", " | ").replaceAll("[\"{}\\[\\]]", "") + "\"";
 							}
 						}
 					}
@@ -341,7 +348,7 @@ public class ProjectResponse {
 								keys.add(entry.getKey());
 								values.add(entry.getValue().getAsJsonObject().get("@value").toString());
 								if (entry.getKey().equals("dc:title")) {
-									storyTitle = entry.getValue().toString();
+									storyTitle = entry.getValue().getAsJsonObject().get("@value").toString();
 								}
 							}
 						}
@@ -350,7 +357,7 @@ public class ProjectResponse {
 								keys.add(entry.getKey());
 								values.add(entry.getValue().getAsJsonObject().get("@id").toString());
 								if (entry.getKey().equals("dc:title")) {
-									storyTitle = entry.getValue().toString();
+									storyTitle = entry.getValue().getAsJsonObject().get("@id").toString();
 								}
 							}
 						}
@@ -390,6 +397,9 @@ public class ProjectResponse {
 									manifestUrl = dataArray.get(i).getAsJsonObject().get("dcterms:isReferencedBy").getAsJsonObject().get("@id").getAsString();
 								}
 							}
+							else {
+								imageLink = dataArray.get(i).getAsJsonObject().get("@id").toString();
+							}
 						}
 					}
 				}
@@ -422,36 +432,10 @@ public class ProjectResponse {
 	    query += ")";
 		String resource = executeInsertQuery(query, "Insert");
 		
-		URL url = new URL(manifestUrl);
-		HttpURLConnection con = (HttpURLConnection) url.openConnection();
-		String redirect = con.getHeaderField("Location");
-		URL url2 = new URL(redirect);
-		if (redirect != null){
-			con = (HttpURLConnection) new URL(redirect).openConnection();
-		}
-		con.setRequestMethod("GET");
-		con.setRequestProperty("Content-Type", "application/json");
-		BufferedReader in = new BufferedReader(
-		  new InputStreamReader(url2.openStream(), "UTF-8"));
-		String inputLine;
-		StringBuffer content = new StringBuffer();
-		while ((inputLine = in.readLine()) != null) {
-		    content.append(inputLine);
-		}
-		in.close();
-		con.disconnect();
-		
-		//String json = readUrl(manifestUrl);
-		JsonObject manifest = (JsonObject) new JsonParser().parse(content.toString());
-		
-		JsonArray imageArray = manifest.get("sequences").getAsJsonArray().get(0).getAsJsonObject().get("canvases").getAsJsonArray();
-		int imageCount = imageArray.size();
-		String imageLink = "";
-		for (int i = 1; i <= imageCount; i++) {
-			imageLink = imageArray.get(i).getAsJsonObject().get("images").getAsJsonArray().get(0).getAsJsonObject().get("resource").getAsJsonObject().get("@id").getAsString();
-			String itemQuery = "";
-			
-			query += "INSERT INTO Item ("
+		String itemQuery = "";
+		if (manifestUrl == "") {
+			itemQuery = "";
+			itemQuery += "INSERT INTO Item ("
 					+ "Title, "
 					+ "StoryId, "
 					+ "ImageLink, "
@@ -459,13 +443,58 @@ public class ProjectResponse {
 					+ "Manifest"
 					+ ") "
 					+ "VALUES ("
-					+ storyTitle + ", "
-					+ "" + 1 + ", "
-					+ imageLink + ", "
-					+ i + ", "
-					+ manifestUrl + ")";
-			String itemResponse = executeInsertQuery(query, "Insert");
-			break;
+					+ "\"" + storyTitle.replace("\"", "") + " Item "  + "1" + "\"" +  ", "
+					+ "(SELECT StoryId FROM Story ORDER BY StoryId DESC LIMIT 1), "
+					+ "\"" + imageLink + "\"" + ", "
+					+ "1" + ", "
+					+ "\"" + manifestUrl + "\"" + ")";
+			String itemResponse = executeInsertQuery(itemQuery, "Insert");
+		}
+		else {
+			URL url = new URL(manifestUrl);
+			HttpURLConnection con = (HttpURLConnection) url.openConnection();
+			String redirect = con.getHeaderField("Location");
+			URL url2 = new URL(redirect);
+			if (redirect != null){
+				con = (HttpURLConnection) new URL(redirect).openConnection();
+			}
+			con.setRequestMethod("GET");
+			con.setRequestProperty("Content-Type", "application/json");
+			BufferedReader in = new BufferedReader(
+			  new InputStreamReader(url2.openStream(), "UTF-8"));
+			String inputLine;
+			StringBuffer content = new StringBuffer();
+			while ((inputLine = in.readLine()) != null) {
+			    content.append(inputLine);
+			}
+			in.close();
+			con.disconnect();
+			
+			//String json = readUrl(manifestUrl);
+			JsonObject manifest = (JsonObject) new JsonParser().parse(content.toString());
+			
+			JsonArray imageArray = manifest.get("sequences").getAsJsonArray().get(0).getAsJsonObject().get("canvases").getAsJsonArray();
+			int imageCount = imageArray.size();
+			
+			for (int i = 1; i <= imageCount; i++) {
+				imageLink = imageArray.get(i).getAsJsonObject().get("images").getAsJsonArray().get(0).getAsJsonObject().get("resource").getAsJsonObject().get("@id").getAsString();
+				
+				itemQuery = "";
+				itemQuery += "INSERT INTO Item ("
+						+ "Title, "
+						+ "StoryId, "
+						+ "ImageLink, "
+						+ "OrderIndex, "
+						+ "Manifest"
+						+ ") "
+						+ "VALUES ("
+						+ "\"" + storyTitle.replace("\"", "") + " Item "  + i + "\"" +  ", "
+						+ "(SELECT StoryId FROM Story ORDER BY StoryId DESC LIMIT 1), "
+						+ "\"" + imageLink + "\"" + ", "
+						+ i + ", "
+						+ "\"" + manifestUrl + "\"" + ")";
+				String itemResponse = executeInsertQuery(itemQuery, "Insert");
+			}
 		}
 		
 		

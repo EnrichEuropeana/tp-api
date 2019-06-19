@@ -476,7 +476,8 @@ public class ItemResponse {
 				", group_concat(t.CurrentVersion + 0) as TranscriptionCurrentVersion " +
 				", group_concat(t.Timestamp) as TranscriptionTimestamp " +
 				"FROM Item i " + 
-				"LEFT JOIN Transcription t on i.ItemId = t.ItemId " +  
+				"LEFT JOIN Transcription t on i.ItemId = t.ItemId " +
+				"ORDER BY t.Timestamp ASC " +  
 				"GROUP BY i.ItemId " +
 			") d " +
 			"ON i.ItemId = d.ItemId " +
