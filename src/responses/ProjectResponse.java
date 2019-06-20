@@ -27,8 +27,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.commons.text.StringEscapeUtils;
-import org.apache.commons.text.StringEscapeUtilsTest;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -297,7 +295,7 @@ public class ProjectResponse {
 	//Get entry by id
 	@Path("/{project_id}/stories")
 	@POST
-	public Response insertStory(@PathParam("project_id") int projectId, @Context UriInfo uriInfo, String body) throws Exception {
+	public String insertStory(@PathParam("project_id") int projectId, @Context UriInfo uriInfo, String body) throws Exception {
 		JsonObject data = new JsonParser().parse(body).getAsJsonObject();
 		JsonArray dataArray = data.getAsJsonObject().get("@graph").getAsJsonArray();
 		List<String> fields = new ArrayList<String>();
@@ -445,7 +443,7 @@ public class ProjectResponse {
 					+ "VALUES ("
 					+ "\"" + storyTitle.replace("\"", "") + " Item "  + "1" + "\"" +  ", "
 					+ "(SELECT StoryId FROM Story ORDER BY StoryId DESC LIMIT 1), "
-					+ "\"" + imageLink + "\"" + ", "
+					+ "\"" + imageLink.replace("\"", "") + "\"" + ", "
 					+ "1" + ", "
 					+ "\"" + manifestUrl + "\"" + ")";
 			String itemResponse = executeInsertQuery(itemQuery, "Insert");
@@ -490,7 +488,7 @@ public class ProjectResponse {
 						+ "VALUES ("
 						+ "\"" + storyTitle.replace("\"", "") + " Item "  + i + "\"" +  ", "
 						+ "(SELECT StoryId FROM Story ORDER BY StoryId DESC LIMIT 1), "
-						+ "\"" + imageLink + "\"" + ", "
+						+ "\"" + imageLink.replace("\"", "") + "\"" + ", "
 						+ i + ", "
 						+ "\"" + manifestUrl + "\"" + ")";
 				String itemResponse = executeInsertQuery(itemQuery, "Insert");
@@ -499,7 +497,8 @@ public class ProjectResponse {
 		
 		
 		ResponseBuilder rBuild = Response.ok(resource);
-        return rBuild.build();
+        //return rBuild.build();
+		return itemQuery;
 	}
 }
 
