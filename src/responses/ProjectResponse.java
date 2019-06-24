@@ -452,47 +452,55 @@ public class ProjectResponse {
 			URL url = new URL(manifestUrl);
 			HttpURLConnection con = (HttpURLConnection) url.openConnection();
 			String redirect = con.getHeaderField("Location");
-			URL url2 = new URL(redirect);
-			if (redirect != null){
-				con = (HttpURLConnection) new URL(redirect).openConnection();
-			}
-			con.setRequestMethod("GET");
-			con.setRequestProperty("Content-Type", "application/json");
-			BufferedReader in = new BufferedReader(
-			  new InputStreamReader(url2.openStream(), "UTF-8"));
-			String inputLine;
-			StringBuffer content = new StringBuffer();
-			while ((inputLine = in.readLine()) != null) {
-			    content.append(inputLine);
-			}
-			in.close();
-			con.disconnect();
+		    try {
+				URL url2 = new URL(con.getURL().toString());	
+				if (redirect != null){
+					con = (HttpURLConnection) new URL(redirect).openConnection();
+					url2 = new URL(redirect);		
+				}
+				else {
+					con = (HttpURLConnection) new URL(con.getURL().toString()).openConnection();
+				}
+				con.setRequestMethod("GET");
+				con.setRequestProperty("Content-Type", "application/json");
+				BufferedReader in = new BufferedReader(
+				  new InputStreamReader(url2.openStream(), "UTF-8"));
+				String inputLine;
+				StringBuffer content = new StringBuffer();
+				while ((inputLine = in.readLine()) != null) {
+				    content.append(inputLine);
+				}
+				in.close();
+				con.disconnect();
 			
-			//String json = readUrl(manifestUrl);
-			JsonObject manifest = (JsonObject) new JsonParser().parse(content.toString());
-			
-			JsonArray imageArray = manifest.get("sequences").getAsJsonArray().get(0).getAsJsonObject().get("canvases").getAsJsonArray();
-			int imageCount = imageArray.size();
-			
-			for (int i = 1; i <= imageCount; i++) {
-				imageLink = imageArray.get(i).getAsJsonObject().get("images").getAsJsonArray().get(0).getAsJsonObject().get("resource").getAsJsonObject().get("@id").getAsString();
+				//String json = readUrl(manifestUrl);
+				JsonObject manifest = (JsonObject) new JsonParser().parse(content.toString());
 				
-				itemQuery = "";
-				itemQuery += "INSERT INTO Item ("
-						+ "Title, "
-						+ "StoryId, "
-						+ "ImageLink, "
-						+ "OrderIndex, "
-						+ "Manifest"
-						+ ") "
-						+ "VALUES ("
-						+ "\"" + storyTitle.replace("\"", "") + " Item "  + i + "\"" +  ", "
-						+ "(SELECT StoryId FROM Story ORDER BY StoryId DESC LIMIT 1), "
-						+ "\"" + imageLink.replace("\"", "") + "\"" + ", "
-						+ i + ", "
-						+ "\"" + manifestUrl + "\"" + ")";
-				String itemResponse = executeInsertQuery(itemQuery, "Insert");
-			}
+				JsonArray imageArray = manifest.get("sequences").getAsJsonArray().get(0).getAsJsonObject().get("canvases").getAsJsonArray();
+				int imageCount = imageArray.size();
+				
+				for (int i = 0; i <= imageCount; i++) {
+					imageLink = imageArray.get(i).getAsJsonObject().get("images").getAsJsonArray().get(0).getAsJsonObject().get("resource").getAsJsonObject().get("@id").getAsString();
+					
+					itemQuery = "";
+					itemQuery += "INSERT INTO Item ("
+							+ "Title, "
+							+ "StoryId, "
+							+ "ImageLink, "
+							+ "OrderIndex, "
+							+ "Manifest"
+							+ ") "
+							+ "VALUES ("
+							+ "\"" + storyTitle.replace("\"", "") + " Item "  + i + "\"" +  ", "
+							+ "(SELECT StoryId FROM Story ORDER BY StoryId DESC LIMIT 1), "
+							+ "\"" + imageLink.replace("\"", "") + "\"" + ", "
+							+ i + ", "
+							+ "\"" + manifestUrl + "\"" + ")";
+					String itemResponse = executeInsertQuery(itemQuery, "Insert");
+				}
+		    } catch (IOException e) {
+		        throw new RuntimeException(e);
+		    }
 		}
 		
 		
