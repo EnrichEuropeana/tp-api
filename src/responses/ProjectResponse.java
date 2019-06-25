@@ -479,7 +479,7 @@ public class ProjectResponse {
 				JsonArray imageArray = manifest.get("sequences").getAsJsonArray().get(0).getAsJsonObject().get("canvases").getAsJsonArray();
 				int imageCount = imageArray.size();
 				
-				for (int i = 0; i <= imageCount; i++) {
+				for (int i = 0; i < imageCount; i++) {
 					imageLink = imageArray.get(i).getAsJsonObject().get("images").getAsJsonArray().get(0).getAsJsonObject().get("resource").getAsJsonObject().get("@id").getAsString();
 					
 					itemQuery = "";
