@@ -174,13 +174,13 @@ public class StoryResponse {
 					  item.setCompletionStatusColorCode(ItemCompletionStatusColorCodes[j]);
 					  item.setCompletionStatusName(ItemCompletionStatusNames[j]);
 					  item.setCompletionStatusId(Integer.parseInt(ItemCompletionStatusIds[j]));
-					  if (ItemProjectItemIds != null) {
+					  if (!ItemProjectItemIds[j].contentEquals("NULL")) {
 						  item.setProjectItemId(Integer.parseInt(ItemProjectItemIds[j]));
 					  }
-					  if (ItemDescriptions != null) {
+					  if (!ItemDescriptions[j].contentEquals("NULL")) {
 						  item.setDescription(ItemDescriptions[j]);
 					  }
-					  if (ItemDateStarts != null) {
+					  if (!ItemDateStarts[j].contentEquals("NULL")) {
 						  try {
 					            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 					            Date date = formatter.parse(ItemDateStarts[j]);
@@ -191,7 +191,7 @@ public class StoryResponse {
 							    return "Exception :" + e;
 							}
 					  }
-					  if (ItemDateEnds != null) {
+					  if (!ItemDateEnds[j].contentEquals("NULL")) {
 						  try {
 					            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 					            Date date = formatter.parse(ItemDateEnds[j]);
@@ -202,7 +202,7 @@ public class StoryResponse {
 					            return "Exception :" + e;
 					        }
 					  }
-					  if (ItemDatasetIds != null) {
+					  if (!ItemDatasetIds[j].contentEquals("NULL")) {
 						  item.setDatasetId(Integer.parseInt(ItemDatasetIds[j]));
 					  }
 					  item.setImageLink(ItemImageLinks[j]);
@@ -583,28 +583,28 @@ public class StoryResponse {
 				", s.DateStart as StoryDateStart" +
 				", s.DateEnd as StoryDateEnd" +
 				", s.OrderIndex as StoryOrderIndex" +
-				", group_concat(i.ItemId SEPARATOR '§~§') as ItemId" +
-				", group_concat(i.Title SEPARATOR '§~§') as Title" +
-				", group_concat(i.CompletionStatusColorCode SEPARATOR '§~§') as CompletionStatusColorCode" +
-				", group_concat(i.CompletionStatusName SEPARATOR '§~§') as CompletionStatusName" +
-				", group_concat(i.CompletionStatusId SEPARATOR '§~§') as CompletionStatusId" +
-				", group_concat(i.ProjectItemId SEPARATOR '§~§') as ProjectItemId" +
-				", group_concat(i.Description SEPARATOR '§~§') as Description" +
-				", group_concat(i.DateStart SEPARATOR '§~§') as DateStart" +
-				", group_concat(i.DateEnd SEPARATOR '§~§') as DateEnd" +
-				", group_concat(i.DatasetId SEPARATOR '§~§') as DatasetId" +
-				", group_concat(i.ImageLink SEPARATOR '§~§') as ImageLink" +
-				", group_concat(i.OrderIndex SEPARATOR '§~§') as OrderIndex" +
-				", group_concat(i.Timestamp SEPARATOR '§~§') as Timestamp" +
-				", group_concat(c.PlaceId SEPARATOR '§~§') as PlaceId " +
-				", group_concat(c.PlaceName SEPARATOR '§~§') as PlaceName " +
-				", group_concat(c.PlaceLatitude SEPARATOR '§~§') as PlaceLatitude " +
-				", group_concat(c.PlaceLongitude SEPARATOR '§~§') as PlaceLongitude " +
-				", group_concat(c.PlaceLink SEPARATOR '§~§') as PlaceLink " +
-				", group_concat(c.PlaceZoom SEPARATOR '§~§') as PlaceZoom " +
-				", group_concat(c.PlaceComment SEPARATOR '§~§') as PlaceComment " +
-				", group_concat(c.PlaceAccuracy SEPARATOR '§~§') as PlaceAccuracy " +
-				", group_concat(c.PlaceUserGenerated SEPARATOR '§~§') as PlaceUserGenerated " +
+				", group_concat(IFNULL(i.ItemId, 'NULL') SEPARATOR '§~§') as ItemId" +
+				", group_concat(IFNULL(i.Title, 'NULL') SEPARATOR '§~§') as Title" +
+				", group_concat(IFNULL(i.CompletionStatusColorCode, 'NULL') SEPARATOR '§~§') as CompletionStatusColorCode" +
+				", group_concat(IFNULL(i.CompletionStatusName, 'NULL') SEPARATOR '§~§') as CompletionStatusName" +
+				", group_concat(IFNULL(i.CompletionStatusId, 'NULL') SEPARATOR '§~§') as CompletionStatusId" +
+				", group_concat(IFNULL(i.ProjectItemId, \"NULL\") SEPARATOR '§~§') as ProjectItemId" +
+				", group_concat(IFNULL(i.Description, 'NULL') SEPARATOR '§~§') as Description" +
+				", group_concat(IFNULL(i.DateStart, 'NULL') SEPARATOR '§~§') as DateStart" +
+				", group_concat(IFNULL(i.DateEnd, 'NULL') SEPARATOR '§~§') as DateEnd" +
+				", group_concat(IFNULL(i.DatasetId, 'NULL') SEPARATOR '§~§') as DatasetId" +
+				", group_concat(IFNULL(i.ImageLink, 'NULL') SEPARATOR '§~§') as ImageLink" +
+				", group_concat(IFNULL(i.OrderIndex, 'NULL') SEPARATOR '§~§') as OrderIndex" +
+				", group_concat(IFNULL(i.Timestamp, 'NULL') SEPARATOR '§~§') as Timestamp" +
+				", group_concat(IFNULL(c.PlaceId, 'NULL') SEPARATOR '§~§') as PlaceId " +
+				", group_concat(IFNULL(c.PlaceName, 'NULL') SEPARATOR '§~§') as PlaceName " +
+				", group_concat(IFNULL(c.PlaceLatitude, 'NULL') SEPARATOR '§~§') as PlaceLatitude " +
+				", group_concat(IFNULL(c.PlaceLongitude, 'NULL') SEPARATOR '§~§') as PlaceLongitude " +
+				", group_concat(IFNULL(c.PlaceLink, 'NULL') SEPARATOR '§~§') as PlaceLink " +
+				", group_concat(IFNULL(c.PlaceZoom, 'NULL') SEPARATOR '§~§') as PlaceZoom " +
+				", group_concat(IFNULL(c.PlaceComment, 'NULL') SEPARATOR '§~§') as PlaceComment " +
+				", group_concat(IFNULL(c.PlaceAccuracy, 'NULL') SEPARATOR '§~§') as PlaceAccuracy " +
+				", group_concat(IFNULL(c.PlaceUserGenerated, 'NULL') SEPARATOR '§~§') as PlaceUserGenerated " +
 				"FROM " +
 					"(" +
 					"SELECT * " +

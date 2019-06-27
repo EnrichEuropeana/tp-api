@@ -55,6 +55,7 @@ public class ItemResponse {
 				   return type +" could not be executed";
 			   }
 		   }
+		   stmt.execute("SET group_concat_max_len = 1000000;");
 		   ResultSet rs = stmt.executeQuery(query);
 		   
 		   // Extract data from result set
@@ -66,10 +67,10 @@ public class ItemResponse {
 			  // Add Properties
 			  List<Property> PropertyList = new ArrayList<Property>();
 			  if (rs.getString("PropertyId") != null) {
-				  String[] PropertyIds = rs.getString("PropertyId").split(",");
-				  String[] PropertyValues = rs.getString("PropertyValue").split(",");
-				  String[] PropertyTypeNames = rs.getString("PropertyTypeName").split(",");
-				  String[] PropertyEditables = rs.getString("PropertyEditable").split(",");
+				  String[] PropertyIds = rs.getString("PropertyId").split("&~&");
+				  String[] PropertyValues = rs.getString("PropertyValue").split("&~&");
+				  String[] PropertyTypeNames = rs.getString("PropertyTypeName").split("&~&");
+				  String[] PropertyEditables = rs.getString("PropertyEditable").split("&~&");
 				  for (int i = 0; i < PropertyIds.length; i++) {
 					  Property property = new Property();
 					  property.setPropertyId(Integer.parseInt(PropertyIds[i]));
@@ -83,15 +84,15 @@ public class ItemResponse {
 			  //Add Places
 			  List<Place> PlaceList = new ArrayList<Place>();
 			  if (rs.getString("PlaceId") != null) {
-				  String[] PlaceIds = rs.getString("PlaceId").split(",");
-				  String[] PlaceNames = rs.getString("PlaceName").split(",");
-				  String[] PlaceLatitudes = rs.getString("PlaceLatitude").split(",");
-				  String[] PlaceLongitudes = rs.getString("PlaceLongitude").split(",");
+				  String[] PlaceIds = rs.getString("PlaceId").split("&~&");
+				  String[] PlaceNames = rs.getString("PlaceName").split("&~&");
+				  String[] PlaceLatitudes = rs.getString("PlaceLatitude").split("&~&");
+				  String[] PlaceLongitudes = rs.getString("PlaceLongitude").split("&~&");
 				  String[] PlaceLink = rs.getString("PlaceLink").split(",", -1);
-				  String[] PlaceZoom = rs.getString("PlaceZoom").split(",");
+				  String[] PlaceZoom = rs.getString("PlaceZoom").split("&~&");
 				  String[] PlaceComment = rs.getString("PlaceComment").split(",", -1);
-				  String[] PlaceAccuracy = rs.getString("PlaceAccuracy").split(",");
-				  String[] PlaceUserGenerated = rs.getString("PlaceUserGenerated").split(",");
+				  String[] PlaceAccuracy = rs.getString("PlaceAccuracy").split("&~&");
+				  String[] PlaceUserGenerated = rs.getString("PlaceUserGenerated").split("&~&");
 				  for (int i = 0; i < PlaceIds.length; i++) {
 					  Place place = new Place();
 					  place.setPlaceId(Integer.parseInt(PlaceIds[i]));
@@ -110,11 +111,11 @@ public class ItemResponse {
 			  //Add Transcriptions
 			  List<Transcription> TranscriptionList = new ArrayList<Transcription>();
 			  if (rs.getString("TranscriptionId") != null) {
-				  String[] TranscriptionIds = rs.getString("TranscriptionId").split(",");
-				  String[] TranscriptionTexts = rs.getString("TranscriptionText").split(",");
-				  String[] TranscriptionUserIds = rs.getString("TranscriptionUserId").split(",");
-				  String[] TranscriptionCurrentVersions = rs.getString("TranscriptionCurrentVersion").split(",");
-				  String[] TranscriptionTimestamps = rs.getString("TranscriptionTimestamp").split(",");
+				  String[] TranscriptionIds = rs.getString("TranscriptionId").split("&~&");
+				  String[] TranscriptionTexts = rs.getString("TranscriptionText").split("&~&");
+				  String[] TranscriptionUserIds = rs.getString("TranscriptionUserId").split("&~&");
+				  String[] TranscriptionCurrentVersions = rs.getString("TranscriptionCurrentVersion").split("&~&");
+				  String[] TranscriptionTimestamps = rs.getString("TranscriptionTimestamp").split("&~&");
 				  for (int i = 0; i < TranscriptionIds.length; i++) {
 					  Transcription transcription = new Transcription();
 					  transcription.setTranscriptionId(Integer.parseInt(TranscriptionIds[i]));
@@ -130,14 +131,14 @@ public class ItemResponse {
 			  //Add Annotations
 			  List<Annotation> AnnotationList = new ArrayList<Annotation>();
 			  if (rs.getString("AnnotationId") != null) {
-				  String[] AnnotationIds = rs.getString("AnnotationId").split(",");
-				  String[] AnnotationTexts = rs.getString("AnnotationText").split(",");
-				  String[] AnnotationUserIds = rs.getString("AnnotationUserId").split(",");
+				  String[] AnnotationIds = rs.getString("AnnotationId").split("&~&");
+				  String[] AnnotationTexts = rs.getString("AnnotationText").split("&~&");
+				  String[] AnnotationUserIds = rs.getString("AnnotationUserId").split("&~&");
 				  String[] AnnotationX_Coords = rs.getString("AnnotationX_Coord").split(",", -1);
 				  String[] AnnotationY_Coords = rs.getString("AnnotationY_Coord").split(",", -1);
 				  String[] AnnotationWidths = rs.getString("AnnotationWidth").split(",", -1);
 				  String[] AnnotationHeights = rs.getString("AnnotationHeight").split(",", -1);
-				  String[] AnnotationTypes = rs.getString("AnnotationType").split(",");
+				  String[] AnnotationTypes = rs.getString("AnnotationType").split("&~&");
 				  for (int i = 0; i < AnnotationIds.length; i++) {
 					  Annotation annotation = new Annotation();
 					  annotation.setAnnotationId(Integer.parseInt(AnnotationIds[i]));
@@ -156,10 +157,10 @@ public class ItemResponse {
 			  //Add Comments
 			  List<Comment> CommentList = new ArrayList<Comment>();
 			  if (rs.getString("CommentId") != null) {
-				  String[] CommentIds = rs.getString("CommentId").split(",");
-				  String[] CommentTexts = rs.getString("CommentText").split(",");
-				  String[] CommentUserIds = rs.getString("CommentUserId").split(",");
-				  String[] CommentTimestamps = rs.getString("CommentTimestamp").split(",");
+				  String[] CommentIds = rs.getString("CommentId").split("&~&");
+				  String[] CommentTexts = rs.getString("CommentText").split("&~&");
+				  String[] CommentUserIds = rs.getString("CommentUserId").split("&~&");
+				  String[] CommentTimestamps = rs.getString("CommentTimestamp").split("&~&");
 				  for (int i = 0; i < CommentIds.length; i++) {
 					  Comment comment = new Comment();
 					  comment.setCommentId(Integer.parseInt(CommentIds[i]));
@@ -427,10 +428,10 @@ public class ItemResponse {
 			"LEFT JOIN " + 
 			"(" +
 				"SELECT i.ItemId as ItemId " +
-				", group_concat(p.PropertyId) as PropertyId" +
-				", group_concat(pt.Name) as PropertyTypeName " +
-				", group_concat(p.Value) as PropertyValue " +
-				", group_concat(pt.Editable + 0) as PropertyEditable " +
+				", group_concat(p.PropertyId SEPARATOR '&~&') as PropertyId" +
+				", group_concat(pt.Name SEPARATOR '&~&') as PropertyTypeName " +
+				", group_concat(p.Value SEPARATOR '&~&') as PropertyValue " +
+				", group_concat(pt.Editable + 0 SEPARATOR '&~&') as PropertyEditable " +
 				"FROM Item i " + 
 				"LEFT JOIN ItemProperty ip on i.ItemId = ip.ItemId " + 
 				"LEFT JOIN Property p on ip.PropertyId = p.PropertyId " + 
@@ -441,10 +442,10 @@ public class ItemResponse {
 			"LEFT JOIN " + 
 			"(" + 
 				"SELECT i.ItemId as ItemId" +
-				", group_concat(c.CommentId) as CommentId " +
-				", group_concat(c.Text) as CommentText " +
-				", group_concat(c.UserId) as CommentUserId " +
-				", group_concat(c.Timestamp) as CommentTimestamp " +
+				", group_concat(c.CommentId SEPARATOR '&~&') as CommentId " +
+				", group_concat(c.Text SEPARATOR '&~&') as CommentText " +
+				", group_concat(c.UserId SEPARATOR '&~&') as CommentUserId " +
+				", group_concat(c.Timestamp SEPARATOR '&~&') as CommentTimestamp " +
 				"FROM Item i " + 
 				"LEFT JOIN Comment c on i.ItemId = c.ItemId " +  
 				"GROUP BY i.ItemId " +
@@ -453,15 +454,15 @@ public class ItemResponse {
 			"LEFT JOIN " + 
 			"(" + 
 				"SELECT i.ItemId as ItemId" +
-				", group_concat(pl.PlaceId) as PlaceId " +
-				", group_concat(pl.Name) as PlaceName " +
-				", group_concat(pl.Latitude) as PlaceLatitude " +
-				", group_concat(pl.Longitude) as PlaceLongitude " +
-				", group_concat(pl.Link) as PlaceLink " +
-				", group_concat(pl.Zoom) as PlaceZoom " +
-				", group_concat(pl.Comment) as PlaceComment " +
-				", group_concat(pl.Accuracy) as PlaceAccuracy " +
-				", group_concat(pl.UserGenerated + 0) as PlaceUserGenerated " +
+				", group_concat(pl.PlaceId SEPARATOR '&~&') as PlaceId " +
+				", group_concat(pl.Name SEPARATOR '&~&') as PlaceName " +
+				", group_concat(pl.Latitude SEPARATOR '&~&') as PlaceLatitude " +
+				", group_concat(pl.Longitude SEPARATOR '&~&') as PlaceLongitude " +
+				", group_concat(pl.Link SEPARATOR '&~&') as PlaceLink " +
+				", group_concat(pl.Zoom SEPARATOR '&~&') as PlaceZoom " +
+				", group_concat(pl.Comment SEPARATOR '&~&') as PlaceComment " +
+				", group_concat(pl.Accuracy SEPARATOR '&~&') as PlaceAccuracy " +
+				", group_concat(pl.UserGenerated + 0 SEPARATOR '&~&') as PlaceUserGenerated " +
 				"FROM Item i " + 
 				"LEFT JOIN Place pl on i.ItemId = pl.ItemId " +  
 				"GROUP BY i.ItemId " +
@@ -470,11 +471,11 @@ public class ItemResponse {
 			"LEFT JOIN " + 
 			"(" + 
 				"SELECT i.ItemId as ItemId" +
-				", group_concat(t.TranscriptionId) as TranscriptionId " +
-				", group_concat(t.Text) as TranscriptionText " +
-				", group_concat(t.UserId) as TranscriptionUserId " +
-				", group_concat(t.CurrentVersion + 0) as TranscriptionCurrentVersion " +
-				", group_concat(t.Timestamp) as TranscriptionTimestamp " +
+				", group_concat(t.TranscriptionId SEPARATOR '&~&') as TranscriptionId " +
+				", group_concat(t.Text SEPARATOR '&~&') as TranscriptionText " +
+				", group_concat(t.UserId SEPARATOR '&~&') as TranscriptionUserId " +
+				", group_concat(t.CurrentVersion + 0 SEPARATOR '&~&') as TranscriptionCurrentVersion " +
+				", group_concat(t.Timestamp SEPARATOR '&~&') as TranscriptionTimestamp " +
 				"FROM Item i " + 
 				"LEFT JOIN Transcription t on i.ItemId = t.ItemId " +
 				"ORDER BY t.Timestamp ASC " +  
@@ -484,14 +485,14 @@ public class ItemResponse {
 			"LEFT JOIN " + 
 			"(" + 
 				"SELECT i.ItemId as ItemId" +
-				", group_concat(a.AnnotationId) as AnnotationId " +
-				", group_concat(at.Name) as AnnotationType " +
-				", group_concat(a.Text) as AnnotationText " +
-				", group_concat(a.UserId) as AnnotationUserId " +
-				", group_concat(a.X_Coord) as AnnotationX_Coord " +
-				", group_concat(a.Y_Coord) as AnnotationY_Coord " +
-				", group_concat(a.Width) as AnnotationWidth " +
-				", group_concat(a.Height) as AnnotationHeight " +
+				", group_concat(a.AnnotationId SEPARATOR '&~&') as AnnotationId " +
+				", group_concat(at.Name SEPARATOR '&~&') as AnnotationType " +
+				", group_concat(a.Text SEPARATOR '&~&') as AnnotationText " +
+				", group_concat(a.UserId SEPARATOR '&~&') as AnnotationUserId " +
+				", group_concat(a.X_Coord SEPARATOR '&~&') as AnnotationX_Coord " +
+				", group_concat(a.Y_Coord SEPARATOR '&~&') as AnnotationY_Coord " +
+				", group_concat(a.Width SEPARATOR '&~&') as AnnotationWidth " +
+				", group_concat(a.Height SEPARATOR '&~&') as AnnotationHeight " +
 				"FROM Item i " + 
 				"LEFT JOIN Annotation a on i.ItemId = a.ItemId " +
 				"LEFT JOIN AnnotationType at on a.AnnotationTypeId = at.AnnotationTypeId " +  
@@ -509,7 +510,7 @@ public class ItemResponse {
 		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
 		
 		for(String key : queryParams.keySet()){
-			String[] values = queryParams.getFirst(key).split(",");
+			String[] values = queryParams.getFirst(key).split("&~&");
 			query += " AND (";
 		    int valueCount = values.length;
 		    int i = 1;
@@ -752,10 +753,10 @@ public class ItemResponse {
 				"LEFT JOIN " + 
 				"(" +
 					"SELECT i.ItemId as ItemId " +
-					", group_concat(p.PropertyId) as PropertyId" +
-					", group_concat(pt.Name) as PropertyTypeName " +
-					", group_concat(p.Value) as PropertyValue " +
-					", group_concat(pt.Editable + 0) as PropertyEditable " +
+					", group_concat(p.PropertyId SEPARATOR '&~&') as PropertyId" +
+					", group_concat(pt.Name SEPARATOR '&~&') as PropertyTypeName " +
+					", group_concat(p.Value SEPARATOR '&~&') as PropertyValue " +
+					", group_concat(pt.Editable + 0 SEPARATOR '&~&') as PropertyEditable " +
 					"FROM Item i " + 
 					"LEFT JOIN ItemProperty ip on i.ItemId = ip.ItemId " + 
 					"LEFT JOIN Property p on ip.PropertyId = p.PropertyId " + 
@@ -766,10 +767,10 @@ public class ItemResponse {
 				"LEFT JOIN " + 
 				"(" + 
 					"SELECT i.ItemId as ItemId" +
-					", group_concat(c.CommentId) as CommentId " +
-					", group_concat(c.Text) as CommentText " +
-					", group_concat(c.UserId) as CommentUserId " +
-					", group_concat(c.Timestamp) as CommentTimestamp " +
+					", group_concat(c.CommentId SEPARATOR '&~&') as CommentId " +
+					", group_concat(c.Text SEPARATOR '&~&') as CommentText " +
+					", group_concat(c.UserId SEPARATOR '&~&') as CommentUserId " +
+					", group_concat(c.Timestamp SEPARATOR '&~&') as CommentTimestamp " +
 					"FROM Item i " + 
 					"LEFT JOIN Comment c on i.ItemId = c.ItemId " +  
 					"GROUP BY i.ItemId " +
@@ -778,15 +779,15 @@ public class ItemResponse {
 				"LEFT JOIN " + 
 				"(" + 
 					"SELECT i.ItemId as ItemId" +
-					", group_concat(pl.PlaceId) as PlaceId " +
-					", group_concat(pl.Name) as PlaceName " +
-					", group_concat(pl.Latitude) as PlaceLatitude " +
-					", group_concat(pl.Longitude) as PlaceLongitude " +
-					", group_concat(pl.Link) as PlaceLink " +
-					", group_concat(pl.Zoom) as PlaceZoom " +
-					", group_concat(pl.Comment) as PlaceComment " +
-					", group_concat(pl.Accuracy) as PlaceAccuracy " +
-					", group_concat(pl.UserGenerated + 0) as PlaceUserGenerated " +
+					", group_concat(pl.PlaceId SEPARATOR '&~&') as PlaceId " +
+					", group_concat(pl.Name SEPARATOR '&~&') as PlaceName " +
+					", group_concat(pl.Latitude SEPARATOR '&~&') as PlaceLatitude " +
+					", group_concat(pl.Longitude SEPARATOR '&~&') as PlaceLongitude " +
+					", group_concat(pl.Link SEPARATOR '&~&') as PlaceLink " +
+					", group_concat(pl.Zoom SEPARATOR '&~&') as PlaceZoom " +
+					", group_concat(pl.Comment SEPARATOR '&~&') as PlaceComment " +
+					", group_concat(pl.Accuracy SEPARATOR '&~&') as PlaceAccuracy " +
+					", group_concat(pl.UserGenerated + 0 SEPARATOR '&~&') as PlaceUserGenerated " +
 					"FROM Item i " + 
 					"LEFT JOIN Place pl on i.ItemId = pl.ItemId " +  
 					"GROUP BY i.ItemId " +
@@ -795,11 +796,11 @@ public class ItemResponse {
 				"LEFT JOIN " + 
 				"(" + 
 					"SELECT i.ItemId as ItemId" +
-					", group_concat(t.TranscriptionId) as TranscriptionId " +
-					", group_concat(t.Text) as TranscriptionText " +
-					", group_concat(t.UserId) as TranscriptionUserId " +
-					", group_concat(t.CurrentVersion + 0) as TranscriptionCurrentVersion " +
-					", group_concat(t.Timestamp) as TranscriptionTimestamp " +
+					", group_concat(t.TranscriptionId SEPARATOR '&~&') as TranscriptionId " +
+					", group_concat(t.Text SEPARATOR '&~&') as TranscriptionText " +
+					", group_concat(t.UserId SEPARATOR '&~&') as TranscriptionUserId " +
+					", group_concat(t.CurrentVersion + 0 SEPARATOR '&~&') as TranscriptionCurrentVersion " +
+					", group_concat(t.Timestamp SEPARATOR '&~&') as TranscriptionTimestamp " +
 					"FROM Item i " + 
 					"LEFT JOIN Transcription t on i.ItemId = t.ItemId " +  
 					"GROUP BY i.ItemId " +
@@ -808,14 +809,14 @@ public class ItemResponse {
 				"LEFT JOIN " + 
 				"(" + 
 					"SELECT i.ItemId as ItemId" +
-					", group_concat(a.AnnotationId) as AnnotationId " +
-					", group_concat(at.Name) as AnnotationType " +
-					", group_concat(a.Text) as AnnotationText " +
-					", group_concat(a.UserId) as AnnotationUserId " +
-					", group_concat(a.X_Coord) as AnnotationX_Coord " +
-					", group_concat(a.Y_Coord) as AnnotationY_Coord " +
-					", group_concat(a.Width) as AnnotationWidth " +
-					", group_concat(a.Height) as AnnotationHeight " +
+					", group_concat(a.AnnotationId SEPARATOR '&~&') as AnnotationId " +
+					", group_concat(at.Name SEPARATOR '&~&') as AnnotationType " +
+					", group_concat(a.Text SEPARATOR '&~&') as AnnotationText " +
+					", group_concat(a.UserId SEPARATOR '&~&') as AnnotationUserId " +
+					", group_concat(a.X_Coord SEPARATOR '&~&') as AnnotationX_Coord " +
+					", group_concat(a.Y_Coord SEPARATOR '&~&') as AnnotationY_Coord " +
+					", group_concat(a.Width SEPARATOR '&~&') as AnnotationWidth " +
+					", group_concat(a.Height SEPARATOR '&~&') as AnnotationHeight " +
 					"FROM Item i " + 
 					"LEFT JOIN Annotation a on i.ItemId = a.ItemId " +
 					"LEFT JOIN AnnotationType at on a.AnnotationTypeId = at.AnnotationTypeId " +  

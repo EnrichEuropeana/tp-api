@@ -164,13 +164,20 @@ public class TranscriptionResponse {
 	    //Check if all mandatory fields are included
 	    if (transcription.Text != null && transcription.UserId != null 
 	    		&& transcription.ItemId != null && transcription.CurrentVersion != null) {
+	    	if (transcription.CurrentVersion.contains("1")) {
+	    		String updateQuery = "UPDATE Transcription "
+	    							+ "SET CurrentVersion = b'0' "
+	    							+ "WHERE ItemId = " + transcription.ItemId;
+				String updateResponse = executeQuery(updateQuery, "Update");
+	    	}
 			String query = "INSERT INTO Transcription (Text, UserId, ItemId, CurrentVersion) "
 							+ "VALUES ('" + transcription.Text + "'"
 								+ ", " + transcription.UserId
 								+ ", " + transcription.ItemId
 								+ ", " + transcription.CurrentVersion + ")";
 			String resource = executeQuery(query, "Insert");
-			return resource;
+			//return resource;
+			return transcription.CurrentVersion;
 	    } else {
 	    	return "Fields missing";
 	    }

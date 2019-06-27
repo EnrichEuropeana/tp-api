@@ -480,7 +480,7 @@ public class ProjectResponse {
 				int imageCount = imageArray.size();
 				
 				for (int i = 0; i < imageCount; i++) {
-					imageLink = imageArray.get(i).getAsJsonObject().get("images").getAsJsonArray().get(0).getAsJsonObject().get("resource").getAsJsonObject().get("@id").getAsString();
+					imageLink = imageArray.get(i).getAsJsonObject().get("images").getAsJsonArray().get(0).getAsJsonObject().get("resource").getAsJsonObject().toString();
 					
 					itemQuery = "";
 					itemQuery += "INSERT INTO Item ("
@@ -493,7 +493,7 @@ public class ProjectResponse {
 							+ "VALUES ("
 							+ "\"" + storyTitle.replace("\"", "") + " Item "  + i + "\"" +  ", "
 							+ "(SELECT StoryId FROM Story ORDER BY StoryId DESC LIMIT 1), "
-							+ "\"" + imageLink.replace("\"", "") + "\"" + ", "
+							+ "\"" + imageLink.replace("\"", "\\\"") + "\"" + ", "
 							+ i + ", "
 							+ "\"" + manifestUrl + "\"" + ")";
 					String itemResponse = executeInsertQuery(itemQuery, "Insert");
