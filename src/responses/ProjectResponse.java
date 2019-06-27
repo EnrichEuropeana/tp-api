@@ -295,7 +295,7 @@ public class ProjectResponse {
 	//Get entry by id
 	@Path("/{project_id}/stories")
 	@POST
-	public String insertStory(@PathParam("project_id") int projectId, @Context UriInfo uriInfo, String body) throws Exception {
+	public Response insertStory(@PathParam("project_id") int projectId, @Context UriInfo uriInfo, String body) throws Exception {
 		JsonObject data = new JsonParser().parse(body).getAsJsonObject();
 		JsonArray dataArray = data.getAsJsonObject().get("@graph").getAsJsonArray();
 		List<String> fields = new ArrayList<String>();
@@ -505,8 +505,7 @@ public class ProjectResponse {
 		
 		
 		ResponseBuilder rBuild = Response.ok(resource);
-        //return rBuild.build();
-		return itemQuery;
+        return rBuild.build();
 	}
 }
 
