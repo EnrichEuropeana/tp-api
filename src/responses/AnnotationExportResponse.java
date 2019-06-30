@@ -100,8 +100,8 @@ public class AnnotationExportResponse {
 				"    a.EuropeanaAnnotationId, " + 
 				"    m.Name AS Motivation, " + 
 				"    i.ProjectItemId as ItemId, " + 
-				"    s.ProjectStoryUrl as StoryUrl, " + 
-				"    s.ProjectStoryId as StoryId " + 
+				"    s.`edm:landingPage` as StoryUrl, " + 
+				"    s.ExternalRecordId as StoryId " + 
 				"FROM " + 
 				"    Annotation a " + 
 				"        LEFT JOIN " + 
@@ -124,8 +124,8 @@ public class AnnotationExportResponse {
 				"    0 AS Height, " + 
 				"    'transcribing' AS Motivation, " + 
 				"    i.ProjectItemId, " + 
-				"    s.ProjectStoryUrl, " + 
-				"    s.ProjectStoryId " + 
+				"    s.`edm:landingPage`, " + 
+				"    s.ExternalRecordId " + 
 				"FROM " + 
 				"    Transcription t " + 
 				"        LEFT JOIN " + 

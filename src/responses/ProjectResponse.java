@@ -289,7 +289,7 @@ public class ProjectResponse {
 	   } catch (ClassNotFoundException e) {
 		   e.printStackTrace();
 	   }
-	   return "test";
+	   return query;
 	}
 	
 	//Get entry by id
@@ -301,6 +301,7 @@ public class ProjectResponse {
 		List<String> fields = new ArrayList<String>();
 		fields.add("dc:title");
 		fields.add("dc:description");
+		fields.add("edm:landingPage");
 		fields.add("dc:creator");
 		fields.add("dc:source");
 		fields.add("edm:country");
@@ -326,21 +327,13 @@ public class ProjectResponse {
 		
 		String manifestUrl = "";
 		String storyTitle = "";
+		String recordId = "";
 		String imageLink = "";
 
 		for (int i = 0; i < keyCount; i++) {
 			for(Map.Entry<String, JsonElement> entry : dataArray.get(i).getAsJsonObject().entrySet()) {
 				if (fields.contains(entry.getKey())) {
-					if (!entry.getValue().isJsonObject()) {
-						if (!keys.contains(entry.getKey())) {
-							keys.add(entry.getKey());
-							values.add("\"" + entry.getValue().toString().replace(",", " | ").replaceAll("[\"{}\\[\\]]", "") + "\"");
-							if (entry.getKey().equals("dc:title")) {
-								storyTitle = "\"" + entry.getValue().toString().replace(",", " | ").replaceAll("[\"{}\\[\\]]", "") + "\"";
-							}
-						}
-					}
-					else {
+					if (entry.getValue().isJsonObject()) {
 						if (entry.getValue().getAsJsonObject().has("@value")) {
 							if (!keys.contains(entry.getKey())) {
 								keys.add(entry.getKey());
@@ -357,6 +350,47 @@ public class ProjectResponse {
 								if (entry.getKey().equals("dc:title")) {
 									storyTitle = entry.getValue().getAsJsonObject().get("@id").toString();
 								}
+							}
+						}
+					}
+					else if (entry.getValue().isJsonArray()){
+						String key = "";
+						String value = "";
+						for (int j = 0; j < entry.getValue().getAsJsonArray().size(); j++) {
+							if (entry.getValue().getAsJsonArray().get(j).isJsonObject()) {
+								JsonObject element = entry.getValue().getAsJsonArray().get(j).getAsJsonObject();
+								if (!keys.contains(entry.getKey())) {
+									if (element.has("@value")) {
+										key = entry.getKey();
+										value = element.get("@value").toString();
+									}
+									if (element.has("@id")) {
+										key = entry.getKey();
+										value = element.get("@id").toString();
+									}
+								}
+								else {
+									if (element.has("@language") && element.get("@language").toString().contains("en")) {
+										key = entry.getKey();
+										value = element.get("@value").toString();
+									}
+								}
+							}
+						}
+						if (key != "" && value != "") {
+							keys.add(key);
+							values.add(value);	
+							if (entry.getKey().equals("dc:title")) {
+								storyTitle = "\"" + value.replace(",", " | ").replaceAll("[\"{}\\[\\]]", "") + "\"";
+							}						
+						}
+					}
+					else {
+						if (!keys.contains(entry.getKey())) {
+							keys.add(entry.getKey());
+							values.add("\"" + entry.getValue().toString().replace(",", " | ").replaceAll("[\"{}\\[\\]]", "") + "\"");
+							if (entry.getKey().equals("dc:title")) {
+								storyTitle = "\"" + entry.getValue().toString().replace(",", " | ").replaceAll("[\"{}\\[\\]]", "") + "\"";
 							}
 						}
 					}
@@ -399,6 +433,11 @@ public class ProjectResponse {
 								imageLink = dataArray.get(i).getAsJsonObject().get("@id").toString();
 							}
 						}
+						else if (entry.getKey().equals("@type") && entry.getValue().getAsString().equals("edm:ProvidedCHO")) {
+							if (dataArray.get(i).getAsJsonObject().keySet().contains("@id")){
+								recordId = dataArray.get(i).getAsJsonObject().get("@id").getAsString();
+							}
+						}
 					}
 				}
 			}
@@ -412,6 +451,7 @@ public class ProjectResponse {
 		String query = "";
 		query += "INSERT INTO Story (";
 
+	    query += "ExternalRecordId, ";
 		Iterator<String> keysIterator = keys.iterator();
 	    while (keysIterator.hasNext()) {
 			query += "`" + keysIterator.next() + "`";
@@ -420,6 +460,7 @@ public class ProjectResponse {
 	        }
 		}
 	    query += ") VALUES (";
+	    query += "\"" + recordId + "\", ";
 		Iterator<String> valuesIterator = values.iterator();
 	    while (valuesIterator.hasNext()) {
 			query += valuesIterator.next();
@@ -478,26 +519,35 @@ public class ProjectResponse {
 				
 				JsonArray imageArray = manifest.get("sequences").getAsJsonArray().get(0).getAsJsonObject().get("canvases").getAsJsonArray();
 				int imageCount = imageArray.size();
-				
+
+				itemQuery = "INSERT INTO Item ("
+						+ "Title, "
+						+ "StoryId, "
+						+ "ImageLink, "
+						+ "OrderIndex, "
+						+ "Manifest"
+						+ ") VALUES ";
 				for (int i = 0; i < imageCount; i++) {
 					imageLink = imageArray.get(i).getAsJsonObject().get("images").getAsJsonArray().get(0).getAsJsonObject().get("resource").getAsJsonObject().toString();
 					
-					itemQuery = "";
-					itemQuery += "INSERT INTO Item ("
-							+ "Title, "
-							+ "StoryId, "
-							+ "ImageLink, "
-							+ "OrderIndex, "
-							+ "Manifest"
-							+ ") "
-							+ "VALUES ("
-							+ "\"" + storyTitle.replace("\"", "") + " Item "  + i + "\"" +  ", "
-							+ "(SELECT StoryId FROM Story ORDER BY StoryId DESC LIMIT 1), "
-							+ "\"" + imageLink.replace("\"", "\\\"") + "\"" + ", "
-							+ i + ", "
-							+ "\"" + manifestUrl + "\"" + ")";
-					String itemResponse = executeInsertQuery(itemQuery, "Insert");
+					if (i == 0) {
+						itemQuery += "("
+						+ "\"" + storyTitle.replace("\"", "") + " Item "  + i + "\"" +  ", "
+						+ "(SELECT StoryId FROM Story ORDER BY StoryId DESC LIMIT 1), "
+						+ "\"" + imageLink.replace("\"", "\\\"") + "\"" + ", "
+						+ i + ", "
+						+ "\"" + manifestUrl + "\"" + ")";
+					}
+					else {
+						itemQuery += ", ("
+								+ "\"" + storyTitle.replace("\"", "") + " Item "  + i + "\"" +  ", "
+								+ "(SELECT StoryId FROM Story ORDER BY StoryId DESC LIMIT 1), "
+								+ "\"" + imageLink.replace("\"", "\\\"") + "\"" + ", "
+								+ i + ", "
+								+ "\"" + manifestUrl + "\"" + ")";
+					}
 				}
+				String itemResponse = executeInsertQuery(itemQuery, "Insert");
 		    } catch (IOException e) {
 		        throw new RuntimeException(e);
 		    }
