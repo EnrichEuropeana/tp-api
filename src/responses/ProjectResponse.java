@@ -354,35 +354,37 @@ public class ProjectResponse {
 						}
 					}
 					else if (entry.getValue().isJsonArray()){
-						String key = "";
-						String value = "";
-						for (int j = 0; j < entry.getValue().getAsJsonArray().size(); j++) {
-							if (entry.getValue().getAsJsonArray().get(j).isJsonObject()) {
-								JsonObject element = entry.getValue().getAsJsonArray().get(j).getAsJsonObject();
-								if (!keys.contains(entry.getKey())) {
-									if (element.has("@value")) {
-										key = entry.getKey();
-										value = element.get("@value").toString();
+						if (!keys.contains(entry.getKey())) {
+							String key = "";
+							String value = "";
+							for (int j = 0; j < entry.getValue().getAsJsonArray().size(); j++) {
+								if (entry.getValue().getAsJsonArray().get(j).isJsonObject()) {
+									JsonObject element = entry.getValue().getAsJsonArray().get(j).getAsJsonObject();
+									if (key == "") {
+										if (element.has("@value")) {
+											key = entry.getKey();
+											value = element.get("@value").toString();
+										}
+										if (element.has("@id")) {
+											key = entry.getKey();
+											value = element.get("@id").toString();
+										}
 									}
-									if (element.has("@id")) {
-										key = entry.getKey();
-										value = element.get("@id").toString();
-									}
-								}
-								else {
-									if (element.has("@language") && element.get("@language").toString().contains("en")) {
-										key = entry.getKey();
-										value = element.get("@value").toString();
+									else {
+										if (element.has("@language") && element.get("@language").toString().contains("en")) {
+											key = entry.getKey();
+											value = element.get("@value").toString();
+										}
 									}
 								}
 							}
-						}
-						if (key != "" && value != "") {
-							keys.add(key);
-							values.add(value);	
-							if (entry.getKey().equals("dc:title")) {
-								storyTitle = "\"" + value.replace(",", " | ").replaceAll("[\"{}\\[\\]]", "") + "\"";
-							}						
+							if (key != "" && value != "") {
+								keys.add(key);
+								values.add(value);	
+								if (entry.getKey().equals("dc:title")) {
+									storyTitle = "\"" + value.replace(",", " | ").replaceAll("[\"{}\\[\\]]", "") + "\"";
+								}						
+							}
 						}
 					}
 					else {
