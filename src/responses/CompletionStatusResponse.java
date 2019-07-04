@@ -70,6 +70,7 @@ public class CompletionStatusResponse {
 				  CompletionStatus.setCompletionStatusId(rs.getInt("CompletionStatusId"));
 				  CompletionStatus.setName(rs.getString("Name"));
 				  CompletionStatus.setColorCode(rs.getString("ColorCode"));
+				  CompletionStatus.setColorCodeGradient(rs.getString("ColorCodeGradient"));
 				  completionStatusList.add(CompletionStatus);
 			   }
 			
