@@ -12,15 +12,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
-import org.keycloak.OAuth2Constants;
-import org.keycloak.admin.client.Keycloak;
-import org.keycloak.admin.client.KeycloakBuilder;
-import org.keycloak.common.VerificationException;
-import org.keycloak.representations.AccessToken;
-import org.keycloak.representations.AccessTokenResponse;
-
-import eu.europeana.apikey.keycloak.KeycloakTokenVerifier;
-
 import objects.CompletionStatus;
 
 import java.util.*;
@@ -30,47 +21,9 @@ import com.google.gson.*;
 
 @Path("/completionStatus")
 public class CompletionStatusResponse {
-    private static AccessTokenResponse getAccessToken(Keycloak keycloak) {
-        try {
-            return keycloak.tokenManager().getAccessToken();
-        } catch (Exception anyException) {
-            System.err.println("error getting access");
-            return null;
-        }
-    }
+
 
 	public String executeQuery(String query, String type) throws SQLException{
-	    String realm = "DataExchangeInfrastructure";
-	    String authServerUrl = "https://keycloak-server-test.eanadev.org/auth";
-	    String clientId = "tp-api-client";
-	    String clientSecret = "8b81cee4-ef9a-49a0-a3ed-fd7435e2496c";
-
-	    Keycloak keycloak = KeycloakBuilder.builder()
-	            .realm(realm)
-	            .serverUrl(authServerUrl)
-	            .clientId(clientId)
-	            .clientSecret(clientSecret)
-	            .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
-	            .build();
-
-	    eu.europeana.apikey.keycloak.KeycloakTokenVerifier.toPublicKey();
-	    AccessTokenResponse token = getAccessToken(keycloak);
-	    if (token == null) {
-	        System.err.println("token null");
-	    }
-	    try {
-	        AccessToken accessToken = eu.europeana.apikey.keycloak.KeycloakTokenVerifier.verifyToken(token.getToken());
-	        if (accessToken != null) {
-	            System.out.println(accessToken.toString());
-	        }
-	    } catch (VerificationException e) {
-	        System.err.println("verification error");
-	    }
-
-	    if (1 == 1) {
-	    	return(token.getToken());
-	    }
-	    
 		final String DB_URL="jdbc:mysql://mysql-db1.man.poznan.pl:3307/transcribathon?serverTimezone=CET";
 		final String USER = "enrichingeuropeana";
 		final String PASS = "Ke;u5De)u8sh";
