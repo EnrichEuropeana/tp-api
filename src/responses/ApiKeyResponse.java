@@ -16,6 +16,10 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import objects.ApiKey;
 
 import java.util.*;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.*;
 
 import com.google.gson.*;
@@ -26,10 +30,18 @@ public class ApiKeyResponse {
 
 
 	public String executeQuery(String query, String type) throws SQLException{
-		final String DB_URL="jdbc:mysql://mysql-db1.man.poznan.pl:3307/transcribathon?serverTimezone=CET";
-		final String USER = "enrichingeuropeana";
-		final String PASS = "Ke;u5De)u8sh";
 		   List<ApiKey> apiKeys = new ArrayList<ApiKey>();
+	       try (InputStream input = new FileInputStream("/home/enrich/tomcat/apache-tomcat-9.0.13/webapps/tp-api/WEB-INF/config.properties")) {
+
+	            Properties prop = new Properties();
+
+	            // load a properties file
+	            prop.load(input);
+
+	            // get the property value and print it out
+	            final String DB_URL = prop.getProperty("DB_URL");
+	            final String USER = prop.getProperty("USER");
+	            final String PASS = prop.getProperty("PASS");
 		   // Register JDBC driver
 		   try {
 			Class.forName("com.mysql.jdbc.Driver");
@@ -70,6 +82,11 @@ public class ApiKeyResponse {
 		   } catch (ClassNotFoundException e) {
 			   e.printStackTrace();
 		}
+			} catch (FileNotFoundException e1) {
+				e1.printStackTrace();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 	    Gson gsonBuilder = new GsonBuilder().create();
 	    String result = gsonBuilder.toJson(apiKeys);
 	    return result;

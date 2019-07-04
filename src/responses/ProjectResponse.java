@@ -1,7 +1,10 @@
 package responses;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -14,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -44,10 +48,18 @@ public class ProjectResponse {
 
 
 	public String executeQuery(String query, String type) throws SQLException{
-		final String DB_URL="jdbc:mysql://mysql-db1.man.poznan.pl:3307/transcribathon?serverTimezone=CET";
-		final String USER = "enrichingeuropeana";
-		final String PASS = "Ke;u5De)u8sh";
 		   List<Project> projectList = new ArrayList<Project>();
+	       try (InputStream input = new FileInputStream("/home/enrich/tomcat/apache-tomcat-9.0.13/webapps/tp-api/WEB-INF/config.properties")) {
+
+	            Properties prop = new Properties();
+
+	            // load a properties file
+	            prop.load(input);
+
+	            // get the property value and print it out
+	            final String DB_URL = prop.getProperty("DB_URL");
+	            final String USER = prop.getProperty("USER");
+	            final String PASS = prop.getProperty("PASS");
 		   // Register JDBC driver
 		   try {
 			Class.forName("com.mysql.jdbc.Driver");
@@ -86,6 +98,11 @@ public class ProjectResponse {
 		   } catch (ClassNotFoundException e) {
 			   e.printStackTrace();
 		}
+			} catch (FileNotFoundException e1) {
+				e1.printStackTrace();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 	    Gson gsonBuilder = new GsonBuilder().create();
 	    String result = gsonBuilder.toJson(projectList);
 	    return result;
