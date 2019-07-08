@@ -11,19 +11,6 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpHeaders;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.commons.io.IOUtils;
 
 import javax.ws.rs.core.Response.ResponseBuilder;
 
@@ -47,70 +34,9 @@ import com.google.gson.*;
 @Path("/completionStatus")
 public class CompletionStatusResponse {
 
-	public String executeQuery(String query, String type) throws SQLException, ClientProtocolException, IOException{
+	public String executeQuery(String query, String type) throws SQLException{
 
-/*
-		HttpClient httpclient = HttpClients.createDefault();
-/*
-        HttpPost httppost = new HttpPost("https://fresenia.man.poznan.pl/dei-test/api/transcription?recordId=/08711/item_51775");
-        List<NameValuePair> params = new ArrayList<NameValuePair>(2);
-        httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
-        HttpResponse response = httpclient.execute(httppost);
-        HttpEntity entity = response.getEntity();
 
-        if (entity != null) {
-            try (InputStream instream = entity.getContent()) {
-                StringWriter writer = new StringWriter();
-                IOUtils.copy(instream, writer, StandardCharsets.UTF_8);
-                JsonObject data = new JsonParser().parse(writer.toString()).getAsJsonObject();
-                return data.toString();
-            }
-        }
-        //HttpPost httppost = new HttpPost("https://keycloak-server-test.eanadev.org/auth/realms/DataExchangeInfrastructure/protocol/openid-connect/token");
-        HttpPost httppost = new HttpPost("https://keycloak-server-test.eanadev.org/auth/realms/DataExchangeInfrastructure/protocol/openid-connect/token");
-	
-	        List<NameValuePair> params = new ArrayList<NameValuePair>(2);
-	        params.add(new BasicNameValuePair("grant_type", "client_credentials"));
-	        params.add(new BasicNameValuePair("client_secret", "8b81cee4-ef9a-49a0-a3ed-fd7435e2496c"));
-	        params.add(new BasicNameValuePair("client_id", "tp-api-client"));
-	        httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
-	        HttpResponse response = httpclient.execute(httppost);
-	        HttpEntity entity = response.getEntity();
-	
-	        if (entity != null) {
-	            try (InputStream instream = entity.getContent()) {
-	                StringWriter writer = new StringWriter();
-	                IOUtils.copy(instream, writer, StandardCharsets.UTF_8);
-	                JsonObject data = new JsonParser().parse(writer.toString()).getAsJsonObject();
-
-	        		/*
-	    	        HttpPost httppost2 = new HttpPost("https://fresenia.man.poznan.pl/dei-test/api/transcription?recordId=/08711/item_51775");
-	    	        httppost2.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
-	    	        //String authHeader = data.get("access_token").toString();
-	    	        //httppost2.setHeader(HttpHeaders.AUTHORIZATION, authHeader);
-	                return httppost2.getRequestLine().toString();
-	                
-	    	        HttpResponse response2 = httpclient.execute(httppost2);
-	    	        HttpEntity entity2 = response2.getEntity();
-	    	        ResponseHandler<String> handler = new BasicResponseHandler();
-	    	        String body = handler.handleResponse(response2);
-	    	        if (entity2 != null) {
-	    	            try (InputStream instream2 = entity2.getContent()) {
-	    	            	if (instream2 == null) {
-	    	            		return "test";
-	    	            	}
-	    	            	else {
-	    	            		return body;
-	    	            	}
-	    	                StringWriter writer2 = new StringWriter();
-	    	                IOUtils.copy(instream2, writer2, StandardCharsets.UTF_8);
-	    	                JsonObject data2 = new JsonParser().parse(writer2.toString()).getAsJsonObject();
-	    	                return data2.toString();
-	    	            }
-	    	        }
-	            }
-	        }
-	        */
 		   List<CompletionStatus> completionStatusList = new ArrayList<CompletionStatus>();
 	       try (InputStream input = new FileInputStream("/home/enrich/tomcat/apache-tomcat-9.0.13/webapps/tp-api/WEB-INF/config.properties")) {
 
@@ -180,7 +106,7 @@ public class CompletionStatusResponse {
 	@Path("")
 	@Produces("application/json;charset=utf-8")
 	@GET
-	public Response search(@Context UriInfo uriInfo) throws SQLException, ClientProtocolException, IOException {
+	public Response search(@Context UriInfo uriInfo) throws SQLException {
 		String query = "SELECT * FROM CompletionStatus WHERE 1";
 		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
 		
@@ -206,7 +132,7 @@ public class CompletionStatusResponse {
 	//Add new entry
 	@Path("")
 	@POST
-	public String add(String body) throws SQLException, ClientProtocolException, IOException {	
+	public String add(String body) throws SQLException {	
 	    GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
 	    Gson gson = gsonBuilder.create();
 	    CompletionStatus completionStatus = gson.fromJson(body, CompletionStatus.class);
@@ -227,7 +153,7 @@ public class CompletionStatusResponse {
 	//Edit entry by id
 	@Path("/{id}")
 	@POST
-	public String update(@PathParam("id") int id, String body) throws SQLException, ClientProtocolException, IOException {
+	public String update(@PathParam("id") int id, String body) throws SQLException {
 	    GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
 	    Gson gson = gsonBuilder.create();
 	    JsonObject  changes = gson.fromJson(body, JsonObject.class);
@@ -262,7 +188,7 @@ public class CompletionStatusResponse {
 	//Delete entry by id
 	@Path("/{id}")
 	@DELETE
-	public String delete(@PathParam("id") int id) throws SQLException, ClientProtocolException, IOException {
+	public String delete(@PathParam("id") int id) throws SQLException {
 		String resource = executeQuery("DELETE FROM CompletionStatus WHERE CompletionStatusId = " + id, "Delete");
 		return resource;
 	}
@@ -272,7 +198,7 @@ public class CompletionStatusResponse {
 	@Path("/{id}")
 	@Produces("application/json;charset=utf-8")
 	@GET
-	public Response getEntry(@PathParam("id") int id) throws SQLException, ClientProtocolException, IOException {
+	public Response getEntry(@PathParam("id") int id) throws SQLException {
 		String resource = executeQuery("SELECT * FROM CompletionStatus WHERE CompletionStatusId = " + id, "Select");
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();

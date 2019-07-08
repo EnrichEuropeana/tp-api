@@ -26,5 +26,8 @@
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jna-4.5.2.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jna-platform-4.5.2.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-io-2.6.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/keycloak-admin-client-6.0.1.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/keycloak-common-6.0.1.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/keycloak-core-6.0.1.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
