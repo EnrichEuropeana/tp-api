@@ -109,10 +109,19 @@ public class ProjectResponse {
 	}
 	
 	public String executeDatasetQuery(String query, String type) throws SQLException{
-		final String DB_URL="jdbc:mysql://mysql-db1.man.poznan.pl:3307/transcribathon?serverTimezone=CET";
-		final String USER = "enrichingeuropeana";
-		final String PASS = "Ke;u5De)u8sh";
-		   List<Dataset> datasetList = new ArrayList<Dataset>();
+	    List<Dataset> datasetList = new ArrayList<Dataset>();
+		try (InputStream input = new FileInputStream("/home/enrich/tomcat/apache-tomcat-9.0.13/webapps/tp-api/WEB-INF/config.properties")) {
+
+            Properties prop = new Properties();
+
+            // load a properties file
+            prop.load(input);
+
+            // get the property value and print it out
+            final String DB_URL = prop.getProperty("DB_URL");
+            final String USER = prop.getProperty("USER");
+            final String PASS = prop.getProperty("PASS");
+            
 		   // Register JDBC driver
 		   try {
 			Class.forName("com.mysql.jdbc.Driver");
@@ -151,6 +160,11 @@ public class ProjectResponse {
 			   se.printStackTrace();
 		   } catch (ClassNotFoundException e) {
 			   e.printStackTrace();
+		}
+		} catch (FileNotFoundException e1) {
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			e1.printStackTrace();
 		}
 	    Gson gsonBuilder = new GsonBuilder().create();
 	    String result = gsonBuilder.toJson(datasetList);
@@ -415,6 +429,9 @@ public class ProjectResponse {
 					}
 				}
 				else {
+					if (entry.getKey().equals("iiif_url")) {
+						manifestUrl = entry.getValue().getAsString();
+					}
 					if (entry.getKey().equals("@type") && entry.getValue().getAsString().equals("edm:Place") && placeAdded == false) {
 						if (dataArray.get(i).getAsJsonObject().keySet().contains("geo:lat")
 								&& dataArray.get(i).getAsJsonObject().keySet().contains("geo:long")) {
@@ -445,6 +462,9 @@ public class ProjectResponse {
 							if (dataArray.get(i).getAsJsonObject().keySet().contains("dcterms:isReferencedBy")){
 								if (dataArray.get(i).getAsJsonObject().get("dcterms:isReferencedBy").isJsonObject()
 										&& dataArray.get(i).getAsJsonObject().get("dcterms:isReferencedBy").getAsJsonObject().get("@id").getAsString().endsWith("manifest.json")) {
+									if (manifestUrl == "") {
+										manifestUrl = dataArray.get(i).getAsJsonObject().get("dcterms:isReferencedBy").getAsJsonObject().get("@id").getAsString();
+									}
 									manifestUrl = dataArray.get(i).getAsJsonObject().get("dcterms:isReferencedBy").getAsJsonObject().get("@id").getAsString();
 								}
 							}
@@ -454,6 +474,10 @@ public class ProjectResponse {
 						}
 						else if (entry.getKey().equals("@type") && entry.getValue().getAsString().equals("edm:ProvidedCHO")) {
 							if (dataArray.get(i).getAsJsonObject().keySet().contains("@id")){
+								if (dataArray.get(i).getAsJsonObject().get("@id").getAsString().contains("europeana.eu")) {
+									String[] arr = dataArray.get(i).getAsJsonObject().get("@id").getAsString().split("/");
+									recordId = "/" + arr[arr.length - 2] + "/" + arr[arr.length - 1];
+								}
 								recordId = dataArray.get(i).getAsJsonObject().get("@id").getAsString();
 							}
 						}

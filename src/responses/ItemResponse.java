@@ -75,44 +75,6 @@ public class ItemResponse {
 			   
 			   int success = stmt.executeUpdate(query);
 			   if (success > 0) {
-				   	/*
-	
-						HttpClient httpclient = HttpClients.createDefault();
-					
-					    HttpPost httppost = new HttpPost("https://keycloak-server-test.eanadev.org/auth/realms/DataExchangeInfrastructure/protocol/openid-connect/token");
-				
-				        List<NameValuePair> params = new ArrayList<NameValuePair>(2);
-				        params.add(new BasicNameValuePair("grant_type", "client_credentials"));
-				        params.add(new BasicNameValuePair("client_secret", "8b81cee4-ef9a-49a0-a3ed-fd7435e2496c"));
-				        params.add(new BasicNameValuePair("client_id", "tp-api-client"));
-				        httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
-				        HttpResponse response = httpclient.execute(httppost);
-				        HttpEntity entity = response.getEntity();
-				
-				        if (entity != null) {
-				            try (InputStream instream = entity.getContent()) {
-				                StringWriter writer = new StringWriter();
-				                IOUtils.copy(instream, writer, StandardCharsets.UTF_8);
-				                JsonObject data = new JsonParser().parse(writer.toString()).getAsJsonObject();
-	
-				    	        HttpPost httppost2 = new HttpPost("https://fresenia.man.poznan.pl/dei-test/api/transcription?recordId=/9200579/nn4a4jwf");
-				    	        List<NameValuePair> params2 = new ArrayList<NameValuePair>(2);
-				    	        httppost2.setEntity(new UrlEncodedFormEntity(params2, "UTF-8"));
-				    	        String authHeader = "bearer " + data.get("access_token").toString().replace("\"", "");
-				    	        httppost2.setHeader(HttpHeaders.AUTHORIZATION, authHeader);
-				    	        
-				    	        HttpResponse response2 = httpclient.execute(httppost2);
-				    	        HttpEntity entity2 = response2.getEntity();
-				    	        if (entity2 != null) {
-				    	            try (InputStream instream2 = entity2.getContent()) {
-				    	                StringWriter writer2 = new StringWriter();
-				    	                IOUtils.copy(instream2, writer2, StandardCharsets.UTF_8);
-				    	                return writer2.toString();
-				    	            }
-				    	        }
-				            }
-				        }
-			        */
 			        
 				   return type +" succesful";
 			   }
