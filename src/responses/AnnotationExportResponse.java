@@ -106,25 +106,33 @@ public class AnnotationExportResponse {
 	@Produces("application/json;charset=utf-8")
 	@GET
 	public Response search(@Context UriInfo uriInfo, @Context HttpHeaders headers) throws SQLException {
-		/*
-		List<String> authHeaders = headers.getRequestHeader(HttpHeaders.AUTHORIZATION);
-		String authorizationToken = authHeaders.get(0);
-		String tokenQuery = "SELECT * FROM ApiKey WHERE KeyString = " + authorizationToken;
-		String tokens = executeQuery(tokenQuery, "Select");
-		JsonObject data = new JsonParser().parse(tokens).getAsJsonObject();
-		
 		boolean auth = false;
-		for (int i = 0; i < data.size(); i++) {
-			if (data.get("KeyString").toString().equals(authorizationToken)) {
-				auth = true;
-				break;
+		String authorizationToken = "";
+		if (headers.getRequestHeader(HttpHeaders.AUTHORIZATION) != null) {
+			List<String> authHeaders = headers.getRequestHeader(HttpHeaders.AUTHORIZATION);
+			authorizationToken = authHeaders.get(0);
+			String tokenQuery = "SELECT * FROM ApiKey";
+			String tokens = executeQuery(tokenQuery, "Select");
+			JsonArray data = new JsonParser().parse(tokens).getAsJsonArray();
+			
+			for (int i = 0; i < data.size(); i++) {
+				if (data.get(i).getAsJsonObject().get("KeyString").toString().replace("\"", "") == authorizationToken) {
+					auth = true;
+					break;
+				}
+				else if (i == 5) {
+					ResponseBuilder authResponse = Response.ok(data.get(i).getAsJsonObject().get("KeyString").toString().replace("\"", ""));
+					return authResponse.build();
+					
+				}
 			}
 		}
-		if (auth == true) {
-			ResponseBuilder authResponse = Response.status(Response.Status.UNAUTHORIZED);
-			return authResponse.build();
-		}*/
 		
+		if (auth != true) {
+			//ResponseBuilder authResponse = Response.status(Response.Status.UNAUTHORIZED);
+			ResponseBuilder authResponse = Response.ok(authorizationToken);
+			return authResponse.build();
+		}
 			
 		String query = "SELECT * FROM (" + 
 				"(SELECT  " + 

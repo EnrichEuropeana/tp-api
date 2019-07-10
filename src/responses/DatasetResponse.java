@@ -7,6 +7,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
@@ -94,7 +95,28 @@ public class DatasetResponse {
 	@Path("")
 	@Produces("application/json;charset=utf-8")
 	@GET
-	public Response search(@Context UriInfo uriInfo, String body) throws SQLException {
+	public Response search(@Context UriInfo uriInfo, String body, @Context HttpHeaders headers) throws SQLException {	
+		boolean auth = false;
+		String authorizationToken = "";
+		if (headers.getRequestHeader(HttpHeaders.AUTHORIZATION) != null) {
+			List<String> authHeaders = headers.getRequestHeader(HttpHeaders.AUTHORIZATION);
+			authorizationToken = authHeaders.get(0);
+			String tokenQuery = "SELECT * FROM ApiKey";
+			String tokens = executeQuery(tokenQuery, "Select");
+			JsonArray data = new JsonParser().parse(tokens).getAsJsonArray();
+			
+			for (int i = 0; i < data.size(); i++) {
+				if (data.get(i).getAsJsonObject().get("KeyString").toString().replace("\"", "").equals(authorizationToken)) {
+					auth = true;
+					break;
+				}
+			}
+		}
+		
+		if (auth != true) {
+			ResponseBuilder authResponse = Response.status(Response.Status.UNAUTHORIZED);
+			return authResponse.build();
+		}
 		String query = "SELECT * FROM Dataset WHERE 1";
 		
 		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
@@ -122,7 +144,28 @@ public class DatasetResponse {
 	//Add new entry
 	@Path("")
 	@POST
-	public String add(String body) throws SQLException {	
+	public Response add(String body, @Context HttpHeaders headers) throws SQLException {		
+		boolean auth = false;
+		String authorizationToken = "";
+		if (headers.getRequestHeader(HttpHeaders.AUTHORIZATION) != null) {
+			List<String> authHeaders = headers.getRequestHeader(HttpHeaders.AUTHORIZATION);
+			authorizationToken = authHeaders.get(0);
+			String tokenQuery = "SELECT * FROM ApiKey";
+			String tokens = executeQuery(tokenQuery, "Select");
+			JsonArray data = new JsonParser().parse(tokens).getAsJsonArray();
+			
+			for (int i = 0; i < data.size(); i++) {
+				if (data.get(i).getAsJsonObject().get("KeyString").toString().replace("\"", "").equals(authorizationToken)) {
+					auth = true;
+					break;
+				}
+			}
+		}
+		
+		if (auth != true) {
+			ResponseBuilder authResponse = Response.status(Response.Status.UNAUTHORIZED);
+			return authResponse.build();
+		}
 	    GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
 	    Gson gson = gsonBuilder.create();
 	    Dataset dataset = gson.fromJson(body, Dataset.class);
@@ -134,9 +177,11 @@ public class DatasetResponse {
 							+ ", '" + dataset.Name 
 							+ ", " + dataset.ProjectId + ")";
 			String resource = executeQuery(query, "Insert");
-			return resource;
+			ResponseBuilder rBuild = Response.ok(resource);
+	        return rBuild.build();
 	    } else {
-	    	return "Fields missing";
+			ResponseBuilder authResponse = Response.status(Response.Status.BAD_REQUEST);
+			return authResponse.build();
 	    }
 	}
 	
@@ -144,14 +189,36 @@ public class DatasetResponse {
 	//Edit entry by id
 	@Path("/{id}")
 	@POST
-	public String update(@PathParam("id") int id, String body) throws SQLException {
+	public Response update(@PathParam("id") int id, String body, @Context HttpHeaders headers) throws SQLException {	
+		boolean auth = false;
+		String authorizationToken = "";
+		if (headers.getRequestHeader(HttpHeaders.AUTHORIZATION) != null) {
+			List<String> authHeaders = headers.getRequestHeader(HttpHeaders.AUTHORIZATION);
+			authorizationToken = authHeaders.get(0);
+			String tokenQuery = "SELECT * FROM ApiKey";
+			String tokens = executeQuery(tokenQuery, "Select");
+			JsonArray data = new JsonParser().parse(tokens).getAsJsonArray();
+			
+			for (int i = 0; i < data.size(); i++) {
+				if (data.get(i).getAsJsonObject().get("KeyString").toString().replace("\"", "").equals(authorizationToken)) {
+					auth = true;
+					break;
+				}
+			}
+		}
+		
+		if (auth != true) {
+			ResponseBuilder authResponse = Response.status(Response.Status.UNAUTHORIZED);
+			return authResponse.build();
+		}
 	    GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
 	    Gson gson = gsonBuilder.create();
 	    JsonObject  changes = gson.fromJson(body, JsonObject.class);
 	    
 	    //Check if field is allowed to be changed
 	    if (changes.get("DatasetId") != null) {
-	    	return "Prohibited change attempt";
+			ResponseBuilder authResponse = Response.status(Response.Status.BAD_REQUEST);
+			return authResponse.build();
 	    }
 	    
 	    //Check if NOT NULL field is attempted to be changed to NULL
@@ -169,9 +236,11 @@ public class DatasetResponse {
 			}
 			query += " WHERE DatasetId = " + id;
 			String resource = executeQuery(query, "Update");
-			return resource;
+			ResponseBuilder rBuild = Response.ok(resource);
+	        return rBuild.build();
 	    } else {
-	    	return "Prohibited changes to null";
+			ResponseBuilder authResponse = Response.status(Response.Status.BAD_REQUEST);
+			return authResponse.build();
 	    }
 	}
 	
@@ -179,9 +248,31 @@ public class DatasetResponse {
 	//Delete entry by id
 	@Path("/{id}")
 	@DELETE
-	public String delete(@PathParam("id") int id) throws SQLException {
+	public Response delete(@PathParam("id") int id, @Context HttpHeaders headers) throws SQLException {
+		boolean auth = false;
+		String authorizationToken = "";
+		if (headers.getRequestHeader(HttpHeaders.AUTHORIZATION) != null) {
+			List<String> authHeaders = headers.getRequestHeader(HttpHeaders.AUTHORIZATION);
+			authorizationToken = authHeaders.get(0);
+			String tokenQuery = "SELECT * FROM ApiKey";
+			String tokens = executeQuery(tokenQuery, "Select");
+			JsonArray data = new JsonParser().parse(tokens).getAsJsonArray();
+			
+			for (int i = 0; i < data.size(); i++) {
+				if (data.get(i).getAsJsonObject().get("KeyString").toString().replace("\"", "").equals(authorizationToken)) {
+					auth = true;
+					break;
+				}
+			}
+		}
+		
+		if (auth != true) {
+			ResponseBuilder authResponse = Response.status(Response.Status.UNAUTHORIZED);
+			return authResponse.build();
+		}
 		String resource = executeQuery("DELETE FROM Dataset WHERE DatasetId = " + id, "Delete");
-		return resource;
+		ResponseBuilder rBuild = Response.ok(resource);
+        return rBuild.build();
 	}
 	
 
@@ -189,7 +280,28 @@ public class DatasetResponse {
 	@Path("/{id}")
 	@Produces("application/json;charset=utf-8")
 	@GET
-	public Response getEntry(@PathParam("id") int id, String body) throws SQLException {
+	public Response getEntry(@PathParam("id") int id, String body, @Context HttpHeaders headers) throws SQLException {	
+		boolean auth = false;
+		String authorizationToken = "";
+		if (headers.getRequestHeader(HttpHeaders.AUTHORIZATION) != null) {
+			List<String> authHeaders = headers.getRequestHeader(HttpHeaders.AUTHORIZATION);
+			authorizationToken = authHeaders.get(0);
+			String tokenQuery = "SELECT * FROM ApiKey";
+			String tokens = executeQuery(tokenQuery, "Select");
+			JsonArray data = new JsonParser().parse(tokens).getAsJsonArray();
+			
+			for (int i = 0; i < data.size(); i++) {
+				if (data.get(i).getAsJsonObject().get("KeyString").toString().replace("\"", "").equals(authorizationToken)) {
+					auth = true;
+					break;
+				}
+			}
+		}
+		
+		if (auth != true) {
+			ResponseBuilder authResponse = Response.status(Response.Status.UNAUTHORIZED);
+			return authResponse.build();
+		}
 		String resource = executeQuery("SELECT * FROM Dataset WHERE DatasetId = " + id, "Select");
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();

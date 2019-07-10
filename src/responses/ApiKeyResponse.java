@@ -7,6 +7,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
@@ -25,7 +26,7 @@ import java.sql.*;
 import com.google.gson.*;
 import com.google.gson.stream.MalformedJsonException;
 
-@Path("/ApiKey")
+@Path("/apikeys")
 public class ApiKeyResponse {
 
 
@@ -93,93 +94,31 @@ public class ApiKeyResponse {
 	}
 
 	//Get all Entries
-	@Path("/all")
+	@Path("")
 	@Produces("application/json;charset=utf-8")
 	@GET
-	public Response getAll() throws SQLException {
-		String query = "SELECT * FROM ApiKey WHERE 1";
-		String resource = executeQuery(query, "Select");
-		ResponseBuilder rBuild = Response.ok(resource);
-        return rBuild.build();
-	}
-	
-	//Add new entry
-	@Path("/add")
-	@POST
-	public String add(String body) throws SQLException {	
-	    GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
-	    Gson gson = gsonBuilder.create();
-	    ApiKey apiKey = gson.fromJson(body, ApiKey.class);
-	    
-	    //Check if all mandatory fields are included
-	    if (apiKey.KeyString != null) {
-			String query = "INSERT INTO ApiKey (KeyString, ProjectId, RoleId) "
-							+ "VALUES ('" + apiKey.KeyString + "'"
-								+ ", " + apiKey.ProjectId
-								+ ", " + apiKey.RoleId + ")";
-			String resource = executeQuery(query, "Insert");
-			return resource;
-	    } else {
-	    	return "Fields missing";
-	    }
-	}
-	
-	//Edit entry by id
-	@Path("/{id}")
-	@POST
-	public String update(@PathParam("id") int id, String body) throws SQLException {
-	    GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
-	    Gson gson = gsonBuilder.create();
-	    JsonObject changes = gson.fromJson(body, JsonObject.class);
-	    
-	    //Check if field is allowed to be changed
-	    if (changes.get("ApiKeyId") != null) {
-	    	return "Prohibited change attempt";
-	    }
-	    
-	    //Check if NOT NULL field is attempted to be changed to NULL
-	    if ((changes.get("KeyString") == null || !changes.get("KeyString").isJsonNull())) {
-		    String query = "UPDATE ApiKey SET ";
-		    int keyCount = changes.entrySet().size();
-		    int i = 1;
-			for(Map.Entry<String, JsonElement> entry : changes.entrySet()) {
-			    query += entry.getKey() + " = " + entry.getValue();
-			    if (i < keyCount) {
-			    	query += ", ";
-			    }
-			    i++;
+	public Response getAll(@Context UriInfo uriInfo, @Context HttpHeaders headers) throws SQLException {
+		boolean auth = false;
+		String authorizationToken = "";
+		if (headers.getRequestHeader(HttpHeaders.AUTHORIZATION) != null) {
+			List<String> authHeaders = headers.getRequestHeader(HttpHeaders.AUTHORIZATION);
+			authorizationToken = authHeaders.get(0);
+			String tokenQuery = "SELECT * FROM ApiKey";
+			String tokens = executeQuery(tokenQuery, "Select");
+			JsonArray data = new JsonParser().parse(tokens).getAsJsonArray();
+			
+			for (int i = 0; i < data.size(); i++) {
+				if (data.get(i).getAsJsonObject().get("KeyString").toString().replace("\"", "").equals(authorizationToken)) {
+					auth = true;
+					break;
+				}
 			}
-			query += " WHERE ApiKeyId = " + id;
-			String resource = executeQuery(query, "Update");
-			return resource;
-	    } else {
-	    	return "Prohibited change to null";
-	    }
-	}
-	
-	//Delete entry by id
-	@Path("/{id}")
-	@DELETE
-	public String delete(@PathParam("id") int id) throws SQLException {
-		String resource = executeQuery("DELETE FROM ApiKey WHERE ApiKeyId = " + id, "Delete");
-		return resource;
-	}
-	
-	//Get entry by id
-	@Path("/{id}")
-	@Produces("application/json;charset=utf-8")
-	@GET
-	public Response getEntry(@PathParam("id") int id) throws SQLException {
-		String resource = executeQuery("SELECT * FROM ApiKey WHERE ApiKeyId = " + id, "Select");
-		ResponseBuilder rBuild = Response.ok(resource);
-        return rBuild.build();
-	}
-	
-	//Search using custom filters
-	@Path("/search")
-	@Produces("application/json;charset=utf-8")
-	@GET
-	public Response search(@Context UriInfo uriInfo) throws SQLException {
+		}
+		
+		if (auth != true) {
+			ResponseBuilder authResponse = Response.status(Response.Status.UNAUTHORIZED);
+			return authResponse.build();
+		}
 		String query = "SELECT * FROM ApiKey WHERE 1";
 		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
 		
@@ -198,6 +137,168 @@ public class ApiKeyResponse {
 		    query += ")";
 		}
 		String resource = executeQuery(query, "Select");
+		ResponseBuilder rBuild = Response.ok(resource);
+        return rBuild.build();
+	}
+	
+	//Add new entry
+	@Path("")
+	@POST
+	public Response add(String body, @Context HttpHeaders headers) throws SQLException {	
+		boolean auth = false;
+		String authorizationToken = "";
+		if (headers.getRequestHeader(HttpHeaders.AUTHORIZATION) != null) {
+			List<String> authHeaders = headers.getRequestHeader(HttpHeaders.AUTHORIZATION);
+			authorizationToken = authHeaders.get(0);
+			String tokenQuery = "SELECT * FROM ApiKey";
+			String tokens = executeQuery(tokenQuery, "Select");
+			JsonArray data = new JsonParser().parse(tokens).getAsJsonArray();
+			
+			for (int i = 0; i < data.size(); i++) {
+				if (data.get(i).getAsJsonObject().get("KeyString").toString().replace("\"", "").equals(authorizationToken)) {
+					auth = true;
+					break;
+				}
+			}
+		}
+		
+		if (auth != true) {
+			ResponseBuilder authResponse = Response.status(Response.Status.UNAUTHORIZED);
+			return authResponse.build();
+		}
+	    GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
+	    Gson gson = gsonBuilder.create();
+	    ApiKey apiKey = gson.fromJson(body, ApiKey.class);
+	    
+	    //Check if all mandatory fields are included
+	    if (apiKey.KeyString != null) {
+			String query = "INSERT INTO ApiKey (KeyString, ProjectId, RoleId) "
+							+ "VALUES ('" + apiKey.KeyString + "'"
+								+ ", " + apiKey.ProjectId
+								+ ", " + apiKey.RoleId + ")";
+			String resource = executeQuery(query, "Insert");
+			ResponseBuilder rBuild = Response.ok(resource);
+	        return rBuild.build();
+	    } else {
+			ResponseBuilder authResponse = Response.status(Response.Status.BAD_REQUEST);
+			return authResponse.build();
+	    }
+	}
+	
+	//Edit entry by id
+	@Path("/{id}")
+	@POST
+	public Response update(@PathParam("id") int id, String body, @Context HttpHeaders headers) throws SQLException {
+		boolean auth = false;
+		String authorizationToken = "";
+		if (headers.getRequestHeader(HttpHeaders.AUTHORIZATION) != null) {
+			List<String> authHeaders = headers.getRequestHeader(HttpHeaders.AUTHORIZATION);
+			authorizationToken = authHeaders.get(0);
+			String tokenQuery = "SELECT * FROM ApiKey";
+			String tokens = executeQuery(tokenQuery, "Select");
+			JsonArray data = new JsonParser().parse(tokens).getAsJsonArray();
+			
+			for (int i = 0; i < data.size(); i++) {
+				if (data.get(i).getAsJsonObject().get("KeyString").toString().replace("\"", "").equals(authorizationToken)) {
+					auth = true;
+					break;
+				}
+			}
+		}
+		
+		if (auth != true) {
+			ResponseBuilder authResponse = Response.status(Response.Status.UNAUTHORIZED);
+			return authResponse.build();
+		}
+	    GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
+	    Gson gson = gsonBuilder.create();
+	    JsonObject changes = gson.fromJson(body, JsonObject.class);
+	    
+	    //Check if field is allowed to be changed
+	    if (changes.get("ApiKeyId") != null) {
+			ResponseBuilder authResponse = Response.status(Response.Status.BAD_REQUEST);
+			return authResponse.build();
+	    }
+	    
+	    //Check if NOT NULL field is attempted to be changed to NULL
+	    if ((changes.get("KeyString") == null || !changes.get("KeyString").isJsonNull())) {
+		    String query = "UPDATE ApiKey SET ";
+		    int keyCount = changes.entrySet().size();
+		    int i = 1;
+			for(Map.Entry<String, JsonElement> entry : changes.entrySet()) {
+			    query += entry.getKey() + " = " + entry.getValue();
+			    if (i < keyCount) {
+			    	query += ", ";
+			    }
+			    i++;
+			}
+			query += " WHERE ApiKeyId = " + id;
+			String resource = executeQuery(query, "Update");
+			ResponseBuilder rBuild = Response.ok(resource);
+	        return rBuild.build();
+	    } else {
+			ResponseBuilder authResponse = Response.status(Response.Status.BAD_REQUEST);
+			return authResponse.build();
+	    }
+	}
+	
+	//Delete entry by id
+	@Path("/{id}")
+	@DELETE
+	public Response delete(@PathParam("id") int id, @Context HttpHeaders headers) throws SQLException {
+		boolean auth = false;
+		String authorizationToken = "";
+		if (headers.getRequestHeader(HttpHeaders.AUTHORIZATION) != null) {
+			List<String> authHeaders = headers.getRequestHeader(HttpHeaders.AUTHORIZATION);
+			authorizationToken = authHeaders.get(0);
+			String tokenQuery = "SELECT * FROM ApiKey";
+			String tokens = executeQuery(tokenQuery, "Select");
+			JsonArray data = new JsonParser().parse(tokens).getAsJsonArray();
+			
+			for (int i = 0; i < data.size(); i++) {
+				if (data.get(i).getAsJsonObject().get("KeyString").toString().replace("\"", "").equals(authorizationToken)) {
+					auth = true;
+					break;
+				}
+			}
+		}
+		
+		if (auth != true) {
+			ResponseBuilder authResponse = Response.status(Response.Status.UNAUTHORIZED);
+			return authResponse.build();
+		}
+		String resource = executeQuery("DELETE FROM ApiKey WHERE ApiKeyId = " + id, "Delete");
+		ResponseBuilder rBuild = Response.ok(resource);
+        return rBuild.build();
+	}
+	
+	//Get entry by id
+	@Path("/{id}")
+	@Produces("application/json;charset=utf-8")
+	@GET
+	public Response getEntry(@PathParam("id") int id, @Context HttpHeaders headers) throws SQLException {
+		boolean auth = false;
+		String authorizationToken = "";
+		if (headers.getRequestHeader(HttpHeaders.AUTHORIZATION) != null) {
+			List<String> authHeaders = headers.getRequestHeader(HttpHeaders.AUTHORIZATION);
+			authorizationToken = authHeaders.get(0);
+			String tokenQuery = "SELECT * FROM ApiKey";
+			String tokens = executeQuery(tokenQuery, "Select");
+			JsonArray data = new JsonParser().parse(tokens).getAsJsonArray();
+			
+			for (int i = 0; i < data.size(); i++) {
+				if (data.get(i).getAsJsonObject().get("KeyString").toString().replace("\"", "").equals(authorizationToken)) {
+					auth = true;
+					break;
+				}
+			}
+		}
+		
+		if (auth != true) {
+			ResponseBuilder authResponse = Response.status(Response.Status.UNAUTHORIZED);
+			return authResponse.build();
+		}
+		String resource = executeQuery("SELECT * FROM ApiKey WHERE ApiKeyId = " + id, "Select");
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
 	}

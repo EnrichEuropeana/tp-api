@@ -7,6 +7,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -405,7 +406,29 @@ public class StoryResponse {
 	//Add new entry
 	@Path("")
 	@POST
-	public Response add(String body) throws SQLException {	
+	public Response add(String body, @Context HttpHeaders headers) throws SQLException {	
+		boolean auth = false;
+		String authorizationToken = "";
+		if (headers.getRequestHeader(HttpHeaders.AUTHORIZATION) != null) {
+			List<String> authHeaders = headers.getRequestHeader(HttpHeaders.AUTHORIZATION);
+			authorizationToken = authHeaders.get(0);
+			String tokenQuery = "SELECT * FROM ApiKey";
+			String tokens = executeQuery(tokenQuery, "Select");
+			JsonArray data = new JsonParser().parse(tokens).getAsJsonArray();
+			
+			for (int i = 0; i < data.size(); i++) {
+				if (data.get(i).getAsJsonObject().get("KeyString").toString().replace("\"", "").equals(authorizationToken)) {
+					auth = true;
+					break;
+				}
+			}
+		}
+		
+		if (auth != true) {
+			ResponseBuilder authResponse = Response.status(Response.Status.UNAUTHORIZED);
+			return authResponse.build();
+		}
+		
 		JsonObject data = new JsonParser().parse(body).getAsJsonObject();
 		JsonArray dataArray = data.getAsJsonObject().get("@graph").getAsJsonArray();
 		List<String> fields = new ArrayList<String>();
