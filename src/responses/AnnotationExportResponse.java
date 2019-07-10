@@ -7,6 +7,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
@@ -104,7 +105,27 @@ public class AnnotationExportResponse {
 	@Path("")
 	@Produces("application/json;charset=utf-8")
 	@GET
-	public Response search(@Context UriInfo uriInfo) throws SQLException {
+	public Response search(@Context UriInfo uriInfo, @Context HttpHeaders headers) throws SQLException {
+		/*
+		List<String> authHeaders = headers.getRequestHeader(HttpHeaders.AUTHORIZATION);
+		String authorizationToken = authHeaders.get(0);
+		String tokenQuery = "SELECT * FROM ApiKey WHERE KeyString = " + authorizationToken;
+		String tokens = executeQuery(tokenQuery, "Select");
+		JsonObject data = new JsonParser().parse(tokens).getAsJsonObject();
+		
+		boolean auth = false;
+		for (int i = 0; i < data.size(); i++) {
+			if (data.get("KeyString").toString().equals(authorizationToken)) {
+				auth = true;
+				break;
+			}
+		}
+		if (auth == true) {
+			ResponseBuilder authResponse = Response.status(Response.Status.UNAUTHORIZED);
+			return authResponse.build();
+		}*/
+		
+			
 		String query = "SELECT * FROM (" + 
 				"(SELECT  " + 
 				"	 a.AnnotationId, " +
