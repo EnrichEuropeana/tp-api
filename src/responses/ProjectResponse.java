@@ -252,6 +252,10 @@ public class ProjectResponse {
 		    query += ")";
 		}
 		String resource = executeQuery(query, "Select");
+		if (resource == "Failed") {
+			ResponseBuilder rBuild = Response.status(Response.Status.BAD_REQUEST);
+	        return rBuild.build();
+		}
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
 	}
@@ -338,6 +342,10 @@ public class ProjectResponse {
 	public Response getDatasets(@PathParam("project_id") int projectId, String body) throws SQLException {
 		String query = "SELECT * FROM Dataset WHERE ProjectId = " + projectId;
 		String resource = executeDatasetQuery(query, "Select");
+		if (resource == "Failed") {
+			ResponseBuilder rBuild = Response.status(Response.Status.BAD_REQUEST);
+	        return rBuild.build();
+		}
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
 	}
@@ -372,7 +380,7 @@ public class ProjectResponse {
 			   }
 			   else {
 				   conn.close();
-				   return type +" could not be executed";
+				   return "Failed";
 			   }
 		   }
 		   else {
@@ -601,7 +609,11 @@ public class ProjectResponse {
 	        }
 		}
 	    query += ")";
-		String resource = executeInsertQuery(query, "Insert");
+		String resource = executeInsertQuery(query, "Import");
+		if (resource == "Failed") {
+			ResponseBuilder rBuild = Response.status(Response.Status.BAD_REQUEST);
+	        return rBuild.build();
+		}
 		
 		String itemQuery = "";
 		if (manifestUrl == "") {
@@ -619,7 +631,11 @@ public class ProjectResponse {
 					+ "\"" + imageLink.replace("\"", "") + "\"" + ", "
 					+ "1" + ", "
 					+ "\"" + manifestUrl + "\"" + ")";
-			String itemResponse = executeInsertQuery(itemQuery, "Insert");
+			String itemResponse = executeInsertQuery(itemQuery, "Import");
+			if (itemResponse == "Failed") {
+				ResponseBuilder rBuild = Response.status(Response.Status.BAD_REQUEST);
+		        return rBuild.build();
+			}
 		}
 		else {
 			URL url = new URL(manifestUrl);
@@ -679,7 +695,11 @@ public class ProjectResponse {
 								+ "\"" + manifestUrl + "\"" + ")";
 					}
 				}
-				String itemResponse = executeInsertQuery(itemQuery, "Insert");
+				String itemResponse = executeInsertQuery(itemQuery, "Import");
+				if (itemResponse == "Failed") {
+					ResponseBuilder rBuild = Response.status(Response.Status.BAD_REQUEST);
+			        return rBuild.build();
+				}
 		    } catch (IOException e) {
 		        throw new RuntimeException(e);
 		    }

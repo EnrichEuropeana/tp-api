@@ -24,6 +24,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.*;
+import java.text.ParseException;
 
 import com.google.gson.*;
 import com.google.gson.stream.MalformedJsonException;
@@ -58,7 +59,7 @@ public class AnnotationExportResponse {
 				   return type +" succesful";
 			   }
 			   else {
-				   return type +" could not be executed";
+				   return "Failed";
 			   }
 		   }
 		   ResultSet rs = stmt.executeQuery(query);
@@ -246,6 +247,70 @@ public class AnnotationExportResponse {
 		    query += ")";
 		}
 		String resource = executeQuery(query, "Select");
+		if (resource == "Failed") {
+			ResponseBuilder rBuild = Response.status(Response.Status.BAD_REQUEST);
+	        return rBuild.build();
+		}
+		ResponseBuilder rBuild = Response.ok(resource);
+        return rBuild.build();
+	}
+
+	//Edit entry by id
+	@Path("/transcription/{id}")
+	@POST
+	public Response transcriptionUpdate(@PathParam("id") int id, String body) throws SQLException, ParseException {
+	    GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
+	    Gson gson = gsonBuilder.create();
+	    JsonObject changes = gson.fromJson(body, JsonObject.class);
+	    
+	    String query = "UPDATE Transcription SET ";
+	    int keyCount = changes.entrySet().size();
+	    int i = 1;
+		for(Map.Entry<String, JsonElement> entry : changes.entrySet()) {
+			/*
+			if (entry.getKey().toString() != "EuropeanaAnnotationId") {
+				ResponseBuilder rBuild = Response.status(Response.Status.BAD_REQUEST);
+		        return rBuild.build();
+			}
+			*/
+		    query += entry.getKey() + " = " + entry.getValue();
+		    if (i < keyCount) {
+		    	query += ", ";
+		    }
+		    i++;
+		}
+		query += " WHERE TranscriptionId = " + id;
+		String resource = executeQuery(query, "Update");
+		ResponseBuilder rBuild = Response.ok(resource);
+        return rBuild.build();
+	}
+	
+	//Edit entry by id
+	@Path("/annotation/{id}")
+	@POST
+	public Response annotationUpdate(@PathParam("id") int id, String body) throws SQLException, ParseException {
+	    GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
+	    Gson gson = gsonBuilder.create();
+	    JsonObject changes = gson.fromJson(body, JsonObject.class);
+	    
+	    String query = "UPDATE Annotation SET ";
+	    int keyCount = changes.entrySet().size();
+	    int i = 1;
+		for(Map.Entry<String, JsonElement> entry : changes.entrySet()) {
+			/*
+			if (entry.getKey().toString() != "EuropeanaAnnotationId") {
+				ResponseBuilder rBuild = Response.status(Response.Status.BAD_REQUEST);
+		        return rBuild.build();
+			}
+			*/
+		    query += entry.getKey() + " = " + entry.getValue();
+		    if (i < keyCount) {
+		    	query += ", ";
+		    }
+		    i++;
+		}
+		query += " WHERE AnnotationId = " + id;
+		String resource = executeQuery(query, "Update");
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
 	}
