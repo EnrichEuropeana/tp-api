@@ -15,6 +15,7 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
 import objects.AnnotationExport;
+import objects.ApiKey;
 import objects.Person;
 
 import java.util.*;
@@ -101,39 +102,86 @@ public class AnnotationExportResponse {
 	    return result;
 	}
 
-	//Search using custom filters
+	public String getApiKeys() throws SQLException{
+			String query = "SELECT * FROM ApiKey";
+		   List<ApiKey> apiKeys = new ArrayList<ApiKey>();
+	       try (InputStream input = new FileInputStream("/home/enrich/tomcat/apache-tomcat-9.0.13/webapps/tp-api/WEB-INF/config.properties")) {
+
+	            Properties prop = new Properties();
+
+	            // load a properties file
+	            prop.load(input);
+
+	            // get the property value and print it out
+	            final String DB_URL = prop.getProperty("DB_URL");
+	            final String USER = prop.getProperty("USER");
+	            final String PASS = prop.getProperty("PASS");
+		   // Register JDBC driver
+		   try {
+			Class.forName("com.mysql.jdbc.Driver");
+		
+		   // Open a connection
+		   Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		   // Execute SQL query
+		   Statement stmt = conn.createStatement();
+		   ResultSet rs = stmt.executeQuery(query);
+		   
+		   // Extract data from result set
+		   while(rs.next()){
+		      //Retrieve by column name
+			  ApiKey apiKey = new ApiKey();
+			  apiKey.setApiKeyId(rs.getInt("ApiKeyId"));
+			  apiKey.setKeyString(rs.getString("KeyString"));
+			  apiKey.setProjectId(rs.getInt("ProjectId"));
+			  apiKey.setRoleId(rs.getInt("RoleId"));
+			  apiKeys.add(apiKey);
+		   }
+		
+		   // Clean-up environment
+		   rs.close();
+		   stmt.close();
+		   conn.close();
+		   } catch(SQLException se) {
+		       //Handle errors for JDBC
+			   se.printStackTrace();
+		   } catch (ClassNotFoundException e) {
+			   e.printStackTrace();
+		}
+			} catch (FileNotFoundException e1) {
+				e1.printStackTrace();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+	    Gson gsonBuilder = new GsonBuilder().create();
+	    String result = gsonBuilder.toJson(apiKeys);
+	    return result;
+	}
+
+	//Get all Entries
 	@Path("")
 	@Produces("application/json;charset=utf-8")
 	@GET
-	public Response search(@Context UriInfo uriInfo, @Context HttpHeaders headers) throws SQLException {
+	public Response getAll(@Context UriInfo uriInfo, @Context HttpHeaders headers) throws SQLException {
 		boolean auth = false;
 		String authorizationToken = "";
 		if (headers.getRequestHeader(HttpHeaders.AUTHORIZATION) != null) {
 			List<String> authHeaders = headers.getRequestHeader(HttpHeaders.AUTHORIZATION);
 			authorizationToken = authHeaders.get(0);
-			String tokenQuery = "SELECT * FROM ApiKey";
-			String tokens = executeQuery(tokenQuery, "Select");
+			String tokens = getApiKeys();
 			JsonArray data = new JsonParser().parse(tokens).getAsJsonArray();
 			
 			for (int i = 0; i < data.size(); i++) {
-				if (data.get(i).getAsJsonObject().get("KeyString").toString().replace("\"", "") == authorizationToken) {
+				if (data.get(i).getAsJsonObject().get("KeyString").toString().replace("\"", "").equals(authorizationToken)) {
 					auth = true;
 					break;
 				}
-				else if (i == 5) {
-					ResponseBuilder authResponse = Response.ok(data.get(i).getAsJsonObject().get("KeyString").toString().replace("\"", ""));
-					return authResponse.build();
-					
-				}
 			}
 		}
-		
 		if (auth != true) {
-			//ResponseBuilder authResponse = Response.status(Response.Status.UNAUTHORIZED);
-			ResponseBuilder authResponse = Response.ok(authorizationToken);
+			ResponseBuilder authResponse = Response.status(Response.Status.UNAUTHORIZED);
 			return authResponse.build();
 		}
-			
+		
 		String query = "SELECT * FROM (" + 
 				"(SELECT  " + 
 				"	 a.AnnotationId, " +

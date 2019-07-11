@@ -29,7 +29,6 @@ import com.google.gson.stream.MalformedJsonException;
 @Path("/apikeys")
 public class ApiKeyResponse {
 
-
 	public String executeQuery(String query, String type) throws SQLException{
 		   List<ApiKey> apiKeys = new ArrayList<ApiKey>();
 	       try (InputStream input = new FileInputStream("/home/enrich/tomcat/apache-tomcat-9.0.13/webapps/tp-api/WEB-INF/config.properties")) {

@@ -26,6 +26,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
@@ -39,6 +40,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import objects.ApiKey;
 import objects.Dataset;
 import objects.Project;
 import objects.Story;
@@ -105,6 +107,61 @@ public class ProjectResponse {
 			}
 	    Gson gsonBuilder = new GsonBuilder().create();
 	    String result = gsonBuilder.toJson(projectList);
+	    return result;
+	}
+
+	public String getApiKeys() throws SQLException{
+			String query = "SELECT * FROM ApiKey";
+		   List<ApiKey> apiKeys = new ArrayList<ApiKey>();
+	       try (InputStream input = new FileInputStream("/home/enrich/tomcat/apache-tomcat-9.0.13/webapps/tp-api/WEB-INF/config.properties")) {
+
+	            Properties prop = new Properties();
+
+	            // load a properties file
+	            prop.load(input);
+
+	            // get the property value and print it out
+	            final String DB_URL = prop.getProperty("DB_URL");
+	            final String USER = prop.getProperty("USER");
+	            final String PASS = prop.getProperty("PASS");
+		   // Register JDBC driver
+		   try {
+			Class.forName("com.mysql.jdbc.Driver");
+		
+		   // Open a connection
+		   Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		   // Execute SQL query
+		   Statement stmt = conn.createStatement();
+		   ResultSet rs = stmt.executeQuery(query);
+		   
+		   // Extract data from result set
+		   while(rs.next()){
+		      //Retrieve by column name
+			  ApiKey apiKey = new ApiKey();
+			  apiKey.setApiKeyId(rs.getInt("ApiKeyId"));
+			  apiKey.setKeyString(rs.getString("KeyString"));
+			  apiKey.setProjectId(rs.getInt("ProjectId"));
+			  apiKey.setRoleId(rs.getInt("RoleId"));
+			  apiKeys.add(apiKey);
+		   }
+		
+		   // Clean-up environment
+		   rs.close();
+		   stmt.close();
+		   conn.close();
+		   } catch(SQLException se) {
+		       //Handle errors for JDBC
+			   se.printStackTrace();
+		   } catch (ClassNotFoundException e) {
+			   e.printStackTrace();
+		}
+			} catch (FileNotFoundException e1) {
+				e1.printStackTrace();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+	    Gson gsonBuilder = new GsonBuilder().create();
+	    String result = gsonBuilder.toJson(apiKeys);
 	    return result;
 	}
 	
@@ -339,7 +396,26 @@ public class ProjectResponse {
 	//Get entry by id
 	@Path("/{project_id}/stories")
 	@POST
-	public Response insertStory(@PathParam("project_id") int projectId, @Context UriInfo uriInfo, String body) throws Exception {
+	public Response insertStory(@PathParam("project_id") int projectId, @Context UriInfo uriInfo, String body, @Context HttpHeaders headers) throws Exception {
+		boolean auth = false;
+		String authorizationToken = "";
+		if (headers.getRequestHeader(HttpHeaders.AUTHORIZATION) != null) {
+			List<String> authHeaders = headers.getRequestHeader(HttpHeaders.AUTHORIZATION);
+			authorizationToken = authHeaders.get(0);
+			String tokens = getApiKeys();
+			JsonArray data = new JsonParser().parse(tokens).getAsJsonArray();
+			
+			for (int i = 0; i < data.size(); i++) {
+				if (data.get(i).getAsJsonObject().get("KeyString").toString().replace("\"", "").equals(authorizationToken)) {
+					auth = true;
+					break;
+				}
+			}
+		}
+		if (auth != true) {
+			ResponseBuilder authResponse = Response.status(Response.Status.UNAUTHORIZED);
+			return authResponse.build();
+		}
 		JsonObject data = new JsonParser().parse(body).getAsJsonObject();
 		JsonArray dataArray = data.getAsJsonObject().get("@graph").getAsJsonArray();
 		List<String> fields = new ArrayList<String>();
