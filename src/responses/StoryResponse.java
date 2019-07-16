@@ -644,103 +644,139 @@ public class StoryResponse {
 	@Produces("application/json;charset=utf-8")
 	@GET
 	public Response getEntry(@PathParam("id") int id, String body) throws SQLException {
-		String query = "SELECT * FROM " +
-				"(SELECT s.StoryId as StoryId" + 
-				", s.`dc:Title` as StorydcTitle" +
-				", s.`dc:description` as StorydcDescription" +
-				", s.`edm:landingPage` as StoryedmLandingPage" +
-				", s.ExternalRecordId as StoryExternalRecordId" +
-				", s.PlaceName as StoryPlaceName" +
-				", s.PlaceLatitude as StoryPlaceLatitude" +
-				", s.PlaceLongitude as StoryPlaceLongitude" +
-				", s.PlaceUserGenerated as StoryPlaceUserGenerated" +
-				", s.`dc:creator` as StorydcCreator" +
-				", s.`dc:source` as StorydcSource" +
-				", s.`edm:country` as StoryedmCountry" +
-				", s.`edm:dataProvider` as StoryedmDataProvider" +
-				", s.`edm:provider` as StoryedmProvider" +
-				", s.`edm:year` as StoryedmYear" +
-				", s.`dc:publisher` as StorydcPublisher" +
-				", s.`dc:coverage` as StorydcCoverage" +
-				", s.`dc:date` as StorydcDate" +
-				", s.`dc:type` as StorydcType" +
-				", s.`dc:relation` as StorydcRelation" +
-				", s.`dcterms:medium` as StorydctermsMedium" +
-				", s.`edm:datasetName` as StoryedmDatasetName" +
-				", s.`dc:contributor` as StorydcContributor" +
-				", s.`edm:rights` as StoryedmRights" +
-				", s.`edm:begin` as StoryedmBegin" +
-				", s.`edm:end` as StoryedmEnd" +
-				", s.ProjectId as StoryProjectId" +
-				", s.Summary as StorySummary" +
-				", s.ParentStory as StoryParentStory" +
-				", s.SearchText as StorySearchText" +
-				", s.DateStart as StoryDateStart" +
-				", s.DateEnd as StoryDateEnd" +
-				", s.OrderIndex as StoryOrderIndex" +
-				", group_concat(IFNULL(i.ItemId, 'NULL') SEPARATOR '§~§') as ItemId" +
-				", group_concat(IFNULL(i.Title, 'NULL') SEPARATOR '§~§') as Title" +
-				", group_concat(IFNULL(i.CompletionStatusColorCode, 'NULL') SEPARATOR '§~§') as CompletionStatusColorCode" +
-				", group_concat(IFNULL(i.CompletionStatusName, 'NULL') SEPARATOR '§~§') as CompletionStatusName" +
-				", group_concat(IFNULL(i.CompletionStatusId, 'NULL') SEPARATOR '§~§') as CompletionStatusId" +
-				", group_concat(IFNULL(i.ProjectItemId, \"NULL\") SEPARATOR '§~§') as ProjectItemId" +
-				", group_concat(IFNULL(i.Description, 'NULL') SEPARATOR '§~§') as Description" +
-				", group_concat(IFNULL(i.DateStart, 'NULL') SEPARATOR '§~§') as DateStart" +
-				", group_concat(IFNULL(i.DateEnd, 'NULL') SEPARATOR '§~§') as DateEnd" +
-				", group_concat(IFNULL(i.DatasetId, 'NULL') SEPARATOR '§~§') as DatasetId" +
-				", group_concat(IFNULL(i.ImageLink, 'NULL') SEPARATOR '§~§') as ImageLink" +
-				", group_concat(IFNULL(i.OrderIndex, 'NULL') SEPARATOR '§~§') as OrderIndex" +
-				", group_concat(IFNULL(i.Timestamp, 'NULL') SEPARATOR '§~§') as Timestamp" +
-				", group_concat(IFNULL(c.PlaceId, 'NULL') SEPARATOR '§~§') as PlaceId " +
-				", group_concat(IFNULL(c.PlaceName, 'NULL') SEPARATOR '§~§') as PlaceName " +
-				", group_concat(IFNULL(c.PlaceLatitude, 'NULL') SEPARATOR '§~§') as PlaceLatitude " +
-				", group_concat(IFNULL(c.PlaceLongitude, 'NULL') SEPARATOR '§~§') as PlaceLongitude " +
-				", group_concat(IFNULL(c.PlaceLink, 'NULL') SEPARATOR '§~§') as PlaceLink " +
-				", group_concat(IFNULL(c.PlaceZoom, 'NULL') SEPARATOR '§~§') as PlaceZoom " +
-				", group_concat(IFNULL(c.PlaceComment, 'NULL') SEPARATOR '§~§') as PlaceComment " +
-				", group_concat(IFNULL(c.PlaceAccuracy, 'NULL') SEPARATOR '§~§') as PlaceAccuracy " +
-				", group_concat(IFNULL(c.PlaceUserGenerated, 'NULL') SEPARATOR '§~§') as PlaceUserGenerated " +
-				"FROM " +
-					"(" +
-					"SELECT * " +
-				    "FROM Item i " +
-				    "LEFT JOIN ( " +
-						"SELECT i.ItemId as CompletionStatusItemId" +
-						", c.Name as CompletionStatusName " + 
-						", c.ColorCode as CompletionStatusColorCode " + 
-				        "FROM CompletionStatus c " +
-				        "JOIN Item i " +
-				        "ON i.CompletionStatusId = c.CompletionStatusId " +
-				        ") c  " +
-				        "ON i.ItemId = c.CompletionStatusItemId " +
-					") i " +
-				"LEFT JOIN " + 
-				"(" + 
-					"SELECT i.ItemId as ItemId" +
-					", group_concat(IFNULL(pl.PlaceId, 'NULL') SEPARATOR '&~&') as PlaceId " +
-					", group_concat(IFNULL(pl.Name, 'NULL') SEPARATOR '&~&') as PlaceName " +
-					", group_concat(IFNULL(pl.Latitude, 'NULL') SEPARATOR '&~&') as PlaceLatitude " +
-					", group_concat(IFNULL(pl.Longitude, 'NULL') SEPARATOR '&~&') as PlaceLongitude " +
-					", group_concat(IFNULL(pl.Link, 'NULL') SEPARATOR '&~&') as PlaceLink " +
-					", group_concat(IFNULL(pl.Zoom, 'NULL') SEPARATOR '&~&') as PlaceZoom " +
-					", group_concat(IFNULL(pl.Comment, 'NULL') SEPARATOR '&~&') as PlaceComment " +
-					", group_concat(IFNULL(pl.Accuracy, 'NULL') SEPARATOR '&~&') as PlaceAccuracy " +
-					", group_concat(IFNULL(pl.UserGenerated + 0, 'NULL') SEPARATOR '&~&') as PlaceUserGenerated " +
-					"FROM Item i " + 
-					"LEFT JOIN Place pl on i.ItemId = pl.ItemId " +  
-					"GROUP BY i.ItemId " +
-				") c " + 
-				"ON i.ItemId = c.ItemId " +
-				"LEFT JOIN " + 
-				"(" +
-					"SELECT * " +
-					"FROM Story " + 
-				") s " +
-				"ON i.StoryId = s.StoryId " +
-				"GROUP BY s.StoryId) s " +
-				"WHERE s.StoryId = " + id;
+		String query = "SELECT \r\n" + 
+				"    *\r\n" + 
+				"FROM\r\n" + 
+				"    (SELECT \r\n" + 
+				"        s.StoryId AS StoryId,\r\n" + 
+				"            s.`dc:Title` AS StorydcTitle,\r\n" + 
+				"            s.`dc:description` AS StorydcDescription,\r\n" + 
+				"            s.`edm:landingPage` AS StoryedmLandingPage,\r\n" + 
+				"            s.ExternalRecordId AS StoryExternalRecordId,\r\n" + 
+				"            s.PlaceName AS StoryPlaceName,\r\n" + 
+				"            s.PlaceLatitude AS StoryPlaceLatitude,\r\n" + 
+				"            s.PlaceLongitude AS StoryPlaceLongitude,\r\n" + 
+				"            s.PlaceUserGenerated AS StoryPlaceUserGenerated,\r\n" + 
+				"            s.`dc:creator` AS StorydcCreator,\r\n" + 
+				"            s.`dc:source` AS StorydcSource,\r\n" + 
+				"            s.`edm:country` AS StoryedmCountry,\r\n" + 
+				"            s.`edm:dataProvider` AS StoryedmDataProvider,\r\n" + 
+				"            s.`edm:provider` AS StoryedmProvider,\r\n" + 
+				"            s.`edm:year` AS StoryedmYear,\r\n" + 
+				"            s.`dc:publisher` AS StorydcPublisher,\r\n" + 
+				"            s.`dc:coverage` AS StorydcCoverage,\r\n" + 
+				"            s.`dc:date` AS StorydcDate,\r\n" + 
+				"            s.`dc:type` AS StorydcType,\r\n" + 
+				"            s.`dc:relation` AS StorydcRelation,\r\n" + 
+				"            s.`dcterms:medium` AS StorydctermsMedium,\r\n" + 
+				"            s.`edm:datasetName` AS StoryedmDatasetName,\r\n" + 
+				"            s.`dc:contributor` AS StorydcContributor,\r\n" + 
+				"            s.`edm:rights` AS StoryedmRights,\r\n" + 
+				"            s.`edm:begin` AS StoryedmBegin,\r\n" + 
+				"            s.`edm:end` AS StoryedmEnd,\r\n" + 
+				"            s.ProjectId AS StoryProjectId,\r\n" + 
+				"            s.Summary AS StorySummary,\r\n" + 
+				"            s.ParentStory AS StoryParentStory,\r\n" + 
+				"            s.SearchText AS StorySearchText,\r\n" + 
+				"            s.DateStart AS StoryDateStart,\r\n" + 
+				"            s.DateEnd AS StoryDateEnd,\r\n" + 
+				"            s.OrderIndex AS StoryOrderIndex,\r\n" + 
+				"            GROUP_CONCAT(IFNULL(i.ItemId, 'NULL')\r\n" + 
+				"                SEPARATOR '§~§') AS ItemId,\r\n" + 
+				"            GROUP_CONCAT(IFNULL(i.Title, 'NULL')\r\n" + 
+				"                SEPARATOR '§~§') AS Title,\r\n" + 
+				"            GROUP_CONCAT(IFNULL(i.CompletionStatusColorCode, 'NULL')\r\n" + 
+				"                SEPARATOR '§~§') AS CompletionStatusColorCode,\r\n" + 
+				"            GROUP_CONCAT(IFNULL(i.CompletionStatusName, 'NULL')\r\n" + 
+				"                SEPARATOR '§~§') AS CompletionStatusName,\r\n" + 
+				"            GROUP_CONCAT(IFNULL(i.CompletionStatusId, 'NULL')\r\n" + 
+				"                SEPARATOR '§~§') AS CompletionStatusId,\r\n" + 
+				"            GROUP_CONCAT(IFNULL(i.ProjectItemId, 'NULL')\r\n" + 
+				"                SEPARATOR '§~§') AS ProjectItemId,\r\n" + 
+				"            GROUP_CONCAT(IFNULL(i.Description, 'NULL')\r\n" + 
+				"                SEPARATOR '§~§') AS Description,\r\n" + 
+				"            GROUP_CONCAT(IFNULL(i.DateStart, 'NULL')\r\n" + 
+				"                SEPARATOR '§~§') AS DateStart,\r\n" + 
+				"            GROUP_CONCAT(IFNULL(i.DateEnd, 'NULL')\r\n" + 
+				"                SEPARATOR '§~§') AS DateEnd,\r\n" + 
+				"            GROUP_CONCAT(IFNULL(i.DatasetId, 'NULL')\r\n" + 
+				"                SEPARATOR '§~§') AS DatasetId,\r\n" + 
+				"            GROUP_CONCAT(IFNULL(i.ImageLink, 'NULL')\r\n" + 
+				"                SEPARATOR '§~§') AS ImageLink,\r\n" + 
+				"            GROUP_CONCAT(IFNULL(i.OrderIndex, 'NULL')\r\n" + 
+				"                SEPARATOR '§~§') AS OrderIndex,\r\n" + 
+				"            GROUP_CONCAT(IFNULL(i.Timestamp, 'NULL')\r\n" + 
+				"                SEPARATOR '§~§') AS Timestamp,\r\n" + 
+				"            GROUP_CONCAT(IFNULL(i.PlaceId, 'NULL')\r\n" + 
+				"                SEPARATOR '§~§') AS PlaceId,\r\n" + 
+				"            GROUP_CONCAT(IFNULL(i.PlaceName, 'NULL')\r\n" + 
+				"                SEPARATOR '§~§') AS PlaceName,\r\n" + 
+				"            GROUP_CONCAT(IFNULL(i.PlaceLatitude, 'NULL')\r\n" + 
+				"                SEPARATOR '§~§') AS PlaceLatitude,\r\n" + 
+				"            GROUP_CONCAT(IFNULL(i.PlaceLongitude, 'NULL')\r\n" + 
+				"                SEPARATOR '§~§') AS PlaceLongitude,\r\n" + 
+				"            GROUP_CONCAT(IFNULL(i.PlaceLink, 'NULL')\r\n" + 
+				"                SEPARATOR '§~§') AS PlaceLink,\r\n" + 
+				"            GROUP_CONCAT(IFNULL(i.PlaceZoom, 'NULL')\r\n" + 
+				"                SEPARATOR '§~§') AS PlaceZoom,\r\n" + 
+				"            GROUP_CONCAT(IFNULL(i.PlaceComment, 'NULL')\r\n" + 
+				"                SEPARATOR '§~§') AS PlaceComment,\r\n" + 
+				"            GROUP_CONCAT(IFNULL(i.PlaceAccuracy, 'NULL')\r\n" + 
+				"                SEPARATOR '§~§') AS PlaceAccuracy,\r\n" + 
+				"            GROUP_CONCAT(IFNULL(i.PlaceUserGenerated, 'NULL')\r\n" + 
+				"                SEPARATOR '§~§') AS PlaceUserGenerated\r\n" + 
+				"    FROM\r\n" + 
+				"        ( SELECT \r\n" + 
+				"			i.StoryId,\r\n" + 
+				"			i.ItemId,  \r\n" + 
+				"			i.Title,  \r\n" + 
+				"			i.CompletionStatusId,\r\n" + 
+				"			c.Name as CompletionStatusName,\r\n" + 
+				"			c.ColorCode as CompletionStatusColorCode, \r\n" + 
+				"			i.ProjectItemId, \r\n" + 
+				"			i.Description,  \r\n" + 
+				"			i.DateStart, \r\n" + 
+				"			i.DateEnd,  \r\n" + 
+				"			i.DatasetId,  \r\n" + 
+				"			i.ImageLink, \r\n" + 
+				"			i.OrderIndex,  \r\n" + 
+				"			i.Timestamp, \r\n" + 
+				"			i.Manifest, \r\n" + 
+				"			GROUP_CONCAT(IFNULL(pl.PlaceId, 'NULL')\r\n" + 
+				"				SEPARATOR '&~&') AS PlaceId,\r\n" + 
+				"			GROUP_CONCAT(IFNULL(pl.Name, 'NULL')\r\n" + 
+				"				SEPARATOR '&~&') AS PlaceName,\r\n" + 
+				"			GROUP_CONCAT(IFNULL(pl.Latitude, 'NULL')\r\n" + 
+				"				SEPARATOR '&~&') AS PlaceLatitude,\r\n" + 
+				"			GROUP_CONCAT(IFNULL(pl.Longitude, 'NULL')\r\n" + 
+				"				SEPARATOR '&~&') AS PlaceLongitude,\r\n" + 
+				"			GROUP_CONCAT(IFNULL(pl.Link, 'NULL')\r\n" + 
+				"				SEPARATOR '&~&') AS PlaceLink,\r\n" + 
+				"			GROUP_CONCAT(IFNULL(pl.Zoom, 'NULL')\r\n" + 
+				"				SEPARATOR '&~&') AS PlaceZoom,\r\n" + 
+				"			GROUP_CONCAT(IFNULL(pl.Comment, 'NULL')\r\n" + 
+				"				SEPARATOR '&~&') AS PlaceComment,\r\n" + 
+				"			GROUP_CONCAT(IFNULL(pl.Accuracy, 'NULL')\r\n" + 
+				"				SEPARATOR '&~&') AS PlaceAccuracy,\r\n" + 
+				"			GROUP_CONCAT(IFNULL(pl.UserGenerated + 0, 'NULL')\r\n" + 
+				"				SEPARATOR '&~&') AS PlaceUserGenerated\r\n" + 
+				"	FROM\r\n" + 
+				"		(SELECT * FROM Item WHERE StoryId = " + id + ") i \r\n" + 
+				"	LEFT JOIN \r\n" + 
+				"	CompletionStatus c\r\n" + 
+				"	ON i.CompletionStatusId = c.CompletionStatusId\r\n" + 
+				"	LEFT JOIN Place pl \r\n" + 
+				"	ON i.ItemId = pl.ItemId\r\n" + 
+				"	GROUP BY i.ItemId \r\n" + 
+				"    ) i\r\n" + 
+				"    LEFT JOIN (SELECT \r\n" + 
+				"        *\r\n" + 
+				"    FROM\r\n" + 
+				"        Story) s ON i.StoryId = s.StoryId\r\n" + 
+				"    GROUP BY s.StoryId) s";
 		String resource = executeQuery(query, "Select");
 		ResponseBuilder rBuild = Response.ok(resource);
+		//ResponseBuilder rBuild = Response.ok(query);
         return rBuild.build();
 	}
 
