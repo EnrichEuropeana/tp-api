@@ -75,7 +75,7 @@ public class StoryMinimalResponse {
 			  Story story = new Story();
 			  story.setStoryId(rs.getInt("StoryId")); 
 			  story.setdcTitle(rs.getString("StorydcTitle"));
-			   
+			   /*
 			  // Iterate through Items of the Story
 			  List<Item> ItemList = new ArrayList<Item>();
 			  if (rs.getString("ItemId") != null) {
@@ -93,7 +93,7 @@ public class StoryMinimalResponse {
 					  ItemList.add(item);
 				  }
 			  }
-			  story.setItems(ItemList);
+			  story.setItems(ItemList);*/
 			  storyList.add(story);
 		   }
 		
@@ -123,33 +123,9 @@ public class StoryMinimalResponse {
 	@Produces("application/json;charset=utf-8")
 	@GET
 	public Response search(@Context UriInfo uriInfo, String body) throws SQLException {
-		String query = "SELECT * FROM " +
-				"(SELECT s.StoryId as StoryId" + 
-				", s.`dc:title` as StorydcTitle" +
-				", group_concat(i.ItemId SEPARATOR '§~§') as ItemId" +
-				", group_concat(i.CompletionStatusName SEPARATOR '§~§') as CompletionStatusName" +
-				", group_concat(i.CompletionStatusId SEPARATOR '§~§') as CompletionStatusId " +
-				"FROM " +
-					"(" +
-					"SELECT * " +
-				    "FROM Item i " +
-				    "LEFT JOIN ( " +
-						"SELECT i.ItemId as CompletionStatusItemId" +
-						", c.Name as CompletionStatusName " + 
-				        "FROM CompletionStatus c " +
-				        "JOIN Item i " +
-				        "ON i.CompletionStatusId = c.CompletionStatusId " +
-				        ") c  " +
-				        "ON i.ItemId = c.CompletionStatusItemId " +
-					") i " +
-				"LEFT JOIN " + 
-				"(" +
-					"SELECT * " +
-					"FROM Story " + 
-				") s " +
-				"ON i.StoryId = s.StoryId " +
-				"GROUP BY s.StoryId) s " +
-				"WHERE 1";
+		String query = "SELECT StoryId as StoryId \r\n" + 
+				"				, `dc:title` as StorydcTitle\r\n" + 
+				"					FROM Story  ";
 		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
 		
 		for(String key : queryParams.keySet()){
