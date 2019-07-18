@@ -101,8 +101,8 @@ public class ItemResponse {
 				  for (int i = 0; i < PropertyIds.length; i++) {
 					  Property property = new Property();
 					  property.setPropertyId(Integer.parseInt(PropertyIds[i]));
-					  property.setValue(PropertyValues[i]);
-					  property.setTypeName(PropertyTypeNames[i]);
+					  property.setPropertyValue(PropertyValues[i]);
+					  property.setPropertyType(PropertyTypeNames[i]);
 					  property.setEditable(PropertyEditables[i]);
 					  PropertyList.add(property);
 				  }

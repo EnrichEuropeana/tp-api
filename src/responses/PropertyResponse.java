@@ -23,7 +23,7 @@ import java.sql.*;
 
 import com.google.gson.*;
 
-@Path("/Property")
+@Path("/properties")
 public class PropertyResponse {
 
 
@@ -64,8 +64,11 @@ public class PropertyResponse {
 		      //Retrieve by column name
 			  Property property = new Property();
 			  property.setPropertyId(rs.getInt("PropertyId"));
-			  property.setValue(rs.getString("Value"));
-			  property.setTypeName(rs.getString("TypeName"));
+			  property.setPropertyValue(rs.getString("PropertyValue"));
+			  property.setPropertyTypeId(rs.getInt("PropertyTypeId"));
+			  property.setPropertyType(rs.getString("PropertyType"));
+			  property.setMotivationId(rs.getInt("MotivationId"));
+			  property.setMotivation(rs.getString("Motivation"));
 			  property.setEditable(rs.getString("Editable"));
 			  propertyList.add(property);
 		   }
@@ -90,15 +93,42 @@ public class PropertyResponse {
 	    return result;
 	}
 
-	//Get all Entries
-	@Path("/all")
+	//Search using custom filters
+	@Path("")
 	@Produces("application/json;charset=utf-8")
 	@GET
-	public Response getAll() throws SQLException {
-		String query = "SELECT * "
-				+ "FROM Property p "
-				+ "JOIN PropertyType pt "
-				+ "ON p.PropertyTypeId = pt.PropertyTypeId ";
+	public Response search(@Context UriInfo uriInfo) throws SQLException {
+		String query = "SELECT * FROM (" +
+				"SELECT \r\n" + 
+				"	p.PropertyId as PropertyId,\r\n" + 
+				"	p.Value as PropertyValue,\r\n" + 
+				"	pt.PropertyTypeId as PropertyTypeId,\r\n" + 
+				"    pt.Name as PropertyType,\r\n" + 
+				"    m.MotivationId as MotivationId,\r\n" + 
+				"    m.Name as Motivation,\r\n" + 
+				"    pt.Editable as Editable\r\n" + 
+				"FROM transcribathon.Property p\r\n" + 
+				"JOIN PropertyType pt\r\n" + 
+				"ON p.PropertyTypeId = pt.PropertyTypeId\r\n" + 
+				"JOIN Motivation m\r\n" + 
+				"ON pt.MotivationId = m.MotivationId) a " +
+				"WHERE 1";
+		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
+		
+		for(String key : queryParams.keySet()){
+			String[] values = queryParams.getFirst(key).split(",");
+			query += " AND (";
+		    int valueCount = values.length;
+		    int i = 1;
+		    for(String value : values) {
+		    	query += key + " = " + value;
+			    if (i < valueCount) {
+			    	query += " OR ";
+			    }
+			    i++;
+		    }
+		    query += ")";
+		}
 		String resource = executeQuery(query, "Select");
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
@@ -106,7 +136,7 @@ public class PropertyResponse {
 	
 
 	//Add new entry
-	@Path("/add")
+	@Path("")
 	@POST
 	public String add(String body) throws SQLException {	
 	    GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -114,12 +144,12 @@ public class PropertyResponse {
 	    Property property = gson.fromJson(body, Property.class);
 	    
 	    //Check if all mandatory fields are included
-	    if (property.Value != null && property.TypeName != null) {
+	    if (property.PropertyValue != null && property.PropertyType != null) {
 			String query = "INSERT INTO Property (Value, PropertyTypeId) "
-						+ "VALUES ('" + property.Value + "'"
+						+ "VALUES ('" + property.PropertyValue + "'"
 						+ ", (SELECT PropertyTypeID "
 						+ "FROM PropertyType "
-						+ "WHERE Name = '" + property.TypeName + "'))";
+						+ "WHERE Name = '" + property.PropertyType + "'))";
 			String resource = executeQuery(query, "Insert");
 			return resource;
 	    } else {
@@ -183,30 +213,4 @@ public class PropertyResponse {
         return rBuild.build();
 	}
 
-	//Search using custom filters
-	@Path("/search")
-	@Produces("application/json;charset=utf-8")
-	@GET
-	public Response search(@Context UriInfo uriInfo) throws SQLException {
-		String query = "SELECT * FROM Property WHERE 1";
-		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
-		
-		for(String key : queryParams.keySet()){
-			String[] values = queryParams.getFirst(key).split(",");
-			query += " AND (";
-		    int valueCount = values.length;
-		    int i = 1;
-		    for(String value : values) {
-		    	query += key + " = " + value;
-			    if (i < valueCount) {
-			    	query += " OR ";
-			    }
-			    i++;
-		    }
-		    query += ")";
-		}
-		String resource = executeQuery(query, "Select");
-		ResponseBuilder rBuild = Response.ok(resource);
-        return rBuild.build();
-	}
 }

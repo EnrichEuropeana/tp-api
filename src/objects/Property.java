@@ -2,19 +2,30 @@ package objects;
 
 public class Property {
 	public Integer PropertyId;
-	public String Value;
-	public String TypeName;
+	public String PropertyValue;
+	public Integer PropertyTypeId;
+	public String PropertyType;
+	public Integer MotivationId;
+	public String Motivation;
 	public String Editable;
 	
-
 	public void setPropertyId(Integer propertyId) {
 		PropertyId = propertyId;
 	}
-	public void setValue(String value) {
-		Value = value;
+	public void setPropertyValue(String propertyValue) {
+		PropertyValue = propertyValue;
 	}
-	public void setTypeName(String typeName) {
-		TypeName = typeName;
+	public void setPropertyTypeId(Integer propertyTypeId) {
+		PropertyTypeId = propertyTypeId;
+	}
+	public void setPropertyType(String propertyType) {
+		PropertyType = propertyType;
+	}
+	public void setMotivationId(Integer motivationId) {
+		MotivationId = motivationId;
+	}
+	public void setMotivation(String motivation) {
+		Motivation = motivation;
 	}
 	public void setEditable(String editable) {
 		Editable = editable;
