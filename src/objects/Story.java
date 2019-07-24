@@ -32,6 +32,7 @@ public class Story {
 	public String edmRights;
 	public String edmBegin;
 	public String edmEnd;
+	public String edmIsShownAt;
 	public Integer ProjectId;
 	public String Summary;
 	public Integer ParentStory;
@@ -132,6 +133,9 @@ public class Story {
 	}
 	public void setedmEnd(String edmEnd) {
 		this.edmEnd = edmEnd;
+	}
+	public void setedmIsShownAt(String edmIsShownAt) {
+		this.edmIsShownAt = edmIsShownAt;
 	}
 	public void setProjectId(Integer projectId) {
 		ProjectId = projectId;

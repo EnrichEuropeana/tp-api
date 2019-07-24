@@ -102,6 +102,7 @@ public class StoryResponse {
 			  story.setedmRights(rs.getString("StoryedmRights"));
 			  story.setedmBegin(rs.getString("StoryedmBegin"));
 			  story.setedmEnd(rs.getString("StoryedmEnd"));
+			  story.setedmIsShownAt(rs.getString("StoryedmIsShownAt"));
 			  story.setProjectId(rs.getInt("StoryProjectId"));
 			  story.setSummary(rs.getString("StorySummary"));
 			  story.setParentStory(rs.getInt("StoryParentStory"));
@@ -370,6 +371,7 @@ public class StoryResponse {
 				", s.`edm:rights` as StoryedmRights" +
 				", s.`edm:begin` as StoryedmBegin" +
 				", s.`edm:end` as StoryedmEnd" +
+				", s.`edm:isShownAt` as StoryedmIsShownAt" +
 				", s.ProjectId as StoryProjectId" +
 				", s.Summary as StorySummary" +
 				", s.ParentStory as StoryParentStory" +
@@ -497,6 +499,7 @@ public class StoryResponse {
 		fields.add("edm:rights");
 		fields.add("edm:begin");
 		fields.add("edm:end");
+		fields.add("edm:isShownAt");
 		fields.add("dc:contributor");
 		fields.add("edm:year");
 		fields.add("dc:publisher");
@@ -674,6 +677,7 @@ public class StoryResponse {
 				"            s.`edm:rights` AS StoryedmRights,\r\n" + 
 				"            s.`edm:begin` AS StoryedmBegin,\r\n" + 
 				"            s.`edm:end` AS StoryedmEnd,\r\n" + 
+				"			 s.`edm:isShownAt` as StoryedmIsShownAt,\r\n" +
 				"            s.ProjectId AS StoryProjectId,\r\n" + 
 				"            s.Summary AS StorySummary,\r\n" + 
 				"            s.ParentStory AS StoryParentStory,\r\n" + 

@@ -61,6 +61,7 @@ public class Item {
 	public String StoryedmRights;
 	public String StoryedmBegin;
 	public String StoryedmEnd;
+	public String StoryedmIsShownAt;
 	public Integer StoryProjectId;
 	public String StorySummary;
 	public Integer StoryParentStory;
@@ -155,6 +156,9 @@ public class Item {
 	}
 	public void setStoryedmEnd(String storyedmEnd) {
 		StoryedmEnd = storyedmEnd;
+	}
+	public void setStoryedmIsShownAt(String storyedmIsShownAt) {
+		StoryedmIsShownAt = storyedmIsShownAt;
 	}
 	public void setStoryProjectId(Integer storyProjectId) {
 		StoryProjectId = storyProjectId;
