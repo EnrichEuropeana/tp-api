@@ -270,6 +270,9 @@ public class ItemResponse {
 			  item.setStoryedmBegin(rs.getString("StoryedmBegin"));
 			  item.setStoryedmEnd(rs.getString("StoryedmEnd"));
 			  item.setStoryedmIsShownAt(rs.getString("StoryedmIsShownAt"));
+			  item.setStorydcRights(rs.getString("StorydcRights"));
+			  item.setStorydcLanguage(rs.getString("StorydcLanguage"));
+			  item.setStoryedmLanguage(rs.getString("StoryedmLanguage"));
 			  item.setStoryProjectId(rs.getInt("StoryProjectId"));
 			  item.setStorySummary(rs.getString("StorySummary"));
 			  item.setStoryParentStory(rs.getInt("StoryParentStory"));
@@ -394,6 +397,9 @@ public class ItemResponse {
 				"	, s.`edm:begin` as StoryedmBegin \r\n" + 
 				"	, s.`edm:end` as StoryedmEnd \r\n" + 
 				"	, s.`edm:isShownAt` as StoryedmIsShownAt \r\n" + 
+				"	, s.`dc:Rights` as StorydcRights \r\n" + 
+				"	, s.`dc:language` as StorydcLanguage \r\n" + 
+				"	, s.`edm:language` as StoryedmLanguage \r\n" + 
 				"	, s.ProjectId as StoryProjectId \r\n" + 
 				"	, s.Summary as StorySummary \r\n" + 
 				"	, s.ParentStory as StoryParentStory \r\n" + 
@@ -748,7 +754,10 @@ public class ItemResponse {
 					"            s.`edm:rights` AS StoryedmRights,\r\n" + 
 					"            s.`edm:begin` AS StoryedmBegin,\r\n" + 
 					"            s.`edm:end` AS StoryedmEnd,\r\n" + 
-					"            s.`edm:isShownAt` AS StoryedmIsShownAt,\r\n" + 
+					"            s.`edm:isShownAt` AS StoryedmIsShownAt,\r\n" +
+					"			 s.`dc:Rights` as StorydcRights,\r\n" +  
+					"			 s.`dc:language` as StorydcLanguage,\r\n" +  
+					"			 s.`edm:language` as StoryedmLanguage,\r\n" +  
 					"            s.ProjectId AS StoryProjectId,\r\n" + 
 					"            s.Summary AS StorySummary,\r\n" + 
 					"            s.ParentStory AS StoryParentStory,\r\n" + 

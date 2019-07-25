@@ -62,6 +62,9 @@ public class Item {
 	public String StoryedmBegin;
 	public String StoryedmEnd;
 	public String StoryedmIsShownAt;
+	public String StorydcRights;
+	public String StorydcLanguage;
+	public String StoryedmLanguage;
 	public Integer StoryProjectId;
 	public String StorySummary;
 	public Integer StoryParentStory;
@@ -159,6 +162,15 @@ public class Item {
 	}
 	public void setStoryedmIsShownAt(String storyedmIsShownAt) {
 		StoryedmIsShownAt = storyedmIsShownAt;
+	}
+	public void setStorydcRights(String storydcRights) {
+		StorydcRights = storydcRights;
+	}
+	public void setStorydcLanguage(String storydcLanguage) {
+		StorydcLanguage = storydcLanguage;
+	}
+	public void setStoryedmLanguage(String storyedmLanguage) {
+		StoryedmLanguage = storyedmLanguage;
 	}
 	public void setStoryProjectId(Integer storyProjectId) {
 		StoryProjectId = storyProjectId;

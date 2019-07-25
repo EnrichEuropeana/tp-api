@@ -33,6 +33,9 @@ public class Story {
 	public String edmBegin;
 	public String edmEnd;
 	public String edmIsShownAt;
+	public String dcRights;
+	public String dcLanguage;
+	public String edmLanguage;
 	public Integer ProjectId;
 	public String Summary;
 	public Integer ParentStory;
@@ -136,6 +139,15 @@ public class Story {
 	}
 	public void setedmIsShownAt(String edmIsShownAt) {
 		this.edmIsShownAt = edmIsShownAt;
+	}
+	public void setdcRights(String dcRights) {
+		this.dcRights = dcRights;
+	}
+	public void setdcLanguage(String dcLanguage) {
+		this.dcLanguage = dcLanguage;
+	}
+	public void setedmLanguage(String edmLanguage) {
+		this.edmLanguage = edmLanguage;
 	}
 	public void setProjectId(Integer projectId) {
 		ProjectId = projectId;
