@@ -448,6 +448,9 @@ public class ProjectResponse {
 		fields.add("dcterms:medium");
 		fields.add("edm:datasetName");
 		fields.add("edm:isShownAt");
+		fields.add("dc:rights");
+		fields.add("dc:language");
+		fields.add("edm:language");
 		boolean placeAdded = false;
 	    int keyCount = dataArray.size();
 
