@@ -6,6 +6,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
@@ -122,28 +123,25 @@ public class StoryMinimalResponse {
 	@Path("")
 	@Produces("application/json;charset=utf-8")
 	@GET
-	public Response search(@Context UriInfo uriInfo, String body) throws SQLException {
-		String query = "SELECT StoryId as StoryId \r\n" + 
-				"				, `dc:title` as StorydcTitle\r\n" + 
-				"					FROM Story  ";
-		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
-		
-		for(String key : queryParams.keySet()){
-			String[] values = queryParams.getFirst(key).split(",");
-			query += " AND (";
-		    int valueCount = values.length;
-		    int i = 1;
-		    for(String value : values) {
-		    	query += key + " = " + value;
-			    if (i < valueCount) {
-			    	query += " OR ";
-			    }
-			    i++;
-		    }
-		    query += ")";
+	public Response search(@Context UriInfo uriInfo, @QueryParam("pa") int page) throws SQLException {
+		String offset = "";
+		if (page > 0) {
+			offset = " OFFSET " + ((page - 1) * 25);
 		}
+		String query = "SELECT s.StoryId as StoryId \r\n" + 
+				"				, `dc:title` as StorydcTitle\r\n" + 
+				"				, `dc:description` as StorydcDescription\r\n" + 
+				"					FROM Story s " +
+				"					JOIN " +
+				"						(SELECT StoryId, ImageLink, ItemId FROM Item WHERE ItemId IN\r\n" + 
+				"							(\r\n" + 
+				"								SELECT MIN(ItemId) FROM Item GROUP BY StoryId\r\n" + 
+				"							) LIMIT 25 " + offset +
+				"						) i " +
+				" 					ON s.StoryId = i.StoryId";
 		String resource = executeQuery(query, "Select");
 		ResponseBuilder rBuild = Response.ok(resource);
+		//ResponseBuilder rBuild = Response.ok(query);
         return rBuild.build();
 	}
 
