@@ -60,6 +60,12 @@ public class StoryMinimalResponse {
 		   // Execute SQL query
 		   Statement stmt = conn.createStatement();
 		   if (type != "Select") {
+			   if (type == "Select count") {
+				   ResultSet rs = stmt.executeQuery(query);
+				   rs.next();
+				   String count = rs.getString("count");
+				   return count;
+			   }
 			   int success = stmt.executeUpdate(query);
 			   if (success > 0) {
 				   return type +" succesful";
@@ -304,6 +310,15 @@ public class StoryMinimalResponse {
 		String resource = executeQuery(query, "Select");
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
+	}
+
+	//Return Story count
+	@Path("/count")
+	@GET
+	public String count() throws SQLException {
+		String query =  "SELECT count(*) as count FROM Story";
+		String resource = executeQuery(query, "Select count");
+		return resource;
 	}
 
 	public static boolean isNumeric(String str)
