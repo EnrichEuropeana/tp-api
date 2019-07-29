@@ -82,6 +82,8 @@ public class StoryMinimalResponse {
 			  Story story = new Story();
 			  story.setStoryId(rs.getInt("StoryId")); 
 			  story.setdcTitle(rs.getString("StorydcTitle"));
+			  story.setdcDescription(rs.getString("StorydcDescription"));
+			  story.setPreviewImageLink(rs.getString("StoryPreviewImageLink"));
 			   /*
 			  // Iterate through Items of the Story
 			  List<Item> ItemList = new ArrayList<Item>();
@@ -137,6 +139,7 @@ public class StoryMinimalResponse {
 		String query = "SELECT s.StoryId as StoryId \r\n" + 
 				"				, `dc:title` as StorydcTitle\r\n" + 
 				"				, `dc:description` as StorydcDescription\r\n" + 
+				"				, i.ImageLink as StoryPreviewImageLink\r\n" + 
 				"					FROM Story s " +
 				"					JOIN " +
 				"						(SELECT StoryId, ImageLink, ItemId FROM Item WHERE ItemId IN\r\n" + 
@@ -316,7 +319,7 @@ public class StoryMinimalResponse {
 	@Path("/count")
 	@GET
 	public String count() throws SQLException {
-		String query =  "SELECT count(*) as count FROM Story";
+		String query =  "SELECT count(DISTINCT(StoryId)) as count FROM Item";
 		String resource = executeQuery(query, "Select count");
 		return resource;
 	}

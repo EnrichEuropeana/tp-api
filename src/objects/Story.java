@@ -7,6 +7,7 @@ public class Story {
 	public Integer StoryId;
 	public String dcTitle;
 	public String dcDescription;
+	public String PreviewImageLink;
 	public String edmLandingPage;
 	public String ExternalRecordId;
 	public String DateStartDisplay;
@@ -61,6 +62,9 @@ public class Story {
 	}
 	public void setdcDescription(String dcDescription) {
 		this.dcDescription = dcDescription;
+	}
+	public void setPreviewImageLink(String previewImageLink) {
+		PreviewImageLink = previewImageLink;
 	}
 	public void setedmLandingPage(String edmLandingPage) {
 		this.edmLandingPage = edmLandingPage;
