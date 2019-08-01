@@ -124,7 +124,7 @@ public class ItemLanguageResponse {
 	
 
 	//Add new entry
-	@Path("/add")
+	@Path("")
 	@POST
 	public Response add(String body) throws SQLException {	
 	    GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
