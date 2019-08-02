@@ -121,7 +121,7 @@ public class ItemPropertyResponse {
 	
 
 	//Add new entry
-	@Path("/add")
+	@Path("")
 	@POST
 	public Response add(String body) throws SQLException {	
 	    GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -130,6 +130,9 @@ public class ItemPropertyResponse {
 	    
 	    //Check if all mandatory fields are included
 	    if (itemProperty.ItemId != null && itemProperty.PropertyId != null) {
+	    	// Remove existing languages for that item
+	    	String deleteQuery = "DELETE FROM ItemProperty WHERE ItemId = " + itemProperty.ItemId;
+			executeQuery(deleteQuery, "Delete");
 			String query = "INSERT INTO ItemProperty (ItemId, PropertyId, UserGenerated, EditedVersion, Original) "
 							+ "VALUES ('" + itemProperty.ItemId + "'"
 									+ ", " + itemProperty.PropertyId

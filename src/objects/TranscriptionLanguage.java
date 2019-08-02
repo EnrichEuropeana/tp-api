@@ -1,15 +1,15 @@
 package objects;
 
-public class ItemLanguage {
-	public Integer ItemId; 
+public class TranscriptionLanguage {
+	public Integer TranscriptionId; 
 	public Integer LanguageId;
 	public String Name;
 	public String NameEnglish;
 	public String ShortName;
 	public String Code;
 	
-	public void setItemId(Integer itemId) {
-		ItemId = itemId;
+	public void setTranscriptionId(Integer transcriptionId) {
+		TranscriptionId = transcriptionId;
 	}
 	public void setLanguageId(Integer languageId) {
 		LanguageId = languageId;

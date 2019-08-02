@@ -12,7 +12,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
-import objects.ItemLanguage;
+import objects.TranscriptionLanguage;
 
 import java.util.*;
 import java.io.FileInputStream;
@@ -23,12 +23,12 @@ import java.sql.*;
 
 import com.google.gson.*;
 
-@Path("/itemLanguages")
-public class ItemLanguageResponse {
+@Path("/transcriptionLanguages")
+public class TranscriptionLanguageResponse {
 
 
 	public String executeQuery(String query, String type) throws SQLException{
-		   List<ItemLanguage> itemLanguageList = new ArrayList<ItemLanguage>();
+		   List<TranscriptionLanguage> transcriptionLanguageList = new ArrayList<TranscriptionLanguage>();
 	       try (InputStream input = new FileInputStream("/home/enrich/tomcat/apache-tomcat-9.0.13/webapps/tp-api/WEB-INF/config.properties")) {
 
 	            Properties prop = new Properties();
@@ -62,14 +62,14 @@ public class ItemLanguageResponse {
 		   // Extract data from result set
 		   while(rs.next()){
 		      //Retrieve by column name
-			  ItemLanguage itemLanguage = new ItemLanguage();;
-			  itemLanguage.setItemId(rs.getInt("ItemId"));
-			  itemLanguage.setLanguageId(rs.getInt("LanguageId"));
-			  itemLanguage.setName(rs.getString("Name"));
-			  itemLanguage.setNameEnglish(rs.getString("NameEnglish"));
-			  itemLanguage.setShortName(rs.getString("ShortName"));
-			  itemLanguage.setCode(rs.getString("Code"));
-			  itemLanguageList.add(itemLanguage);
+			  TranscriptionLanguage transcriptionLanguage = new TranscriptionLanguage();;
+			  transcriptionLanguage.setTranscriptionId(rs.getInt("TranscriptionId"));
+			  transcriptionLanguage.setLanguageId(rs.getInt("LanguageId"));
+			  transcriptionLanguage.setName(rs.getString("Name"));
+			  transcriptionLanguage.setNameEnglish(rs.getString("NameEnglish"));
+			  transcriptionLanguage.setShortName(rs.getString("ShortName"));
+			  transcriptionLanguage.setCode(rs.getString("Code"));
+			  transcriptionLanguageList.add(transcriptionLanguage);
 		   }
 		
 		   // Clean-up environment
@@ -88,7 +88,7 @@ public class ItemLanguageResponse {
 				e1.printStackTrace();
 			}
 	    Gson gsonBuilder = new GsonBuilder().create();
-	    String result = gsonBuilder.toJson(itemLanguageList);
+	    String result = gsonBuilder.toJson(transcriptionLanguageList);
 	    return result;
 	}
 
@@ -97,9 +97,9 @@ public class ItemLanguageResponse {
 	@Produces("application/json;charset=utf-8")
 	@GET
 	public Response search(@Context UriInfo uriInfo) throws SQLException {
-		String query = "SELECT * FROM ItemLanguage il "
+		String query = "SELECT * FROM TranscriptionLanguage tl "
 						+ "JOIN Language l "
-						+ "ON il.LanguageId = l.LanguageId "
+						+ "ON tl.LanguageId = l.LanguageId "
 						+ "WHERE 1";
 		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
 		
@@ -129,13 +129,13 @@ public class ItemLanguageResponse {
 	public Response add(String body) throws SQLException {	
 	    GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
 	    Gson gson = gsonBuilder.create();
-	    ItemLanguage itemLanguage = gson.fromJson(body, ItemLanguage.class);
+	    TranscriptionLanguage transcriptionLanguage = gson.fromJson(body, TranscriptionLanguage.class);
 	    
 	    //Check if all mandatory fields are included
-	    if (itemLanguage.ItemId != null && itemLanguage.LanguageId != null) {
-			String query = "INSERT INTO ItemLanguage (ItemId, LanguageId) "
-							+ "VALUES ('" + itemLanguage.ItemId + "'"
-									+ ", " + itemLanguage.LanguageId + ")";
+	    if (transcriptionLanguage.TranscriptionId != null && transcriptionLanguage.LanguageId != null) {
+			String query = "INSERT INTO TranscriptionLanguage (TranscriptionId, LanguageId) "
+							+ "VALUES ('" + transcriptionLanguage.TranscriptionId + "'"
+									+ ", " + transcriptionLanguage.LanguageId + ")";
 			String resource = executeQuery(query, "Insert");
 			ResponseBuilder rBuild = Response.ok(resource);
 			return rBuild.build();
@@ -149,7 +149,7 @@ public class ItemLanguageResponse {
 	@Path("/{id}")
 	@DELETE
 	public String delete(@PathParam("id") int id) throws SQLException {
-		String resource = executeQuery("DELETE FROM ItemLanguage WHERE ItemLanguageId = " + id, "Delete");
+		String resource = executeQuery("DELETE FROM TranscriptionLanguage WHERE TranscriptionLanguageId = " + id, "Delete");
 		return resource;
 	}
 	
@@ -159,7 +159,7 @@ public class ItemLanguageResponse {
 	@Produces("application/json;charset=utf-8")
 	@GET
 	public Response getEntry(@PathParam("id") int id) throws SQLException {
-		String resource = executeQuery("SELECT * FROM ItemLanguage WHERE ItemLanguageId = " + id, "Select");
+		String resource = executeQuery("SELECT * FROM TranscriptionLanguage WHERE TranscriptionLanguageId = " + id, "Select");
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
 	}

@@ -26,6 +26,7 @@ import org.apache.http.message.BasicNameValuePair;
 import objects.Annotation;
 import objects.Comment;
 import objects.Item;
+import objects.Language;
 import objects.Person;
 import objects.Place;
 import objects.Property;
@@ -134,15 +135,42 @@ public class ItemResponse {
 					  PlaceList.add(place);
 				  }
 			  }
-			  
+
 			  //Add Transcriptions
 			  List<Transcription> TranscriptionList = new ArrayList<Transcription>();
-			  if (rs.getString("TranscriptionId") != null) {
+			  if (rs.getString("TranscriptionId") != null) {				  
 				  String[] TranscriptionIds = rs.getString("TranscriptionId").split("&~&");
 				  String[] TranscriptionTexts = rs.getString("TranscriptionText").split("&~&");
 				  String[] TranscriptionUserIds = rs.getString("TranscriptionUserId").split("&~&");
 				  String[] TranscriptionCurrentVersions = rs.getString("TranscriptionCurrentVersion").split("&~&");
 				  String[] TranscriptionTimestamps = rs.getString("TranscriptionTimestamp").split("&~&");
+				  String[] TranscriptionWP_UserIds = rs.getString("TranscriptionWP_UserId").split("&~&");
+				  String[] TranscriptionEuropeanaAnnotationIds = new String[TranscriptionIds.length];
+				  if (rs.getString("TranscriptionEuropeanaAnnotationId") != null) {
+					  TranscriptionEuropeanaAnnotationIds = rs.getString("TranscriptionEuropeanaAnnotationId").split("&~&");
+				  }
+				  
+				  String[] LanguageIdList = new String[TranscriptionIds.length];
+				  String[] LanguageNameList = new String[TranscriptionIds.length];
+				  String[] LanguageNameEnglishList = new String[TranscriptionIds.length];
+				  String[] LanguageShortNameList = new String[TranscriptionIds.length];
+				  String[] LanguageCodeList = new String[TranscriptionIds.length];
+				  if (rs.getString("TranscriptionLanguageId") != null) {
+					  LanguageIdList = rs.getString("TranscriptionLanguageId").split("&~&");
+				  }
+				  if (rs.getString("TranscriptionLanguageName") != null) {
+					  LanguageNameList = rs.getString("TranscriptionLanguageName").split("&~&");
+				  }
+				  if (rs.getString("TranscriptionLanguageNameEnglish") != null) {
+					  LanguageNameEnglishList = rs.getString("TranscriptionLanguageNameEnglish").split("&~&");
+				  }
+				  if (rs.getString("TranscriptionLanguageShortName") != null) {
+					  LanguageShortNameList = rs.getString("TranscriptionLanguageShortName").split("&~&");
+				  }
+				  if (rs.getString("TranscriptionLanguageCode") != null) {
+					  LanguageCodeList = rs.getString("TranscriptionLanguageCode").split("&~&");
+				  }
+				  
 				  for (int i = 0; i < TranscriptionIds.length; i++) {
 					  Transcription transcription = new Transcription();
 					  transcription.setTranscriptionId(Integer.parseInt(TranscriptionIds[i]));
@@ -150,6 +178,33 @@ public class ItemResponse {
 					  transcription.setUserId(Integer.parseInt(TranscriptionUserIds[i]));
 					  transcription.setCurrentVersion(TranscriptionCurrentVersions[i]);
 				      transcription.setTimestamp(TranscriptionTimestamps[i]);
+					  transcription.setWP_UserId(Integer.parseInt(TranscriptionWP_UserIds[i]));
+					  if (TranscriptionEuropeanaAnnotationIds[i] != null) {
+						  transcription.setEuropeanaAnnotationId(Integer.parseInt(TranscriptionEuropeanaAnnotationIds[i]));
+					  }
+
+					  List<Language> LanguageList = new ArrayList<Language>();
+					  if (rs.getString("TranscriptionLanguageId") != null) {
+						  // Intitialize lists grouped by items
+						  String[] LanguageIds = LanguageIdList[i].split("§~§");
+						  String[] LanguageNames = LanguageNameList[i].split("§~§");
+						  String[] LanguageNameEnglishs = LanguageNameEnglishList[i].split("§~§");
+						  String[] LanguageShortNames = LanguageShortNameList[i].split("§~§");
+						  String[] LanguageCodes = LanguageCodeList[i].split("§~§");
+						  for (int j = 0; j < LanguageIds.length; j++) {
+							  if (!isNumeric(LanguageIds[j])) {
+								  continue;
+							  }
+							  Language language = new Language();
+							  language.setLanguageId(Integer.parseInt(LanguageIds[j]));
+							  language.setName(LanguageNames[j]);
+							  language.setNameEnglish(LanguageNameEnglishs[j]);
+							  language.setShortName(LanguageShortNames[j]);
+							  language.setCode(LanguageCodes[j]);
+							  LanguageList.add(language);
+						  }
+					  }
+					  transcription.setLanguages(LanguageList);
 					  TranscriptionList.add(transcription);
 				  }
 			  }
@@ -362,6 +417,13 @@ public class ItemResponse {
 				"    d.TranscriptionUserId as TranscriptionUserId,\r\n" + 
 				"    d.TranscriptionCurrentVersion as TranscriptionCurrentVersion,\r\n" + 
 				"    d.TranscriptionTimestamp as TranscriptionTimestamp,\r\n" + 
+				"    d.TranscriptionWP_UserId AS TranscriptionWP_UserId,\r\n" + 
+				"    d.TranscriptionEuropeanaAnnotationId AS TranscriptionEuropeanaAnnotationId,\r\n" + 
+				"    d.TranscriptionLanguageId AS TranscriptionLanguageId,\r\n" + 
+				"    d.TranscriptionLanguageName AS TranscriptionLanguageName,\r\n" + 
+				"    d.TranscriptionLanguageNameEnglish AS TranscriptionLanguageNameEnglish,\r\n" + 
+				"    d.TranscriptionLanguageShortName AS TranscriptionLanguageShortName,\r\n" + 
+				"    d.TranscriptionLanguageCode AS TranscriptionLanguageCode,\r\n" + 
 				"    e.AnnotationId as AnnotationId,\r\n" + 
 				"    e.AnnotationType as AnnotationType,\r\n" + 
 				"    e.AnnotationText as AnnotationText,\r\n" + 
@@ -515,9 +577,43 @@ public class ItemResponse {
 				", group_concat(t.Text SEPARATOR '&~&') as TranscriptionText " +
 				", group_concat(t.UserId SEPARATOR '&~&') as TranscriptionUserId " +
 				", group_concat(t.CurrentVersion + 0 SEPARATOR '&~&') as TranscriptionCurrentVersion " +
-				", group_concat(t.Timestamp SEPARATOR '&~&') as TranscriptionTimestamp " +
-				"FROM Item i " + 
-				"LEFT JOIN Transcription t on i.ItemId = t.ItemId " +
+				", group_concat(t.Timestamp SEPARATOR '&~&') as TranscriptionTimestamp, " +
+				"			GROUP_CONCAT(t.WP_UserId\r\n" + 
+				"				SEPARATOR '&~&') AS TranscriptionWP_UserId,\r\n" + 
+				"			GROUP_CONCAT(t.EuropeanaAnnotationId\r\n" + 
+				"				SEPARATOR '&~&') AS TranscriptionEuropeanaAnnotationId,\r\n" + 
+				"    		GROUP_CONCAT(IFNULL(l.LanguageId, 'NULL') SEPARATOR '&~&') AS TranscriptionLanguageId,\r\n" + 
+				"    		GROUP_CONCAT(IFNULL(l.Name, 'NULL') SEPARATOR '&~&') AS TranscriptionLanguageName,\r\n" + 
+				"    		GROUP_CONCAT(IFNULL(l.NameEnglish, 'NULL') SEPARATOR '&~&') AS TranscriptionLanguageNameEnglish,\r\n" + 
+				"    		GROUP_CONCAT(IFNULL(l.ShortName, 'NULL') SEPARATOR '&~&') AS TranscriptionLanguageShortName,\r\n" + 
+				"    		GROUP_CONCAT(IFNULL(l.Code, 'NULL') SEPARATOR '&~&') AS TranscriptionLanguageCode " + 
+				"		FROM\r\n" + 
+				"    	(" +
+				"			SELECT \r\n" + 
+				"        		*\r\n" + 
+				"    		FROM\r\n" + 
+				"        		Transcription t\r\n" + 
+				"		) t\r\n" + 
+				"        LEFT JOIN\r\n" + 
+				"    	(SELECT \r\n" + 
+				"        	WP_UserId, UserId\r\n" + 
+				"    	FROM\r\n" + 
+				"        	User) u ON t.UserId = u.UserId\r\n" + 
+				"        LEFT JOIN\r\n" + 
+				"    	(" +
+				"			SELECT \r\n" + 
+				"        		tl.TranscriptionId,\r\n" + 
+				"            	GROUP_CONCAT(IFNULL(l.LanguageId, 'NULL') SEPARATOR '§~§') AS LanguageId,\r\n" + 
+				"            	GROUP_CONCAT(IFNULL(l.Name, 'NULL') SEPARATOR '§~§') AS Name,\r\n" + 
+				"            	GROUP_CONCAT(IFNULL(l.NameEnglish, 'NULL') SEPARATOR '§~§') AS NameEnglish,\r\n" + 
+				"            	GROUP_CONCAT(IFNULL(l.ShortName, 'NULL') SEPARATOR '§~§') AS ShortName,\r\n" + 
+				"            	GROUP_CONCAT(IFNULL(l.Code, 'NULL') SEPARATOR '§~§') AS Code\r\n" + 
+				"    		FROM\r\n" + 
+				"        		TranscriptionLanguage tl\r\n" + 
+				"    		JOIN Language l ON l.LanguageId = tl.LanguageId\r\n" + 
+				"    		GROUP BY tl.TranscriptionId" +
+				"		) " +
+				"		l ON t.TranscriptionId = l.TranscriptionId " + 
 				"ORDER BY t.Timestamp ASC " +  
 				"GROUP BY i.ItemId " +
 			") d " +
@@ -565,6 +661,7 @@ public class ItemResponse {
 		}
 		String resource = executeQuery(query, "Select");
 		ResponseBuilder rBuild = Response.ok(resource);
+		//ResponseBuilder rBuild = Response.ok(query);
         return rBuild.build();
 	}
 	
@@ -690,6 +787,13 @@ public class ItemResponse {
 					"    transc.TranscriptionUserId AS TranscriptionUserId,\r\n" + 
 					"    transc.TranscriptionCurrentVersion AS TranscriptionCurrentVersion,\r\n" + 
 					"    transc.TranscriptionTimestamp AS TranscriptionTimestamp,\r\n" + 
+					"    transc.TranscriptionWP_UserId AS TranscriptionWP_UserId,\r\n" + 
+					"    transc.TranscriptionEuropeanaAnnotationId AS TranscriptionEuropeanaAnnotationId,\r\n" + 
+					"    transc.TranscriptionLanguageId AS TranscriptionLanguageId,\r\n" + 
+					"    transc.TranscriptionLanguageName AS TranscriptionLanguageName,\r\n" + 
+					"    transc.TranscriptionLanguageNameEnglish AS TranscriptionLanguageNameEnglish,\r\n" + 
+					"    transc.TranscriptionLanguageShortName AS TranscriptionLanguageShortName,\r\n" + 
+					"    transc.TranscriptionLanguageCode AS TranscriptionLanguageCode,\r\n" + 
 					"    annot.AnnotationId AS AnnotationId,\r\n" + 
 					"    annot.AnnotationType AS AnnotationType,\r\n" + 
 					"    annot.AnnotationText AS AnnotationText,\r\n" + 
@@ -741,7 +845,7 @@ public class ItemResponse {
 					"    FROM\r\n" + 
 					"        Item\r\n" + 
 					"    WHERE\r\n" + 
-					"        ItemId = 400784) i\r\n" + 
+					"        ItemId = " + id + ") i\r\n" + 
 					"        LEFT JOIN\r\n" + 
 					"    CompletionStatus coStatus ON i.CompletionStatusId = coStatus.CompletionStatusId\r\n" + 
 					"        LEFT JOIN\r\n" + 
@@ -821,18 +925,53 @@ public class ItemResponse {
 					"	(\r\n" + 
 					"		SELECT \r\n" + 
 					"			t.ItemId,\r\n" + 
-					"			GROUP_CONCAT(t.TranscriptionId\r\n" + 
+					"			GROUP_CONCAT(t.TranscriptionId ORDER BY t.Timestamp DESC\r\n" + 
 					"				SEPARATOR '&~&') AS TranscriptionId,\r\n" + 
-					"			GROUP_CONCAT(t.Text\r\n" + 
+					"			GROUP_CONCAT(t.Text ORDER BY t.Timestamp DESC\r\n" + 
 					"				SEPARATOR '&~&') AS TranscriptionText,\r\n" + 
-					"			GROUP_CONCAT(t.UserId\r\n" + 
+					"			GROUP_CONCAT(t.UserId ORDER BY t.Timestamp DESC\r\n" + 
 					"				SEPARATOR '&~&') AS TranscriptionUserId,\r\n" + 
-					"			GROUP_CONCAT(t.CurrentVersion + 0\r\n" + 
+					"			GROUP_CONCAT(t.CurrentVersion + 0 ORDER BY t.Timestamp DESC\r\n" + 
 					"				SEPARATOR '&~&') AS TranscriptionCurrentVersion,\r\n" + 
-					"			GROUP_CONCAT(t.Timestamp\r\n" + 
-					"				SEPARATOR '&~&') AS TranscriptionTimestamp\r\n" + 
-					"		FROM Transcription t\r\n" + 
-					"        GROUP BY t.ItemId\r\n" + 
+					"			GROUP_CONCAT(t.Timestamp ORDER BY t.Timestamp DESC\r\n" + 
+					"				SEPARATOR '&~&') AS TranscriptionTimestamp,\r\n" + 
+					"			GROUP_CONCAT(u.WP_UserId ORDER BY t.Timestamp DESC\r\n" + 
+					"				SEPARATOR '&~&') AS TranscriptionWP_UserId,\r\n" + 
+					"			GROUP_CONCAT(t.EuropeanaAnnotationId ORDER BY t.Timestamp DESC\r\n" + 
+					"				SEPARATOR '&~&') AS TranscriptionEuropeanaAnnotationId,\r\n" + 
+					"    		GROUP_CONCAT(IFNULL(l.LanguageId, 'NULL') ORDER BY t.Timestamp DESC SEPARATOR '&~&') AS TranscriptionLanguageId,\r\n" + 
+					"    		GROUP_CONCAT(IFNULL(l.Name, 'NULL') ORDER BY t.Timestamp DESC SEPARATOR '&~&') AS TranscriptionLanguageName,\r\n" + 
+					"    		GROUP_CONCAT(IFNULL(l.NameEnglish, 'NULL') ORDER BY t.Timestamp DESC SEPARATOR '&~&') AS TranscriptionLanguageNameEnglish,\r\n" + 
+					"    		GROUP_CONCAT(IFNULL(l.ShortName, 'NULL') ORDER BY t.Timestamp DESC SEPARATOR '&~&') AS TranscriptionLanguageShortName,\r\n" + 
+					"    		GROUP_CONCAT(IFNULL(l.Code, 'NULL') ORDER BY t.Timestamp DESC SEPARATOR '&~&') AS TranscriptionLanguageCode " + 
+					"		FROM\r\n" + 
+					"    	(" +
+					"			SELECT \r\n" + 
+					"        		*\r\n" + 
+					"    		FROM\r\n" + 
+					"        		Transcription t\r\n" + 
+					"		) t\r\n" + 
+					"        LEFT JOIN\r\n" + 
+					"    	(SELECT \r\n" + 
+					"        	WP_UserId, UserId\r\n" + 
+					"    	FROM\r\n" + 
+					"        	User) u ON t.UserId = u.UserId\r\n" + 
+					"        LEFT JOIN\r\n" + 
+					"    	(" +
+					"			SELECT \r\n" + 
+					"        		tl.TranscriptionId,\r\n" + 
+					"            	GROUP_CONCAT(IFNULL(l.LanguageId, 'NULL') SEPARATOR '§~§') AS LanguageId,\r\n" + 
+					"            	GROUP_CONCAT(IFNULL(l.Name, 'NULL') SEPARATOR '§~§') AS Name,\r\n" + 
+					"            	GROUP_CONCAT(IFNULL(l.NameEnglish, 'NULL') SEPARATOR '§~§') AS NameEnglish,\r\n" + 
+					"            	GROUP_CONCAT(IFNULL(l.ShortName, 'NULL') SEPARATOR '§~§') AS ShortName,\r\n" + 
+					"            	GROUP_CONCAT(IFNULL(l.Code, 'NULL') SEPARATOR '§~§') AS Code\r\n" + 
+					"    		FROM\r\n" + 
+					"        		TranscriptionLanguage tl\r\n" + 
+					"    		JOIN Language l ON l.LanguageId = tl.LanguageId\r\n" + 
+					"    		GROUP BY tl.TranscriptionId" +	
+					"		) " +
+					"		l ON t.TranscriptionId = l.TranscriptionId " +
+					"    	GROUP BY t.ItemId\r\n" +
 					"	) transc On transc.ItemId = i.ItemId\r\n" + 
 					"        LEFT JOIN\r\n" + 
 					"	(\r\n" + 
@@ -867,5 +1006,14 @@ public class ItemResponse {
 			ResponseBuilder rBuild = Response.ok(resource);
 			//ResponseBuilder rBuild = Response.ok(query);
 	        return rBuild.build();
+		}
+
+		public static boolean isNumeric(String str)
+		{
+		    for (char c : str.toCharArray())
+		    {
+		        if (!Character.isDigit(c)) return false;
+		    }
+		    return true;
 		}
 }

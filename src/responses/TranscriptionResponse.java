@@ -12,6 +12,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
+import objects.Language;
+import objects.Property;
 import objects.Transcription;
 
 import java.util.*;
@@ -111,6 +113,26 @@ public class TranscriptionResponse {
 			  transcription.setItemId(rs.getInt("ItemId"));
 			  transcription.setCurrentVersion(rs.getString("CurrentVersion"));
 			  transcription.setEuropeanaAnnotationId(rs.getInt("EuropeanaAnnotationId"));
+
+			  // Add Languages
+			  List<Language> LanguageList = new ArrayList<Language>();
+			  if (rs.getString("LanguageId") != null) {
+				  String[] LanguageIds = rs.getString("LanguageId").split("&~&");
+				  String[] LanguageNames = rs.getString("LanguageName").split("&~&");
+				  String[] LanguageNameEnglishs = rs.getString("LanguageNameEnglish").split("&~&");
+				  String[] LanguageShortNames = rs.getString("LanguageShortName").split("&~&");
+				  String[] LanguageCodes = rs.getString("LanguageCode").split("&~&");
+				  for (int i = 0; i < LanguageIds.length; i++) {
+					  Language language = new Language();
+					  language.setLanguageId(Integer.parseInt(LanguageIds[i]));
+					  language.setName(LanguageNames[i]);
+					  language.setNameEnglish(LanguageNameEnglishs[i]);
+					  language.setShortName(LanguageShortNames[i]);
+					  language.setCode(LanguageCodes[i]);
+					  LanguageList.add(language);
+				  }
+			  }
+			  transcription.setLanguages(LanguageList);
 			  transcriptionList.add(transcription);
 		   }
 		
@@ -139,19 +161,44 @@ public class TranscriptionResponse {
 	@Produces("application/json;charset=utf-8")
 	@GET
 	public Response search(@Context UriInfo uriInfo) throws SQLException, ParseException {		
-		String query = "SELECT * FROM ("
-				+ "SELECT "
-				+ "t.TranscriptionId, "
-				+ "t.Text, "
-				+ "t.Timestamp, "
-				+ "t.UserId, "
-				+ "t.ItemId, "
-				+ "t.CurrentVersion, "
-				+ "t.EuropeanaAnnotationId, "
-				+ "u.WP_UserId "
-				+ "FROM Transcription t "
-				+ "JOIN User u ON t.UserId = u.UserId) a "
-				+ "WHERE 1";
+		String query = "SELECT \r\n" + 
+				"    t.TranscriptionId,\r\n" + 
+				"    t.Text,\r\n" + 
+				"    t.Timestamp,\r\n" + 
+				"    t.UserId,\r\n" + 
+				"    t.ItemId,\r\n" + 
+				"    t.CurrentVersion,\r\n" + 
+				"    t.EuropeanaAnnotationId,\r\n" + 
+				"    u.WP_UserId,\r\n" + 
+				"    l.LanguageId AS LanguageId,\r\n" + 
+				"    l.Name AS LanguageName,\r\n" + 
+				"    l.NameEnglish AS LanguageNameEnglish,\r\n" + 
+				"    l.ShortName AS LanguageShortName,\r\n" + 
+				"    l.Code AS LanguageCode\r\n" + 
+				"FROM\r\n" + 
+				"    (SELECT \r\n" + 
+				"        *\r\n" + 
+				"    FROM\r\n" + 
+				"        Transcription t\r\n" + 
+				"    ) t\r\n" + 
+				"        LEFT JOIN\r\n" + 
+				"    (SELECT \r\n" + 
+				"        WP_UserId, UserId\r\n" + 
+				"    FROM\r\n" + 
+				"        User) u ON t.UserId = u.UserId\r\n" + 
+				"        LEFT JOIN\r\n" + 
+				"    (SELECT \r\n" + 
+				"        tl.TranscriptionId,\r\n" + 
+				"            GROUP_CONCAT(l.LanguageId SEPARATOR '&~&') AS LanguageId,\r\n" + 
+				"            GROUP_CONCAT(l.Name SEPARATOR '&~&') AS Name,\r\n" + 
+				"            GROUP_CONCAT(l.NameEnglish SEPARATOR '&~&') AS NameEnglish,\r\n" + 
+				"            GROUP_CONCAT(l.ShortName SEPARATOR '&~&') AS ShortName,\r\n" + 
+				"            GROUP_CONCAT(l.Code SEPARATOR '&~&') AS Code\r\n" + 
+				"    FROM\r\n" + 
+				"        TranscriptionLanguage tl\r\n" + 
+				"    JOIN Language l ON l.LanguageId = tl.LanguageId\r\n" + 
+				"    GROUP BY tl.TranscriptionId) l ON t.TranscriptionId = l.TranscriptionId " +
+				"WHERE 1";
 
 		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
 		
@@ -232,8 +279,21 @@ public class TranscriptionResponse {
 								+ ", " + transcription.ItemId
 								+ ", " + transcription.CurrentVersion + ")";
 			String resource = executeQuery(query, "Insert");
-			//return resource;
-			return transcription.CurrentVersion;
+			if (transcription.Languages != null) {
+				for (int i = 0; i < transcription.Languages.size(); i++) {
+					executeQuery("INSERT INTO TranscriptionLanguage (TranscriptionId, LanguageId) "
+							+ "VALUES ("
+							+ "("
+								+ "SELECT TranscriptionId "
+								+ "FROM Transcription "
+								+ "WHERE ItemId = " + transcription.ItemId + " "
+								+ "ORDER BY `Timestamp` DESC "
+								+ "LIMIT 1"
+								+ ")"
+								+ ", " + transcription.Languages.get(i).LanguageId + ")", "Insert");
+				}
+			};
+			return resource;
 	    } else {
 	    	return "Fields missing";
 	    }
@@ -254,21 +314,47 @@ public class TranscriptionResponse {
 	@Produces("application/json;charset=utf-8")
 	@GET
 	public Response getEntry(@PathParam("id") int id) throws SQLException, ParseException {
-		String query = "SELECT * FROM ("
-				+ "SELECT "
-				+ "t.TranscriptionId, "
-				+ "t.Text, "
-				+ "t.Timestamp, "
-				+ "t.UserId, "
-				+ "t.ItemId, "
-				+ "t.CurrentVersion, "
-				+ "t.EuropeanaAnnotationId, "
-				+ "u.WP_UserId "
-				+ "FROM Transcription t "
-				+ "JOIN User u ON t.UserId = u.UserId) a "
-				+ "WHERE TranscriptionId = " + id;
+		String query = "SELECT \r\n" + 
+				"    t.TranscriptionId,\r\n" + 
+				"    t.Text,\r\n" + 
+				"    t.Timestamp,\r\n" + 
+				"    t.UserId,\r\n" + 
+				"    t.ItemId,\r\n" + 
+				"    t.CurrentVersion,\r\n" + 
+				"    t.EuropeanaAnnotationId,\r\n" + 
+				"    u.WP_UserId,\r\n" + 
+				"    l.LanguageId AS LanguageId,\r\n" + 
+				"    l.Name AS LanguageName,\r\n" + 
+				"    l.NameEnglish AS LanguageNameEnglish,\r\n" + 
+				"    l.ShortName AS LanguageShortName,\r\n" + 
+				"    l.Code AS LanguageCode\r\n" + 
+				"FROM\r\n" + 
+				"    (SELECT \r\n" + 
+				"        *\r\n" + 
+				"    FROM\r\n" + 
+				"        Transcription t\r\n" + 
+				"    WHERE\r\n" + 
+				"        TranscriptionId = " + id + ") t\r\n" + 
+				"        LEFT JOIN\r\n" + 
+				"    (SELECT \r\n" + 
+				"        WP_UserId, UserId\r\n" + 
+				"    FROM\r\n" + 
+				"        User) u ON t.UserId = u.UserId\r\n" + 
+				"        LEFT JOIN\r\n" + 
+				"    (SELECT \r\n" + 
+				"        tl.TranscriptionId,\r\n" + 
+				"            GROUP_CONCAT(l.LanguageId SEPARATOR '&~&') AS LanguageId,\r\n" + 
+				"            GROUP_CONCAT(l.Name SEPARATOR '&~&') AS Name,\r\n" + 
+				"            GROUP_CONCAT(l.NameEnglish SEPARATOR '&~&') AS NameEnglish,\r\n" + 
+				"            GROUP_CONCAT(l.ShortName SEPARATOR '&~&') AS ShortName,\r\n" + 
+				"            GROUP_CONCAT(l.Code SEPARATOR '&~&') AS Code\r\n" + 
+				"    FROM\r\n" + 
+				"        TranscriptionLanguage tl\r\n" + 
+				"    JOIN Language l ON l.LanguageId = tl.LanguageId\r\n" + 
+				"    GROUP BY tl.TranscriptionId) l ON t.TranscriptionId = l.TranscriptionId";
 		String resource = executeQuery(query, "Select");
 		ResponseBuilder rBuild = Response.ok(resource);
+		//ResponseBuilder rBuild = Response.ok(query);
         return rBuild.build();
 	}
 

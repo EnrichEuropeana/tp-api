@@ -1,5 +1,7 @@
 package objects;
 
+import java.util.List;
+
 public class Transcription {
 	public Integer TranscriptionId;
 	public String Text;
@@ -9,6 +11,7 @@ public class Transcription {
 	public Integer ItemId;
 	public String CurrentVersion;
 	public Integer EuropeanaAnnotationId;
+	public List<Language> Languages;
 	
 	
 	public void setTranscriptionId(Integer transcriptionId) {
@@ -34,5 +37,8 @@ public class Transcription {
 	}
 	public void setEuropeanaAnnotationId(Integer europeanaAnnotationId) {
 		EuropeanaAnnotationId = europeanaAnnotationId;
+	}
+	public void setLanguages(List<Language> languages) {
+		Languages = languages;
 	}
 }

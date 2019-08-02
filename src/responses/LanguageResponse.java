@@ -65,7 +65,9 @@ public class LanguageResponse {
 			  Language Language = new Language();
 			  Language.setLanguageId(rs.getInt("LanguageId"));
 			  Language.setName(rs.getString("Name"));
+			  Language.setNameEnglish(rs.getString("NameEnglish"));
 			  Language.setShortName(rs.getString("ShortName"));
+			  Language.setCode(rs.getString("Code"));
 			  languageList.add(Language);
 		   }
 		
@@ -127,9 +129,11 @@ public class LanguageResponse {
 	    
 	    //Check if all mandatory fields are included
 	    if (language.Name != null && language.ShortName != null) {
-			String query = "INSERT INTO Language (Name, ShortName) "
+			String query = "INSERT INTO Language (Name, NameEnglish, ShortName, Code) "
 							+ "VALUES ('" + language.Name + "'"
-							+ ", '" + language.ShortName + "')";
+							+ ", '" + language.NameEnglish 
+							+ ", '" + language.ShortName 
+							+ ", '" + language.Code + "')";
 			String resource = executeQuery(query, "Insert");
 			return resource;
 	    } else {
