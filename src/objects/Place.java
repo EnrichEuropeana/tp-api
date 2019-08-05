@@ -9,7 +9,6 @@ public class Place {
 	public String Link;
 	public Integer Zoom;
 	public String Comment;
-	public Integer Accuracy;
 	public String UserGenerated;
 	
 	public void setPlaceId (Integer PlaceId) {
@@ -44,9 +43,6 @@ public class Place {
 		this.Comment = Comment;
 	}
 
-	public void setAccuracy (Integer Accuracy) {
-		this.Accuracy = Accuracy;
-	}
 	
 	public void setUserGenerated (String UserGenerated) {
 		this.UserGenerated = UserGenerated;

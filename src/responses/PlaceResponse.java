@@ -71,7 +71,6 @@ public class PlaceResponse {
 			  Place.setLink(rs.getString("Link"));
 			  Place.setZoom(rs.getInt("Zoom"));
 			  Place.setComment(rs.getString("Comment"));
-			  Place.setAccuracy(rs.getInt("Accuracy"));
 			  Place.setUserGenerated(rs.getString("UserGenerated"));
 			  placeList.add(Place);
 		   }
@@ -118,7 +117,7 @@ public class PlaceResponse {
 	    
 	    //Check if all mandatory fields are included
 	    if (place.Latitude != null && place.Longitude != null && place.ItemId != null) {
-			String query = "INSERT INTO Place (Name, Latitude, Longitude, ItemId, Link, Zoom, Comment, Accuracy, UserGenerated) "
+			String query = "INSERT INTO Place (Name, Latitude, Longitude, ItemId, Link, Zoom, Comment, UserGenerated) "
 							+ "VALUES ('" + place.Name + "'"
 							+ ", " + place.Latitude
 							+ ", " + place.Longitude
@@ -126,7 +125,6 @@ public class PlaceResponse {
 							+ ", '" + place.Link + "'"
 							+ ", " + place.Zoom
 							+ ", '" + place.Comment + "'"
-							+ ", " + place.Accuracy
 							+ ", '" + place.UserGenerated + "')";
 			String resource = executeQuery(query, "Insert");
 			return resource;

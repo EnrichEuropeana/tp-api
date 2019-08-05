@@ -119,7 +119,6 @@ public class ItemResponse {
 				  String[] PlaceLink = rs.getString("PlaceLink").split(",", -1);
 				  String[] PlaceZoom = rs.getString("PlaceZoom").split("&~&");
 				  String[] PlaceComment = rs.getString("PlaceComment").split(",", -1);
-				  String[] PlaceAccuracy = rs.getString("PlaceAccuracy").split("&~&");
 				  String[] PlaceUserGenerated = rs.getString("PlaceUserGenerated").split("&~&");
 				  for (int i = 0; i < PlaceIds.length; i++) {
 					  Place place = new Place();
@@ -130,7 +129,6 @@ public class ItemResponse {
 					  place.setLink(PlaceLink[i]);
 					  place.setZoom(Integer.parseInt(PlaceZoom[i]));
 					  place.setComment(PlaceComment[i]);
-					  place.setAccuracy(Integer.parseInt(PlaceAccuracy[i]));
 					  place.setUserGenerated(PlaceUserGenerated[i]);
 					  PlaceList.add(place);
 				  }
@@ -410,7 +408,6 @@ public class ItemResponse {
 				"    c.PlaceLink as PlaceLink,\r\n" + 
 				"    c.PlaceZoom as PlaceZoom,\r\n" + 
 				"    c.PlaceComment as PlaceComment,\r\n" + 
-				"    c.PlaceAccuracy as PlaceAccuracy,\r\n" + 
 				"    c.PlaceUserGenerated as PlaceUserGenerated,\r\n" + 
 				"    d.TranscriptionId as TranscriptionId,\r\n" + 
 				"    d.TranscriptionText as TranscriptionText,\r\n" + 
@@ -563,7 +560,6 @@ public class ItemResponse {
 				", group_concat(pl.Link SEPARATOR '&~&') as PlaceLink " +
 				", group_concat(pl.Zoom SEPARATOR '&~&') as PlaceZoom " +
 				", group_concat(pl.Comment SEPARATOR '&~&') as PlaceComment " +
-				", group_concat(pl.Accuracy SEPARATOR '&~&') as PlaceAccuracy " +
 				", group_concat(pl.UserGenerated + 0 SEPARATOR '&~&') as PlaceUserGenerated " +
 				"FROM Item i " + 
 				"LEFT JOIN Place pl on i.ItemId = pl.ItemId " +  
@@ -780,7 +776,6 @@ public class ItemResponse {
 					"    place.PlaceLink AS PlaceLink,\r\n" + 
 					"    place.PlaceZoom AS PlaceZoom,\r\n" + 
 					"    place.PlaceComment AS PlaceComment,\r\n" + 
-					"    place.PlaceAccuracy AS PlaceAccuracy,\r\n" + 
 					"    place.PlaceUserGenerated AS PlaceUserGenerated,\r\n" + 
 					"    transc.TranscriptionId AS TranscriptionId,\r\n" + 
 					"    transc.TranscriptionText AS TranscriptionText,\r\n" + 
@@ -913,8 +908,6 @@ public class ItemResponse {
 					"				SEPARATOR '&~&') AS PlaceZoom,\r\n" + 
 					"			GROUP_CONCAT(pl.Comment\r\n" + 
 					"				SEPARATOR '&~&') AS PlaceComment,\r\n" + 
-					"			GROUP_CONCAT(pl.Accuracy\r\n" + 
-					"				SEPARATOR '&~&') AS PlaceAccuracy,\r\n" + 
 					"			GROUP_CONCAT(pl.UserGenerated + 0\r\n" + 
 					"				SEPARATOR '&~&') AS PlaceUserGenerated\r\n" + 
 					"		FROM\r\n" + 
