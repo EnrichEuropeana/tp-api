@@ -240,6 +240,10 @@ public class StoryMinimalResponse {
 						", s.PlaceName as StoryPlaceName" +
 						", s.PlaceLatitude as StoryPlaceLatitude" +
 						", s.PlaceLongitute as StoryPlaceLongitute" +
+						"	, s.PlaceZoom as StoryPlaceZoom \r\n" + 
+						"	, s.PlaceLink as StoryPlaceLink \r\n" + 
+						"	, s.PlaceComment as StoryPlaceComment \r\n" + 
+						"	, s.PlaceUserId as StoryPlaceUserId \r\n" + 
 						", s.PlaceUserGenerated as StoryPlaceUserGenerated" +
 						", s.`dc:contributor` as StoryContributor" +
 						", s.`edm:rights` as StoryRights" +
@@ -270,7 +274,7 @@ public class StoryMinimalResponse {
 						", group_concat(c.PlaceLink SEPARATOR '§~§') as PlaceLink " +
 						", group_concat(c.PlaceZoom SEPARATOR '§~§') as PlaceZoom " +
 						", group_concat(c.PlaceComment SEPARATOR '§~§') as PlaceComment " +
-						", group_concat(c.PlaceAccuracy SEPARATOR '§~§') as PlaceAccuracy " +
+						", group_concat(c.PlaceUserId SEPARATOR '§~§') as PlaceUserId " +
 						", group_concat(c.PlaceUserGenerated SEPARATOR '§~§') as PlaceUserGenerated " +
 						"FROM " +
 						"(" +
@@ -295,7 +299,7 @@ public class StoryMinimalResponse {
 							", group_concat(IFNULL(pl.Link, 'NULL') SEPARATOR '&~&') as PlaceLink " +
 							", group_concat(IFNULL(pl.Zoom, 'NULL') SEPARATOR '&~&') as PlaceZoom " +
 							", group_concat(IFNULL(pl.Comment, 'NULL') SEPARATOR '&~&') as PlaceComment " +
-							", group_concat(IFNULL(pl.Accuracy, 'NULL') SEPARATOR '&~&') as PlaceAccuracy " +
+							", group_concat(IFNULL(pl.UserId, 'NULL') SEPARATOR '&~&') as PlaceUserId " +
 							", group_concat(IFNULL(pl.UserGenerated + 0, 'NULL') SEPARATOR '&~&') as PlaceUserGenerated " +
 							"FROM Item i " + 
 							"LEFT JOIN Place pl on i.ItemId = pl.ItemId " +  

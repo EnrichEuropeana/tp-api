@@ -259,7 +259,7 @@ public class TranscriptionResponse {
 	//Add new entry
 	@Path("")
 	@POST
-	public String add(String body) throws SQLException, ParseException {	
+	public Response add(String body) throws SQLException, ParseException {	
 	    GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
 	    Gson gson = gsonBuilder.create();
 	    Transcription transcription = gson.fromJson(body, Transcription.class);
@@ -275,7 +275,8 @@ public class TranscriptionResponse {
 	    	}
 			String query = "INSERT INTO Transcription (Text, UserId, ItemId, CurrentVersion) "
 							+ "VALUES ('" + transcription.Text + "'"
-								+ ", " + transcription.UserId
+								+ ", (SELECT UserId FROM User "
+								+ "		WHERE WP_UserId = " + transcription.UserId + ")"
 								+ ", " + transcription.ItemId
 								+ ", " + transcription.CurrentVersion + ")";
 			String resource = executeQuery(query, "Insert");
@@ -293,9 +294,11 @@ public class TranscriptionResponse {
 								+ ", " + transcription.Languages.get(i).LanguageId + ")", "Insert");
 				}
 			};
-			return resource;
+			ResponseBuilder rBuild = Response.ok(resource);
+	        return rBuild.build();
 	    } else {
-	    	return "Fields missing";
+			ResponseBuilder rBuild = Response.status(Response.Status.BAD_REQUEST);
+	        return rBuild.build();
 	    }
 	}
 	

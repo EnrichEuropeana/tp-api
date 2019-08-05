@@ -10,6 +10,7 @@ public class Place {
 	public Integer Zoom;
 	public String Comment;
 	public String UserGenerated;
+	public Integer UserId;
 	
 	public void setPlaceId (Integer PlaceId) {
 		this.PlaceId = PlaceId;
@@ -42,9 +43,12 @@ public class Place {
 	public void setComment (String Comment) {
 		this.Comment = Comment;
 	}
-
 	
 	public void setUserGenerated (String UserGenerated) {
 		this.UserGenerated = UserGenerated;
+	}
+	
+	public void setUserId(Integer userId) {
+		UserId = userId;
 	}
 }

@@ -116,9 +116,10 @@ public class ItemResponse {
 				  String[] PlaceNames = rs.getString("PlaceName").split("&~&");
 				  String[] PlaceLatitudes = rs.getString("PlaceLatitude").split("&~&");
 				  String[] PlaceLongitudes = rs.getString("PlaceLongitude").split("&~&");
-				  String[] PlaceLink = rs.getString("PlaceLink").split(",", -1);
+				  String[] PlaceLink = rs.getString("PlaceLink").split("&~&", -1);
 				  String[] PlaceZoom = rs.getString("PlaceZoom").split("&~&");
-				  String[] PlaceComment = rs.getString("PlaceComment").split(",", -1);
+				  String[] PlaceComment = rs.getString("PlaceComment").split("&~&", -1);
+				  String[] PlaceUserId = rs.getString("PlaceUserId").split("&~&");
 				  String[] PlaceUserGenerated = rs.getString("PlaceUserGenerated").split("&~&");
 				  for (int i = 0; i < PlaceIds.length; i++) {
 					  Place place = new Place();
@@ -129,6 +130,7 @@ public class ItemResponse {
 					  place.setLink(PlaceLink[i]);
 					  place.setZoom(Integer.parseInt(PlaceZoom[i]));
 					  place.setComment(PlaceComment[i]);
+					  place.setUserId(Integer.parseInt(PlaceUserId[i]));
 					  place.setUserGenerated(PlaceUserGenerated[i]);
 					  PlaceList.add(place);
 				  }
@@ -303,6 +305,10 @@ public class ItemResponse {
 			  item.setStoryPlaceName(rs.getString("StoryPlaceName"));
 			  item.setStoryPlaceLatitude(rs.getFloat("StoryPlaceLatitude"));
 			  item.setStoryPlaceLongitude(rs.getFloat("StoryPlaceLongitude"));
+			  item.setStoryPlaceZoom(rs.getString("StoryPlaceZoom"));
+			  item.setStoryPlaceLink(rs.getString("StoryPlaceLink"));
+			  item.setStoryPlaceComment(rs.getString("StoryPlaceComment"));
+			  item.setStoryPlaceUserId(rs.getInt("StoryPlaceUserId"));
 			  item.setStoryPlaceUserGenerated(rs.getString("StoryPlaceUserGenerated"));
 			  item.setStorydcCreator(rs.getString("StorydcCreator"));
 			  item.setStorydcSource(rs.getString("StoryedmRights"));
@@ -407,7 +413,8 @@ public class ItemResponse {
 				"    c.PlaceLongitude as PlaceLongitude,\r\n" + 
 				"    c.PlaceLink as PlaceLink,\r\n" + 
 				"    c.PlaceZoom as PlaceZoom,\r\n" + 
-				"    c.PlaceComment as PlaceComment,\r\n" + 
+				"    c.PlaceComment as PlaceComment,\r\n" +
+				"    c.PlaceUserId as PlaceUserID,\r\n" + 
 				"    c.PlaceUserGenerated as PlaceUserGenerated,\r\n" + 
 				"    d.TranscriptionId as TranscriptionId,\r\n" + 
 				"    d.TranscriptionText as TranscriptionText,\r\n" + 
@@ -437,6 +444,10 @@ public class ItemResponse {
 				"	, s.PlaceName as StoryPlaceName \r\n" + 
 				"	, s.PlaceLatitude as StoryPlaceLatitude \r\n" + 
 				"	, s.PlaceLongitude as StoryPlaceLongitude \r\n" + 
+				"	, s.PlaceZoom as StoryPlaceZoom \r\n" + 
+				"	, s.PlaceLink as StoryPlaceLink \r\n" + 
+				"	, s.PlaceComment as StoryPlaceComment \r\n" + 
+				"	, s.PlaceUserId as StoryPlaceUserId \r\n" + 
 				"	, s.PlaceUserGenerated as StoryPlaceUserGenerated \r\n" + 
 				", s.`dc:creator` as StorydcCreator" +
 				", s.`dc:source` as StorydcSource" +
@@ -560,6 +571,7 @@ public class ItemResponse {
 				", group_concat(pl.Link SEPARATOR '&~&') as PlaceLink " +
 				", group_concat(pl.Zoom SEPARATOR '&~&') as PlaceZoom " +
 				", group_concat(pl.Comment SEPARATOR '&~&') as PlaceComment " +
+				", group_concat(pl.UserId SEPARATOR '&~&') as PlaceUserId " +
 				", group_concat(pl.UserGenerated + 0 SEPARATOR '&~&') as PlaceUserGenerated " +
 				"FROM Item i " + 
 				"LEFT JOIN Place pl on i.ItemId = pl.ItemId " +  
@@ -776,6 +788,7 @@ public class ItemResponse {
 					"    place.PlaceLink AS PlaceLink,\r\n" + 
 					"    place.PlaceZoom AS PlaceZoom,\r\n" + 
 					"    place.PlaceComment AS PlaceComment,\r\n" + 
+					"    place.PlaceUserId AS PlaceUserId,\r\n" + 
 					"    place.PlaceUserGenerated AS PlaceUserGenerated,\r\n" + 
 					"    transc.TranscriptionId AS TranscriptionId,\r\n" + 
 					"    transc.TranscriptionText AS TranscriptionText,\r\n" + 
@@ -805,6 +818,10 @@ public class ItemResponse {
 					"    s.PlaceName AS StoryPlaceName,\r\n" + 
 					"    s.PlaceLatitude AS StoryPlaceLatitude,\r\n" + 
 					"    s.PlaceLongitude AS StoryPlaceLongitude,\r\n" + 
+					"    s.PlaceZoom AS StoryPlaceZoom,\r\n" + 
+					"    s.PlaceLink AS StoryPlaceLink,\r\n" + 
+					"    s.PlaceComment AS StoryPlaceComment,\r\n" + 
+					"    s.PlaceUserId AS StoryPlaceUserId,\r\n" + 
 					"    s.PlaceUserGenerated AS StoryPlaceUserGenerated,\r\n" + 
 					"    s.`dc:creator` AS StorydcCreator,\r\n" + 
 					"    s.`dc:source` AS StorydcSource,\r\n" + 
@@ -908,6 +925,8 @@ public class ItemResponse {
 					"				SEPARATOR '&~&') AS PlaceZoom,\r\n" + 
 					"			GROUP_CONCAT(pl.Comment\r\n" + 
 					"				SEPARATOR '&~&') AS PlaceComment,\r\n" + 
+					"			GROUP_CONCAT(pl.UserId\r\n" + 
+					"				SEPARATOR '&~&') AS PlaceUserId,\r\n" + 
 					"			GROUP_CONCAT(pl.UserGenerated + 0\r\n" + 
 					"				SEPARATOR '&~&') AS PlaceUserGenerated\r\n" + 
 					"		FROM\r\n" + 

@@ -23,7 +23,7 @@ import java.sql.*;
 
 import com.google.gson.*;
 
-@Path("/Place")
+@Path("/places")
 public class PlaceResponse {
 
 
@@ -71,6 +71,7 @@ public class PlaceResponse {
 			  Place.setLink(rs.getString("Link"));
 			  Place.setZoom(rs.getInt("Zoom"));
 			  Place.setComment(rs.getString("Comment"));
+			  Place.setUserId(rs.getInt("UserId"));
 			  Place.setUserGenerated(rs.getString("UserGenerated"));
 			  placeList.add(Place);
 		   }
@@ -95,12 +96,28 @@ public class PlaceResponse {
 	    return result;
 	}
 
-	//Get all Entries
-	@Path("/all")
+	//Search using custom filters
+	@Path("")
 	@Produces("application/json;charset=utf-8")
 	@GET
-	public Response getAll() throws SQLException {
+	public Response search(@Context UriInfo uriInfo) throws SQLException {
 		String query = "SELECT * FROM Place WHERE 1";
+		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
+		
+		for(String key : queryParams.keySet()){
+			String[] values = queryParams.getFirst(key).split(",");
+			query += " AND (";
+		    int valueCount = values.length;
+		    int i = 1;
+		    for(String value : values) {
+		    	query += key + " = " + value;
+			    if (i < valueCount) {
+			    	query += " OR ";
+			    }
+			    i++;
+		    }
+		    query += ")";
+		}
 		String resource = executeQuery(query, "Select");
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
@@ -108,16 +125,16 @@ public class PlaceResponse {
 
 
 	//Add new entry
-	@Path("/add")
+	@Path("")
 	@POST
-	public String add(String body) throws SQLException {	
+	public Response add(String body) throws SQLException {	
 	    GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
 	    Gson gson = gsonBuilder.create();
 	    Place place = gson.fromJson(body, Place.class);
 	    
 	    //Check if all mandatory fields are included
 	    if (place.Latitude != null && place.Longitude != null && place.ItemId != null) {
-			String query = "INSERT INTO Place (Name, Latitude, Longitude, ItemId, Link, Zoom, Comment, UserGenerated) "
+			String query = "INSERT INTO Place (Name, Latitude, Longitude, ItemId, Link, Zoom, Comment, UserId, UserGenerated) "
 							+ "VALUES ('" + place.Name + "'"
 							+ ", " + place.Latitude
 							+ ", " + place.Longitude
@@ -125,11 +142,16 @@ public class PlaceResponse {
 							+ ", '" + place.Link + "'"
 							+ ", " + place.Zoom
 							+ ", '" + place.Comment + "'"
-							+ ", '" + place.UserGenerated + "')";
+							+ ", (SELECT UserId FROM User " 
+							+ "		WHERE WP_UserId = " + place.UserId + ")"
+							+ ", " + place.UserGenerated + ")";
 			String resource = executeQuery(query, "Insert");
-			return resource;
+			//ResponseBuilder rBuild = Response.ok(resource);
+			ResponseBuilder rBuild = Response.ok(query);
+	        return rBuild.build();
 	    } else {
-	    	return "Fields missing";
+			ResponseBuilder rBuild = Response.status(Response.Status.BAD_REQUEST);
+	        return rBuild.build();
 	    }
 	}
 
@@ -191,32 +213,6 @@ public class PlaceResponse {
         return rBuild.build();
 	}
 
-	//Search using custom filters
-	@Path("/search")
-	@Produces("application/json;charset=utf-8")
-	@GET
-	public Response search(@Context UriInfo uriInfo) throws SQLException {
-		String query = "SELECT * FROM Place WHERE 1";
-		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
-		
-		for(String key : queryParams.keySet()){
-			String[] values = queryParams.getFirst(key).split(",");
-			query += " AND (";
-		    int valueCount = values.length;
-		    int i = 1;
-		    for(String value : values) {
-		    	query += key + " = " + value;
-			    if (i < valueCount) {
-			    	query += " OR ";
-			    }
-			    i++;
-		    }
-		    query += ")";
-		}
-		String resource = executeQuery(query, "Select");
-		ResponseBuilder rBuild = Response.ok(resource);
-        return rBuild.build();
-	}
 }
 
 

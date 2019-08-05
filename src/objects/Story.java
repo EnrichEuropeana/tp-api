@@ -15,6 +15,10 @@ public class Story {
 	public String PlaceName;
 	public Float PlaceLatitude;
 	public Float PlaceLongitude;
+	public String PlaceZoom;
+	public String PlaceLink;
+	public String PlaceComment;
+	public Integer PlaceUserId;
 	public String PlaceUserGenerated;
 	public String dcCreator;
 	public String dcSource;
@@ -86,6 +90,18 @@ public class Story {
 	}
 	public void setPlaceLongitude(Float placeLongitude) {
 		PlaceLongitude = placeLongitude;
+	}
+	public void setPlaceZoom(String placeZoom) {
+		PlaceZoom = placeZoom;
+	}
+	public void setPlaceLink(String placeLink) {
+		PlaceLink = placeLink;
+	}
+	public void setPlaceComment(String placeComment) {
+		PlaceComment = placeComment;
+	}
+	public void setPlaceUserId(Integer placeUserId) {
+		PlaceUserId = placeUserId;
 	}
 	public void setPlaceUserGenerated(String placeUserGenerated) {
 		PlaceUserGenerated = placeUserGenerated;

@@ -83,6 +83,10 @@ public class StoryResponse {
 			  story.setPlaceName(rs.getString("StoryPlaceName"));
 			  story.setPlaceLatitude(rs.getFloat("StoryPlaceLatitude"));
 			  story.setPlaceLongitude(rs.getFloat("StoryPlaceLongitude"));
+			  story.setPlaceZoom(rs.getString("StoryPlaceZoom"));
+			  story.setPlaceLink(rs.getString("StoryPlaceLink"));
+			  story.setPlaceComment(rs.getString("StoryPlaceComment"));
+			  story.setPlaceUserId(rs.getInt("StoryPlaceUserId"));
 			  story.setPlaceUserGenerated(rs.getString("StoryPlaceUserGenerated"));
 			  story.setdcCreator(rs.getString("StorydcCreator"));
 			  story.setdcSource(rs.getString("StoryedmRights"));
@@ -154,6 +158,7 @@ public class StoryResponse {
 				  String[] PlaceLinkList = new String[ItemIds.length];
 				  String[] PlaceZoomList = new String[ItemIds.length];
 				  String[] PlaceCommentList = new String[ItemIds.length];
+				  String[] PlaceUserIdList = new String[ItemIds.length];
 				  String[] PlaceUserGeneratedList = new String[ItemIds.length];
 				  if (rs.getString("PlaceId") != null) {
 					  PlaceIdList = rs.getString("PlaceId").split("§~§");
@@ -175,6 +180,9 @@ public class StoryResponse {
 				  }
 				  if (rs.getString("PlaceComment") != null) {
 					  PlaceCommentList = rs.getString("PlaceComment").split("§~§");
+				  }
+				  if (rs.getString("PlaceUserId") != null) {
+					  PlaceUserIdList = rs.getString("PlaceUserId").split("§~§");
 				  }
 				  if (rs.getString("PlaceUserGenerated") != null) {
 					  PlaceUserGeneratedList = rs.getString("PlaceUserGenerated").split("§~§");
@@ -234,6 +242,7 @@ public class StoryResponse {
 						  String[] PlaceLink = PlaceLinkList[j].split("&~&", -1);
 						  String[] PlaceZoom = PlaceZoomList[j].split("&~&", -1);
 						  String[] PlaceComment = PlaceCommentList[j].split("&~&", -1);
+						  String[] PlaceUserId = PlaceUserIdList[j].split("&~&", -1);
 						  String[] PlaceUserGenerated = PlaceUserGeneratedList[j].split("&~&", -1);
 						  for (int i = 0; i < PlaceIds.length; i++) {
 							  if (!isNumeric(PlaceIds[i])) {
@@ -247,6 +256,7 @@ public class StoryResponse {
 							  place.setLink(PlaceLink[i]);
 							  place.setZoom(Integer.parseInt(PlaceZoom[i]));
 							  place.setComment(PlaceComment[i]);
+							  place.setUserId(Integer.parseInt(PlaceUserId[i]));
 							  place.setUserGenerated(PlaceUserGenerated[i]);
 							  PlaceList.add(place);
 						  }
@@ -350,6 +360,10 @@ public class StoryResponse {
 				", s.PlaceName as StoryPlaceName" +
 				", s.PlaceLatitude as StoryPlaceLatitude" +
 				", s.PlaceLongitude as StoryPlaceLongitude" +
+				"	, s.PlaceZoom as StoryPlaceZoom \r\n" + 
+				"	, s.PlaceLink as StoryPlaceLink \r\n" + 
+				"	, s.PlaceComment as StoryPlaceComment \r\n" + 
+				"	, s.PlaceUserId as StoryPlaceUserId \r\n" + 
 				", s.PlaceUserGenerated as StoryPlaceUserGenerated" +
 				", s.`dc:creator` as StorydcCreator" +
 				", s.`dc:source` as StorydcSource" +
@@ -399,6 +413,7 @@ public class StoryResponse {
 				", group_concat(c.PlaceLink SEPARATOR '§~§') as PlaceLink " +
 				", group_concat(c.PlaceZoom SEPARATOR '§~§') as PlaceZoom " +
 				", group_concat(c.PlaceComment SEPARATOR '§~§') as PlaceComment " +
+				", group_concat(c.PlaceUserId SEPARATOR '§~§') as PlaceUserId " +
 				", group_concat(c.PlaceUserGenerated SEPARATOR '§~§') as PlaceUserGenerated " +
 				"FROM " +
 					"(" +
@@ -424,6 +439,7 @@ public class StoryResponse {
 					", group_concat(IFNULL(pl.Link, 'NULL') SEPARATOR '&~&') as PlaceLink " +
 					", group_concat(IFNULL(pl.Zoom, 'NULL') SEPARATOR '&~&') as PlaceZoom " +
 					", group_concat(IFNULL(pl.Comment, 'NULL') SEPARATOR '&~&') as PlaceComment " +
+					", group_concat(IFNULL(pl.UserId, 'NULL') SEPARATOR '&~&') as PlaceUserId " +
 					", group_concat(IFNULL(pl.UserGenerated + 0, 'NULL') SEPARATOR '&~&') as PlaceUserGenerated " +
 					"FROM Item i " + 
 					"LEFT JOIN Place pl on i.ItemId = pl.ItemId " +  
@@ -569,7 +585,7 @@ public class StoryResponse {
 		}
 
 		keys.add("PlaceUserGenerated");
-		values.add("1");
+		values.add("0");
 		
 		String query = "";
 		query += "INSERT INTO Story (";
@@ -658,6 +674,10 @@ public class StoryResponse {
 				"            s.PlaceName AS StoryPlaceName,\r\n" + 
 				"            s.PlaceLatitude AS StoryPlaceLatitude,\r\n" + 
 				"            s.PlaceLongitude AS StoryPlaceLongitude,\r\n" + 
+				"			 s.PlaceZoom as StoryPlaceZoom, \r\n" + 
+				"			 s.PlaceLink as StoryPlaceLink, \r\n" + 
+				"			 s.PlaceComment as StoryPlaceComment, \r\n" + 
+				"			 s.PlaceUserId as StoryPlaceUserId, \r\n" + 
 				"            s.PlaceUserGenerated AS StoryPlaceUserGenerated,\r\n" + 
 				"            s.`dc:creator` AS StorydcCreator,\r\n" + 
 				"            s.`dc:source` AS StorydcSource,\r\n" + 
@@ -727,6 +747,8 @@ public class StoryResponse {
 				"                SEPARATOR '§~§') AS PlaceZoom,\r\n" + 
 				"            GROUP_CONCAT(IFNULL(i.PlaceComment, 'NULL')\r\n" + 
 				"                SEPARATOR '§~§') AS PlaceComment,\r\n" + 
+				"            GROUP_CONCAT(IFNULL(i.PlaceUserId, 'NULL')\r\n" + 
+				"                SEPARATOR '§~§') AS PlaceUserId,\r\n" + 
 				"            GROUP_CONCAT(IFNULL(i.PlaceUserGenerated, 'NULL')\r\n" + 
 				"                SEPARATOR '§~§') AS PlaceUserGenerated\r\n" + 
 				"    FROM\r\n" + 
@@ -760,6 +782,8 @@ public class StoryResponse {
 				"				SEPARATOR '&~&') AS PlaceZoom,\r\n" + 
 				"			GROUP_CONCAT(IFNULL(pl.Comment, 'NULL')\r\n" + 
 				"				SEPARATOR '&~&') AS PlaceComment,\r\n" + 
+				"			GROUP_CONCAT(IFNULL(pl.UserId, 'NULL')\r\n" + 
+				"				SEPARATOR '&~&') AS PlaceUserId,\r\n" + 
 				"			GROUP_CONCAT(IFNULL(pl.UserGenerated + 0, 'NULL')\r\n" + 
 				"				SEPARATOR '&~&') AS PlaceUserGenerated\r\n" + 
 				"	FROM\r\n" + 

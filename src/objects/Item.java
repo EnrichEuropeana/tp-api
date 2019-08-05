@@ -43,6 +43,10 @@ public class Item {
 	public String StoryPlaceName;
 	public Float StoryPlaceLatitude;
 	public Float StoryPlaceLongitude;
+	public String StoryPlaceZoom;
+	public String StoryPlaceLink;
+	public String StoryPlaceComment;
+	public Integer StoryPlaceUserId;
 	public String StoryPlaceUserGenerated;
 	public String StorydcCreator;
 	public String StorydcSource;
@@ -105,6 +109,18 @@ public class Item {
 	}
 	public void setStoryPlaceLongitude(Float storyPlaceLongitude) {
 		StoryPlaceLongitude = storyPlaceLongitude;
+	}
+	public void setStoryPlaceZoom(String storyPlaceZoom) {
+		StoryPlaceZoom = storyPlaceZoom;
+	}
+	public void setStoryPlaceLink(String storyPlaceLink) {
+		StoryPlaceLink = storyPlaceLink;
+	}
+	public void setStoryPlaceComment(String storyPlaceComment) {
+		StoryPlaceComment = storyPlaceComment;
+	}
+	public void setStoryPlaceUserId(Integer storyPlaceUserId) {
+		StoryPlaceUserId = storyPlaceUserId;
 	}
 	public void setStoryPlaceUserGenerated(String storyPlaceUserGenerated) {
 		StoryPlaceUserGenerated = storyPlaceUserGenerated;
