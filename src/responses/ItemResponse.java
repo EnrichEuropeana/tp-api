@@ -186,11 +186,11 @@ public class ItemResponse {
 					  List<Language> LanguageList = new ArrayList<Language>();
 					  if (rs.getString("TranscriptionLanguageId") != null) {
 						  // Intitialize lists grouped by items
-						  String[] LanguageIds = LanguageIdList[i].split("§~§");
-						  String[] LanguageNames = LanguageNameList[i].split("§~§");
-						  String[] LanguageNameEnglishs = LanguageNameEnglishList[i].split("§~§");
-						  String[] LanguageShortNames = LanguageShortNameList[i].split("§~§");
-						  String[] LanguageCodes = LanguageCodeList[i].split("§~§");
+						  String[] LanguageIds = LanguageIdList[i].split("ï¿½~ï¿½");
+						  String[] LanguageNames = LanguageNameList[i].split("ï¿½~ï¿½");
+						  String[] LanguageNameEnglishs = LanguageNameEnglishList[i].split("ï¿½~ï¿½");
+						  String[] LanguageShortNames = LanguageShortNameList[i].split("ï¿½~ï¿½");
+						  String[] LanguageCodes = LanguageCodeList[i].split("ï¿½~ï¿½");
 						  for (int j = 0; j < LanguageIds.length; j++) {
 							  if (!isNumeric(LanguageIds[j])) {
 								  continue;
@@ -611,11 +611,11 @@ public class ItemResponse {
 				"    	(" +
 				"			SELECT \r\n" + 
 				"        		tl.TranscriptionId,\r\n" + 
-				"            	GROUP_CONCAT(IFNULL(l.LanguageId, 'NULL') SEPARATOR '§~§') AS LanguageId,\r\n" + 
-				"            	GROUP_CONCAT(IFNULL(l.Name, 'NULL') SEPARATOR '§~§') AS Name,\r\n" + 
-				"            	GROUP_CONCAT(IFNULL(l.NameEnglish, 'NULL') SEPARATOR '§~§') AS NameEnglish,\r\n" + 
-				"            	GROUP_CONCAT(IFNULL(l.ShortName, 'NULL') SEPARATOR '§~§') AS ShortName,\r\n" + 
-				"            	GROUP_CONCAT(IFNULL(l.Code, 'NULL') SEPARATOR '§~§') AS Code\r\n" + 
+				"            	GROUP_CONCAT(IFNULL(l.LanguageId, 'NULL') SEPARATOR 'ï¿½~ï¿½') AS LanguageId,\r\n" + 
+				"            	GROUP_CONCAT(IFNULL(l.Name, 'NULL') SEPARATOR 'ï¿½~ï¿½') AS Name,\r\n" + 
+				"            	GROUP_CONCAT(IFNULL(l.NameEnglish, 'NULL') SEPARATOR 'ï¿½~ï¿½') AS NameEnglish,\r\n" + 
+				"            	GROUP_CONCAT(IFNULL(l.ShortName, 'NULL') SEPARATOR 'ï¿½~ï¿½') AS ShortName,\r\n" + 
+				"            	GROUP_CONCAT(IFNULL(l.Code, 'NULL') SEPARATOR 'ï¿½~ï¿½') AS Code\r\n" + 
 				"    		FROM\r\n" + 
 				"        		TranscriptionLanguage tl\r\n" + 
 				"    		JOIN Language l ON l.LanguageId = tl.LanguageId\r\n" + 
@@ -787,8 +787,8 @@ public class ItemResponse {
 					"    place.PlaceLongitude AS PlaceLongitude,\r\n" + 
 					"    place.PlaceLink AS PlaceLink,\r\n" + 
 					"    place.PlaceZoom AS PlaceZoom,\r\n" + 
-					"    place.PlaceComment AS PlaceComment,\r\n" + 
-					"    place.PlaceUserId AS PlaceUserId, \r\n" + 
+					"    place.PlaceComment AS PlaceComment, \r\n" + 
+					"    place.PlaceUserId AS PlaceUserId,\r\n" + 
 					"    place.PlaceUserGenerated AS PlaceUserGenerated,\r\n" + 
 					"    transc.TranscriptionId AS TranscriptionId,\r\n" + 
 					"    transc.TranscriptionText AS TranscriptionText,\r\n" + 
@@ -972,11 +972,11 @@ public class ItemResponse {
 					"    	(" +
 					"			SELECT \r\n" + 
 					"        		tl.TranscriptionId,\r\n" + 
-					"            	GROUP_CONCAT(IFNULL(l.LanguageId, 'NULL') SEPARATOR '§~§') AS LanguageId,\r\n" + 
-					"            	GROUP_CONCAT(IFNULL(l.Name, 'NULL') SEPARATOR '§~§') AS Name,\r\n" + 
-					"            	GROUP_CONCAT(IFNULL(l.NameEnglish, 'NULL') SEPARATOR '§~§') AS NameEnglish,\r\n" + 
-					"            	GROUP_CONCAT(IFNULL(l.ShortName, 'NULL') SEPARATOR '§~§') AS ShortName,\r\n" + 
-					"            	GROUP_CONCAT(IFNULL(l.Code, 'NULL') SEPARATOR '§~§') AS Code\r\n" + 
+					"            	GROUP_CONCAT(IFNULL(l.LanguageId, 'NULL') SEPARATOR 'ï¿½~ï¿½') AS LanguageId,\r\n" + 
+					"            	GROUP_CONCAT(IFNULL(l.Name, 'NULL') SEPARATOR 'ï¿½~ï¿½') AS Name,\r\n" + 
+					"            	GROUP_CONCAT(IFNULL(l.NameEnglish, 'NULL') SEPARATOR 'ï¿½~ï¿½') AS NameEnglish,\r\n" + 
+					"            	GROUP_CONCAT(IFNULL(l.ShortName, 'NULL') SEPARATOR 'ï¿½~ï¿½') AS ShortName,\r\n" + 
+					"            	GROUP_CONCAT(IFNULL(l.Code, 'NULL') SEPARATOR 'ï¿½~ï¿½') AS Code\r\n" + 
 					"    		FROM\r\n" + 
 					"        		TranscriptionLanguage tl\r\n" + 
 					"    		JOIN Language l ON l.LanguageId = tl.LanguageId\r\n" + 
