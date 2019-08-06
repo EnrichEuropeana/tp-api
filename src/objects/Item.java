@@ -26,6 +26,7 @@ public class Item {
 	public Integer AutomaticEnrichmentStatusId;
 	public Integer ProjectItemId;
 	public String Description;
+	public Integer DescriptionLanguage;
 	public Timestamp DateStart;
 	public Timestamp DateEnd;
 	public Integer DatasetId;
@@ -277,6 +278,9 @@ public class Item {
 	}
 	public void setDescription(String description) {
 		Description = description;
+	}
+	public void setDescriptionLanguage(Integer descriptionLanguage) {
+		DescriptionLanguage = descriptionLanguage;
 	}
 	public void setDateStart(Timestamp dateStart) {
 		DateStart = dateStart;

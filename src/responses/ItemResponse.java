@@ -290,6 +290,7 @@ public class ItemResponse {
 			  item.setAutomaticEnrichmentStatusId(rs.getInt("AutomaticEnrichmentStatusId"));
 			  item.setProjectItemId(rs.getInt("ProjectItemId"));
 			  item.setDescription(rs.getString("Description"));
+			  item.setDescriptionLanguage(rs.getInt("DescriptionLanguage"));
 			  item.setDateStart(rs.getTimestamp("DateStart"));
 			  item.setDateEnd(rs.getTimestamp("DateEnd"));
 			  item.setDatasetId(rs.getInt("DatasetId"));
@@ -392,6 +393,7 @@ public class ItemResponse {
 				"    i.AutomaticEnrichmentStatusColorCode as AutomaticEnrichmentStatusColorCode, \r\n" + 
 				"    i.ProjectItemId as ProjectItemId, \r\n" + 
 				"    i.Description as Description, \r\n" + 
+				"    i.DescriptionLanguage as DescriptionLanguage, \r\n" + 
 				"    i.DateStart as DateStart, \r\n" + 
 				"    i.DateEnd as DateEnd, \r\n" + 
 				"    i.DatasetId as DatasetId, \r\n" + 
@@ -766,6 +768,7 @@ public class ItemResponse {
 					"    auStatus.ColorCode AS AutomaticEnrichmentStatusColorCode,\r\n" + 
 					"    i.ProjectItemId AS ProjectItemId,\r\n" + 
 					"    i.Description AS Description,\r\n" + 
+					"    i.DescriptionLanguage AS DescriptionLanguage,\r\n" + 
 					"    i.DateStart AS DateStart,\r\n" + 
 					"    i.DateEnd AS DateEnd,\r\n" + 
 					"    i.DatasetId AS DatasetId,\r\n" + 
