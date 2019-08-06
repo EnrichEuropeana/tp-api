@@ -788,7 +788,7 @@ public class ItemResponse {
 					"    place.PlaceLink AS PlaceLink,\r\n" + 
 					"    place.PlaceZoom AS PlaceZoom,\r\n" + 
 					"    place.PlaceComment AS PlaceComment,\r\n" + 
-					"    place.PlaceUserId AS PlaceUserId,\r\n" + 
+					"    place.PlaceUserId AS PlaceUserId, \r\n" + 
 					"    place.PlaceUserGenerated AS PlaceUserGenerated,\r\n" + 
 					"    transc.TranscriptionId AS TranscriptionId,\r\n" + 
 					"    transc.TranscriptionText AS TranscriptionText,\r\n" + 
