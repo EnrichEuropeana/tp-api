@@ -4,21 +4,35 @@ import java.sql.Timestamp;
 
 public class Person {
 	public Integer PersonId; 
-	public String Name; 
+	public String FirstName; 
+	public String LastName; 
 	public String BirthPlace; 
 	public Timestamp BirthDate;
 	public String DeathPlace; 
 	public Timestamp DeathDate;
 	public String Link; 
+	public String Description; 
 	
 	public void setPersonId (Integer PersonId) {
 		this.PersonId = PersonId;
 	}
 	
-	public void setName (String Name) {
-		this.Name = Name;
-	}
 	
+	public void setFirstName(String firstName) {
+		FirstName = firstName;
+	}
+
+
+	public void setLastName(String lastName) {
+		LastName = lastName;
+	}
+
+
+	public void setDescription(String description) {
+		Description = description;
+	}
+
+
 	public void setBirthPlace (String BirthPlace) {
 		this.BirthPlace = BirthPlace;
 	}

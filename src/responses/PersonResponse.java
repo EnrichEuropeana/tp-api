@@ -23,7 +23,7 @@ import java.sql.*;
 
 import com.google.gson.*;
 
-@Path("/Person")
+@Path("/persons")
 public class PersonResponse {
 
 
@@ -64,12 +64,14 @@ public class PersonResponse {
 		      //Retrieve by column name
 			  Person Person = new Person();
 			  Person.setPersonId(rs.getInt("PersonId"));
-			  Person.setName(rs.getString("Name"));
+			  Person.setFirstName(rs.getString("FirstName"));
+			  Person.setLastName(rs.getString("LastName"));
 			  Person.setBirthPlace(rs.getString("BirthPlace"));
 			  Person.setBirthDate(rs.getTimestamp("BirthDate"));
 			  Person.setDeathPlace(rs.getString("DeathPlace"));
 			  Person.setDeathDate(rs.getTimestamp("DeathDate"));
 			  Person.setLink(rs.getString("Link"));
+			  Person.setDescription(rs.getString("Description"));
 			  personList.add(Person);
 		   }
 		
@@ -93,12 +95,28 @@ public class PersonResponse {
 	    return result;
 	}
 
-	//Get all Entries
-	@Path("/all")
+	//Search using custom filters
+	@Path("")
 	@Produces("application/json;charset=utf-8")
 	@GET
-	public Response getAll() throws SQLException {
+	public Response search(@Context UriInfo uriInfo) throws SQLException {
 		String query = "SELECT * FROM Person WHERE 1";
+		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
+		
+		for(String key : queryParams.keySet()){
+			String[] values = queryParams.getFirst(key).split(",");
+			query += " AND (";
+		    int valueCount = values.length;
+		    int i = 1;
+		    for(String value : values) {
+		    	query += key + " = " + value;
+			    if (i < valueCount) {
+			    	query += " OR ";
+			    }
+			    i++;
+		    }
+		    query += ")";
+		}
 		String resource = executeQuery(query, "Select");
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
@@ -106,27 +124,26 @@ public class PersonResponse {
 
 
 	//Add new entry
-	@Path("/add")
+	@Path("")
 	@POST
-	public String add(String body) throws SQLException {	
+	public Response add(String body) throws SQLException {	
 	    GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
 	    Gson gson = gsonBuilder.create();
 	    Person person = gson.fromJson(body, Person.class);
 	    
 	    //Check if all mandatory fields are included
-	    if (person.Name != null) {
-			String query = "INSERT INTO Person (Name, BirthPlace, BirthDate, DeathPlace, DeathDate, Link) "
-							+ "VALUES ('" + person.Name + "'"
-							+ ", '" + person.BirthPlace + "'"
-							+ ", '" + person.BirthDate + "'"
-							+ ", '" + person.DeathPlace + "'"
-							+ ", '" + person.DeathDate + "'"
-							+ ", '" + person.Link + "')";
-			String resource = executeQuery(query, "Insert");
-			return resource;
-	    } else {
-	    	return "Fields missing";
-	    }
+		String query = "INSERT INTO Person (Name, BirthPlace, BirthDate, DeathPlace, DeathDate, Link) "
+						+ "VALUES ('" + person.FirstName + "'"
+						+ ", '" + person.LastName + "'"
+						+ ", '" + person.BirthPlace + "'"
+						+ ", '" + person.BirthDate + "'"
+						+ ", '" + person.DeathPlace + "'"
+						+ ", '" + person.DeathDate + "'"
+						+ ", '" + person.Link + "'"
+						+ ", '" + person.Description + "')";
+		String resource = executeQuery(query, "Insert");
+		ResponseBuilder rBuild = Response.ok(resource);
+        return rBuild.build();
 	}
 
 
@@ -180,33 +197,6 @@ public class PersonResponse {
 	@GET
 	public Response getEntry(@PathParam("id") int id) throws SQLException {
 		String resource = executeQuery("SELECT * FROM Person WHERE PersonId = " + id, "Select");
-		ResponseBuilder rBuild = Response.ok(resource);
-        return rBuild.build();
-	}
-
-	//Search using custom filters
-	@Path("/search")
-	@Produces("application/json;charset=utf-8")
-	@GET
-	public Response search(@Context UriInfo uriInfo) throws SQLException {
-		String query = "SELECT * FROM Person WHERE 1";
-		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
-		
-		for(String key : queryParams.keySet()){
-			String[] values = queryParams.getFirst(key).split(",");
-			query += " AND (";
-		    int valueCount = values.length;
-		    int i = 1;
-		    for(String value : values) {
-		    	query += key + " = " + value;
-			    if (i < valueCount) {
-			    	query += " OR ";
-			    }
-			    i++;
-		    }
-		    query += ")";
-		}
-		String resource = executeQuery(query, "Select");
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
 	}
