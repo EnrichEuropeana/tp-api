@@ -67,11 +67,12 @@ public class PersonResponse {
 			  Person.setFirstName(rs.getString("FirstName"));
 			  Person.setLastName(rs.getString("LastName"));
 			  Person.setBirthPlace(rs.getString("BirthPlace"));
-			  Person.setBirthDate(rs.getTimestamp("BirthDate"));
+			  Person.setBirthDate(rs.getString("BirthDate"));
 			  Person.setDeathPlace(rs.getString("DeathPlace"));
-			  Person.setDeathDate(rs.getTimestamp("DeathDate"));
+			  Person.setDeathDate(rs.getString("DeathDate"));
 			  Person.setLink(rs.getString("Link"));
 			  Person.setDescription(rs.getString("Description"));
+			  Person.setItemId(rs.getInt("ItemId"));
 			  personList.add(Person);
 		   }
 		
@@ -132,7 +133,7 @@ public class PersonResponse {
 	    Person person = gson.fromJson(body, Person.class);
 	    
 	    //Check if all mandatory fields are included
-		String query = "INSERT INTO Person (Name, BirthPlace, BirthDate, DeathPlace, DeathDate, Link) "
+		String query = "INSERT INTO Person (FirstName, LastName, BirthPlace, BirthDate, DeathPlace, DeathDate, Link, Description, ItemId) "
 						+ "VALUES ('" + person.FirstName + "'"
 						+ ", '" + person.LastName + "'"
 						+ ", '" + person.BirthPlace + "'"
@@ -140,7 +141,8 @@ public class PersonResponse {
 						+ ", '" + person.DeathPlace + "'"
 						+ ", '" + person.DeathDate + "'"
 						+ ", '" + person.Link + "'"
-						+ ", '" + person.Description + "')";
+						+ ", '" + person.Description + "'"
+						+ ", " + person.ItemId + ")";
 		String resource = executeQuery(query, "Insert");
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();

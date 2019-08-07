@@ -80,6 +80,7 @@ public class Item {
 	public String[] PropertyIds;
 	public List<Property> Properties;
 	public List<Place> Places;
+	public List<Person> Persons;
 	public List<Transcription> Transcriptions;
 	public List<Annotation> Annotations;
 	public List<Comment> Comments;
@@ -311,6 +312,9 @@ public class Item {
 	}
 	public void setPlaces(List<Place> places) {
 		Places = places;
+	}
+	public void setPersons(List<Person> persons) {
+		Persons = persons;
 	}
 	public void setTranscriptions(List<Transcription> transcriptions) {
 		Transcriptions = transcriptions;

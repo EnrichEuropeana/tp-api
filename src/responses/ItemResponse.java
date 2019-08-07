@@ -235,7 +235,7 @@ public class ItemResponse {
 				  }
 			  }
 			  
-			  
+
 			  //Add Comments
 			  List<Comment> CommentList = new ArrayList<Comment>();
 			  if (rs.getString("CommentId") != null) {
@@ -263,10 +263,79 @@ public class ItemResponse {
 					  CommentList.add(comment);
 				  }
 			  }
+			  
+			  //Add Persons
+			  List<Person> PersonList = new ArrayList<Person>();
+			  if (rs.getString("PersonId") != null) {
+				  String[] PersonIds = rs.getString("PersonId").split("&~&");
+				  String[] PersonFirstNames = new String[PersonIds.length];
+				  if (rs.getString("PersonFirstName") != null) {
+					  PersonFirstNames = rs.getString("PersonFirstName").split("&~&");
+				  }
+				  String[] PersonLastNames = new String[PersonIds.length];
+				  if (rs.getString("PersonLastName") != null) {
+					  PersonLastNames = rs.getString("PersonLastName").split("&~&");
+				  }
+				  String[] PersonBirthPlaces = new String[PersonIds.length];
+				  if (rs.getString("PersonBirthPlace") != null) {
+					  PersonBirthPlaces = rs.getString("PersonBirthPlace").split("&~&");
+				  }
+				  String[] PersonBirthDates = new String[PersonIds.length];
+				  if (rs.getString("PersonBirthDate") != null) {
+					  PersonBirthDates = rs.getString("PersonBirthDate").split("&~&");
+				  }
+				  String[] PersonDeathPlaces = new String[PersonIds.length];
+				  if (rs.getString("PersonDeathPlace") != null) {
+					  PersonDeathPlaces = rs.getString("PersonDeathPlace").split("&~&");
+				  }
+				  String[] PersonDeathDates = new String[PersonIds.length];
+				  if (rs.getString("PersonDeathDate") != null) {
+					  PersonDeathDates = rs.getString("PersonDeathDate").split("&~&");
+				  }
+				  String[] PersonLinks = new String[PersonIds.length];
+				  if (rs.getString("PersonLink") != null) {
+					  PersonLinks = rs.getString("PersonLink").split("&~&");
+				  }
+				  String[] PersonDescriptions = new String[PersonIds.length];
+				  if (rs.getString("PersonDescription") != null) {
+					  PersonDescriptions = rs.getString("PersonDescription").split("&~&");
+				  }
+				  for (int i = 0; i < PersonIds.length; i++) {
+					  Person person = new Person();
+					  person.setPersonId(Integer.parseInt(PersonIds[i]));
+					  if (PersonFirstNames[i] != null) {
+						  person.setFirstName(PersonFirstNames[i]);
+					  }
+					  if (PersonLastNames[i] != null) {
+						  person.setLastName(PersonLastNames[i]);
+					  }
+					  if (PersonBirthPlaces[i] != null) {
+						  person.setBirthPlace(PersonBirthPlaces[i]);
+					  }
+					  if (PersonBirthDates[i] != null) {
+						  person.setBirthDate(PersonBirthDates[i]);
+					  }
+					  if (PersonDeathPlaces[i] != null) {
+						  person.setDeathPlace(PersonDeathPlaces[i]);
+					  }
+					  if (PersonDeathDates[i] != null) {
+						  person.setDeathDate(PersonDeathDates[i]);
+					  }
+					  if (PersonLinks[i] != null) {
+						  person.setLink(PersonLinks[i]);
+					  }
+					  if (PersonDescriptions[i] != null) {
+						  person.setDescription(PersonDescriptions[i]);
+					  }
+					  
+					  PersonList.add(person);
+				  }
+			  }
 
 			  item.setProperties(PropertyList);
 			  item.setPlaces(PlaceList);
 			  item.setComments(CommentList);
+			  item.setPersons(PersonList);
 			  item.setTranscriptions(TranscriptionList);
 			  item.setAnnotations(AnnotationList);
 			  item.setTitle(rs.getString("Title"));
@@ -438,6 +507,15 @@ public class ItemResponse {
 				"    e.AnnotationY_Coord as AnnotationY_Coord,\r\n" + 
 				"    e.AnnotationWidth as AnnotationWidth,\r\n" + 
 				"    e.AnnotationHeight as AnnotationHeight,\r\n" + 
+				"    f.PersonId as PersonId,\r\n" + 
+				"    f.PersonFirstName as PersonFirstName,\r\n" + 
+				"    f.PersonLastName as PersonLastName,\r\n" + 
+				"    f.PersonBirthPlace as PersonBirthPlace,\r\n" + 
+				"    f.PersonBirthDate as PersonBirthDate,\r\n" + 
+				"    f.PersonDeathPlace as PersonDeathPlace,\r\n" + 
+				"    f.PersonDeathDate as PersonDeathDate,\r\n" +
+				"    f.PersonLink as PersonLink,\r\n" + 
+				"    f.PersonDescription as PersonDescription,\r\n" + 
 				"    s.StoryId as StoryId\r\n" + 
 				"	, s.`dc:title` as StorydcTitle \r\n" + 
 				"	, s.`dc:description` as StorydcDescription \r\n" + 
@@ -646,6 +724,23 @@ public class ItemResponse {
 			") e " + 
 			"ON i.ItemId = e.ItemId " +
 			"LEFT JOIN " + 
+			"(" + 
+				"SELECT i.ItemId as ItemId" +
+				", group_concat(pe.PersonId SEPARATOR '&~&') as PersonId " +
+				", group_concat(pe.FirstName SEPARATOR '&~&') as Person " +
+				", group_concat(pe.LastName SEPARATOR '&~&') as Person " +
+				", group_concat(pe.BirthPlace SEPARATOR '&~&') as PersonBirthPlace " +
+				", group_concat(pe.BirthDate SEPARATOR '&~&') as PersonBirthDate " +
+				", group_concat(pe.DeathPlace SEPARATOR '&~&') as PersonDeathPlace " +
+				", group_concat(pe.DeathDate SEPARATOR '&~&') as PersonDeathDate " +
+				", group_concat(pe.Link SEPARATOR '&~&') as PersonLink " +
+				", group_concat(pe.Description SEPARATOR '&~&') as PersonDescription " +
+				"FROM Item i " + 
+				"LEFT JOIN Person pe on i.ItemId = pe.ItemId " +  
+				"GROUP BY i.ItemId " +
+			") f " + 
+			"ON i.ItemId = f.ItemId " +
+			"LEFT JOIN " + 
 			"(" +
 				"SELECT * " +
 				"FROM Story " + 
@@ -813,6 +908,15 @@ public class ItemResponse {
 					"    annot.AnnotationY_Coord AS AnnotationY_Coord,\r\n" + 
 					"    annot.AnnotationWidth AS AnnotationWidth,\r\n" + 
 					"    annot.AnnotationHeight AS AnnotationHeight,\r\n" + 
+					"    person.PersonId as PersonId,\r\n" + 
+					"    person.PersonFirstName as PersonFirstName,\r\n" + 
+					"    person.PersonLastName as PersonLastName,\r\n" + 
+					"    person.PersonBirthPlace as PersonBirthPlace,\r\n" + 
+					"    person.PersonBirthDate as PersonBirthDate,\r\n" + 
+					"    person.PersonDeathPlace as PersonDeathPlace,\r\n" + 
+					"    person.PersonDeathDate as PersonDeathDate,\r\n" +
+					"    person.PersonLink as PersonLink,\r\n" + 
+					"    person.PersonDescription as PersonDescription,\r\n" + 
 					"    s.StoryId AS StoryId,\r\n" + 
 					"    s.`dc:title` AS StorydcTitle,\r\n" + 
 					"    s.`dc:description` AS StorydcDescription,\r\n" + 
@@ -1014,6 +1118,32 @@ public class ItemResponse {
 					"			AnnotationType at ON a.AnnotationTypeId = at.AnnotationTypeId\r\n" + 
 					"		GROUP BY a.ItemId\r\n" + 
 					"	) annot ON annot.ItemId = i.ItemId\r\n" + 
+					"        LEFT JOIN\r\n" + 
+					"	(\r\n" + 
+					"		SELECT \r\n" + 
+					"			pe.ItemId,\r\n" + 
+					"			GROUP_CONCAT(pe.PersonId\r\n" + 
+					"				SEPARATOR '&~&') AS PersonId,\r\n" + 
+					"			GROUP_CONCAT(IFNULL(pe.FirstName, 'NULL')\r\n" + 
+					"				SEPARATOR '&~&') AS PersonFirstName,\r\n" + 
+					"			GROUP_CONCAT(IFNULL(pe.LastName, 'NULL')\r\n" + 
+					"				SEPARATOR '&~&') AS PersonLastName,\r\n" + 
+					"			GROUP_CONCAT(IFNULL(pe.BirthPlace, 'NULL')\r\n" + 
+					"				SEPARATOR '&~&') AS PersonBirthPlace,\r\n" + 
+					"			GROUP_CONCAT(IFNULL(pe.BirthDate, 'NULL')\r\n" + 
+					"				SEPARATOR '&~&') AS PersonBirthDate,\r\n" + 
+					"			GROUP_CONCAT(IFNULL(pe.DeathPlace, 'NULL')\r\n" + 
+					"				SEPARATOR '&~&') AS PersonDeathPlace,\r\n" + 
+					"			GROUP_CONCAT(IFNULL(pe.DeathDate, 'NULL')\r\n" + 
+					"				SEPARATOR '&~&') AS PersonDeathDate,\r\n" + 
+					"			GROUP_CONCAT(IFNULL(pe.Link, 'NULL')\r\n" + 
+					"				SEPARATOR '&~&') AS PersonLink,\r\n" + 
+					"			GROUP_CONCAT(IFNULL(pe.Description + 0, 'NULL')\r\n" + 
+					"				SEPARATOR '&~&') AS PersonDescription\r\n" + 
+					"		FROM\r\n" + 
+					"			Person pe\r\n" + 
+					"		GROUP BY pe.ItemId\r\n" + 
+					"	) person ON person.ItemId = i.ItemId\r\n" + 
 					"				LEFT JOIN\r\n" + 
 					"    Story s ON i.StoryId = s.StoryId\r\n" + 
 					"GROUP BY i.ItemId";

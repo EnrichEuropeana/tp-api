@@ -48,13 +48,9 @@ public class Story {
 	public Timestamp DateStart;
 	public Timestamp DateEnd;
 	public Integer OrderIndex;
-	public List<Person> Persons;
 	public List<Item> Items;
 	
 	
-	public void setPersons(List<Person> persons) {
-		Persons = persons;
-	}
 	public void setItems(List<Item> items) {
 		Items = items;
 	}

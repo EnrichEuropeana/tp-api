@@ -7,11 +7,12 @@ public class Person {
 	public String FirstName; 
 	public String LastName; 
 	public String BirthPlace; 
-	public Timestamp BirthDate;
+	public String BirthDate;
 	public String DeathPlace; 
-	public Timestamp DeathDate;
+	public String DeathDate;
 	public String Link; 
 	public String Description; 
+	public Integer ItemId; 
 	
 	public void setPersonId (Integer PersonId) {
 		this.PersonId = PersonId;
@@ -37,7 +38,7 @@ public class Person {
 		this.BirthPlace = BirthPlace;
 	}
 	
-	public void setBirthDate (Timestamp BirthDate) {
+	public void setBirthDate (String BirthDate) {
 		this.BirthDate = BirthDate;
 	}
 	
@@ -45,12 +46,16 @@ public class Person {
 		this.DeathPlace = DeathPlace;
 	}
 	
-	public void setDeathDate (Timestamp DeathDate) {
+	public void setDeathDate (String DeathDate) {
 		this.DeathDate = DeathDate;
 	}
 	
 	public void setLink (String Link) {
 		this.Link = Link;
+	}
+
+	public void setItemId(Integer itemId) {
+		ItemId = itemId;
 	}
 	
 

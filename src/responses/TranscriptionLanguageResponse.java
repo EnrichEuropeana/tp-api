@@ -100,6 +100,8 @@ public class TranscriptionLanguageResponse {
 		String query = "SELECT * FROM TranscriptionLanguage tl "
 						+ "JOIN Language l "
 						+ "ON tl.LanguageId = l.LanguageId "
+						+ "JOIN "
+						+ "Transcription t ON tl.TranscriptionId = t.TranscriptionId "
 						+ "WHERE 1";
 		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
 		
@@ -119,6 +121,7 @@ public class TranscriptionLanguageResponse {
 		}
 		String resource = executeQuery(query, "Select");
 		ResponseBuilder rBuild = Response.ok(resource);
+		//ResponseBuilder rBuild = Response.ok(query);
         return rBuild.build();
 	}
 	
