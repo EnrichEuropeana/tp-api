@@ -110,7 +110,7 @@ public class PersonResponse {
 		    int valueCount = values.length;
 		    int i = 1;
 		    for(String value : values) {
-		    	query += key + " = " + value;
+		    	query += key + " = '" + value + "'";
 			    if (i < valueCount) {
 			    	query += " OR ";
 			    }
@@ -154,31 +154,31 @@ public class PersonResponse {
 		else {
 			query += "null,";
 		}
-		if(person.BirthDate.equals("") || person.BirthDate.equals(null)) {
+		if(!person.BirthDate.equals("")) {
 			query += "'" + person.BirthDate + "',";
 		}
 		else {
 			query += "null,";
 		}
-		if(person.DeathPlace.equals("") || person.DeathPlace.equals(null)) {
+		if(!person.DeathPlace.equals("")) {
 			query += "'" + person.DeathPlace + "',";
 		}
 		else {
 			query += "null,";
 		}
-		if(person.DeathDate.equals("") || person.DeathDate.equals(null)) {
+		if(!person.DeathDate.equals("")) {
 			query += "'" + person.DeathDate + "',";
 		}
 		else {
 			query += "null,";
 		}
-		if(person.Link.equals("") || person.Link.equals(null)) {
+		if(!person.Link.equals("")) {
 			query += "'" + person.Link + "',";
 		}
 		else {
 			query += "null,";
 		}
-		if(person.Description.equals("") || person.Description.equals(null)) {
+		if(!person.Description.equals("")) {
 			query += "'" + person.Description + "',";
 		}
 		else {
@@ -187,8 +187,8 @@ public class PersonResponse {
 		query += person.ItemId;
 		query += ")";
 		String resource = executeQuery(query, "Insert");
-		//ResponseBuilder rBuild = Response.ok(resource);
-		ResponseBuilder rBuild = Response.ok(query);
+		ResponseBuilder rBuild = Response.ok(resource);
+		//ResponseBuilder rBuild = Response.ok(query);
         return rBuild.build();
 	}
 

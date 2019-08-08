@@ -23,7 +23,7 @@ import java.sql.*;
 
 import com.google.gson.*;
 
-@Path("/PropertyType")
+@Path("/propertyTypes")
 public class PropertyTypeResponse {
 
 
@@ -63,7 +63,7 @@ public class PropertyTypeResponse {
 		   while(rs.next()){
 		      //Retrieve by column name
 			  PropertyType propertyType = new PropertyType();
-			  propertyType.setPropertyTypeId(rs.getInt("PropertyTypeTypeId"));
+			  propertyType.setPropertyTypeId(rs.getInt("PropertyTypeId"));
 			  propertyType.setName(rs.getString("Name"));
 			  propertyType.setMotivationId(rs.getString("MotivationId"));
 			  propertyType.setEditable(rs.getString("Editable"));
@@ -90,12 +90,29 @@ public class PropertyTypeResponse {
 	    return result;
 	}
 
-	//Get all Entries
-	@Path("/all")
+
+	//Search using custom filters
+	@Path("")
 	@Produces("application/json;charset=utf-8")
 	@GET
-	public Response getAll() throws SQLException {
+	public Response search(@Context UriInfo uriInfo) throws SQLException {
 		String query = "SELECT * FROM PropertyType WHERE 1";
+		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
+		
+		for(String key : queryParams.keySet()){
+			String[] values = queryParams.getFirst(key).split(",");
+			query += " AND (";
+		    int valueCount = values.length;
+		    int i = 1;
+		    for(String value : values) {
+		    	query += key + " = '" + value + "'";
+			    if (i < valueCount) {
+			    	query += " OR ";
+			    }
+			    i++;
+		    }
+		    query += ")";
+		}
 		String resource = executeQuery(query, "Select");
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
@@ -103,9 +120,9 @@ public class PropertyTypeResponse {
 	
 
 	//Add new entry
-	@Path("/add")
+	@Path("")
 	@POST
-	public String add(String body) throws SQLException {	
+	public Response add(String body) throws SQLException {	
 	    GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
 	    Gson gson = gsonBuilder.create();
 	    PropertyType propertyType = gson.fromJson(body, PropertyType.class);
@@ -117,9 +134,11 @@ public class PropertyTypeResponse {
 								+ ", " + propertyType.MotivationId
 								+ ", " + propertyType.Editable + ")";
 			String resource = executeQuery(query, "Insert");
-			return resource;
+			ResponseBuilder rBuild = Response.ok(resource);
+	        return rBuild.build();
 	    } else {
-	    	return "Fields missing";
+			ResponseBuilder rBuild = Response.status(Response.Status.BAD_REQUEST);
+	        return rBuild.build();
 	    }
 	}
 	
@@ -176,33 +195,6 @@ public class PropertyTypeResponse {
 	@GET
 	public Response getEntry(@PathParam("id") int id) throws SQLException {
 		String resource = executeQuery("SELECT * FROM PropertyType WHERE PropertyTypeId = " + id, "Select");
-		ResponseBuilder rBuild = Response.ok(resource);
-        return rBuild.build();
-	}
-
-	//Search using custom filters
-	@Path("/search")
-	@Produces("application/json;charset=utf-8")
-	@GET
-	public Response search(@Context UriInfo uriInfo) throws SQLException {
-		String query = "SELECT * FROM PropertyType WHERE 1";
-		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
-		
-		for(String key : queryParams.keySet()){
-			String[] values = queryParams.getFirst(key).split(",");
-			query += " AND (";
-		    int valueCount = values.length;
-		    int i = 1;
-		    for(String value : values) {
-		    	query += key + " = " + value;
-			    if (i < valueCount) {
-			    	query += " OR ";
-			    }
-			    i++;
-		    }
-		    query += ")";
-		}
-		String resource = executeQuery(query, "Select");
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
 	}

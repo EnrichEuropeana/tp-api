@@ -201,7 +201,7 @@ public class UserResponse {
 		    int valueCount = values.length;
 		    int i = 1;
 		    for(String value : values) {
-		    	query += key + " = " + value;
+		    	query += key + " = '" + value + "'";
 			    if (i < valueCount) {
 			    	query += " OR ";
 			    }
