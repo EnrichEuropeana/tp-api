@@ -133,18 +133,62 @@ public class PersonResponse {
 	    Person person = gson.fromJson(body, Person.class);
 	    
 	    //Check if all mandatory fields are included
-		String query = "INSERT INTO Person (FirstName, LastName, BirthPlace, BirthDate, DeathPlace, DeathDate, Link, Description, ItemId) "
-						+ "VALUES ('" + person.FirstName + "'"
-						+ ", '" + person.LastName + "'"
-						+ ", '" + person.BirthPlace + "'"
-						+ ", '" + person.BirthDate + "'"
-						+ ", '" + person.DeathPlace + "'"
-						+ ", '" + person.DeathDate + "'"
-						+ ", '" + person.Link + "'"
-						+ ", '" + person.Description + "'"
-						+ ", " + person.ItemId + ")";
+	    String query = "";
+		query += "INSERT INTO Person (FirstName, LastName, BirthPlace, BirthDate, DeathPlace, DeathDate, Link, Description, ItemId) "
+						+ "VALUES (";
+		if(!person.FirstName.equals("")) {
+			query += "'" + person.FirstName + "',";
+		}
+		else {
+			query += "null,";
+		}
+		if(!person.LastName.equals("")) {
+			query += "'" + person.LastName + "',";
+		}
+		else {
+			query += "null,";
+		}
+		if(!person.BirthPlace.equals("")) {
+			query += "'" + person.BirthPlace + "',";
+		}
+		else {
+			query += "null,";
+		}
+		if(person.BirthDate.equals("") || person.BirthDate.equals(null)) {
+			query += "'" + person.BirthDate + "',";
+		}
+		else {
+			query += "null,";
+		}
+		if(person.DeathPlace.equals("") || person.DeathPlace.equals(null)) {
+			query += "'" + person.DeathPlace + "',";
+		}
+		else {
+			query += "null,";
+		}
+		if(person.DeathDate.equals("") || person.DeathDate.equals(null)) {
+			query += "'" + person.DeathDate + "',";
+		}
+		else {
+			query += "null,";
+		}
+		if(person.Link.equals("") || person.Link.equals(null)) {
+			query += "'" + person.Link + "',";
+		}
+		else {
+			query += "null,";
+		}
+		if(person.Description.equals("") || person.Description.equals(null)) {
+			query += "'" + person.Description + "',";
+		}
+		else {
+			query += "null,";
+		}
+		query += person.ItemId;
+		query += ")";
 		String resource = executeQuery(query, "Insert");
-		ResponseBuilder rBuild = Response.ok(resource);
+		//ResponseBuilder rBuild = Response.ok(resource);
+		ResponseBuilder rBuild = Response.ok(query);
         return rBuild.build();
 	}
 
