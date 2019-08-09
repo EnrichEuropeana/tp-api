@@ -49,12 +49,20 @@ public class PropertyResponse {
 		   // Execute SQL query
 		   Statement stmt = conn.createStatement();
 		   if (type != "Select") {
-			   int success = stmt.executeUpdate(query);
-			   if (success > 0) {
-				   return type +" succesful";
+			   if (type == "PropertyId") {
+				   ResultSet rs = stmt.executeQuery(query);
+				   while(rs.next()){
+					   return rs.getString("PropertyId");
+				   }
 			   }
 			   else {
-				   return type +" could not be executed";
+				   int success = stmt.executeUpdate(query);
+				   if (success > 0) {
+					   return type +" succesful";
+				   }
+				   else {
+					   return type +" could not be executed";
+				   }
 			   }
 		   }
 		   ResultSet rs = stmt.executeQuery(query);
@@ -138,22 +146,51 @@ public class PropertyResponse {
 	//Add new entry
 	@Path("")
 	@POST
-	public String add(String body) throws SQLException {	
+	public Response add(String body, @Context UriInfo uriInfo) throws SQLException {	
 	    GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
 	    Gson gson = gsonBuilder.create();
 	    Property property = gson.fromJson(body, Property.class);
+
 	    
 	    //Check if all mandatory fields are included
 	    if (property.PropertyValue != null && property.PropertyType != null) {
-			String query = "INSERT INTO Property (Value, PropertyTypeId) "
-						+ "VALUES ('" + property.PropertyValue + "'"
-						+ ", (SELECT PropertyTypeID "
-						+ "FROM PropertyType "
-						+ "WHERE Name = '" + property.PropertyType + "'))";
-			String resource = executeQuery(query, "Insert");
-			return resource;
+	    	// Check if property exists already
+	    	String checkQuery = "SELECT PropertyId FROM Property "
+	    						+ "WHERE Value = '" + property.PropertyValue + "'"
+	    						+ "AND PropertyTypeId = (SELECT PropertyTypeID FROM PropertyType WHERE Name = '" + property.PropertyType + "')";
+			String PropertyId = executeQuery(checkQuery, "PropertyId");
+			if (PropertyId != "") {
+				String propertyInsert = "INSERT INTO Property (Value, PropertyTypeId) "
+							+ "VALUES ('" + property.PropertyValue + "'"
+							+ ", (SELECT PropertyTypeID "
+							+ "FROM PropertyType "
+							+ "WHERE Name = '" + property.PropertyType + "'))";
+				String propertyInsertResponse = executeQuery(propertyInsert, "Insert");
+
+				MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
+				if (queryParams.keySet().contains("ItemId")) {
+					PropertyId = executeQuery(checkQuery, "PropertyId");
+					String itemPropertyInsert = "INSERT INTO ItemProperty (ItemId, PropertyId, UserGenerated) "
+												+ "VALUES (" + queryParams.get("ItemId").get(0) + ", " + PropertyId + ", 1)";
+					String itemPropertyInsertResponse = executeQuery(itemPropertyInsert, "Insert");
+					//ResponseBuilder rBuild = Response.ok(itemPropertyInsertResponse);
+					ResponseBuilder rBuild = Response.ok(itemPropertyInsert);
+			        return rBuild.build();
+				}
+				else {
+					ResponseBuilder rBuild = Response.ok(propertyInsertResponse);
+			        return rBuild.build();
+				}
+			}
+	    	
+	    	
+			
+			
+			ResponseBuilder rBuild = Response.ok("test");
+	        return rBuild.build();
 	    } else {
-	    	return "Fields missing";
+			ResponseBuilder rBuild = Response.status(Response.Status.BAD_REQUEST);
+	        return rBuild.build();
 	    }
 	}
 	
