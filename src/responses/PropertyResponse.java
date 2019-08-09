@@ -51,7 +51,10 @@ public class PropertyResponse {
 		   if (type != "Select") {
 			   if (type == "PropertyId") {
 				   ResultSet rs = stmt.executeQuery(query);
-				   while(rs.next()){
+				   if(rs.next() == false){
+					   return "";
+				   }
+				   else {
 					   return rs.getString("PropertyId");
 				   }
 			   }
@@ -73,6 +76,7 @@ public class PropertyResponse {
 			  Property property = new Property();
 			  property.setPropertyId(rs.getInt("PropertyId"));
 			  property.setPropertyValue(rs.getString("PropertyValue"));
+			  property.setPropertyDescription(rs.getString("PropertyDescription"));
 			  property.setPropertyTypeId(rs.getInt("PropertyTypeId"));
 			  property.setPropertyType(rs.getString("PropertyType"));
 			  property.setMotivationId(rs.getInt("MotivationId"));
@@ -110,6 +114,7 @@ public class PropertyResponse {
 				"SELECT \r\n" + 
 				"	p.PropertyId as PropertyId,\r\n" + 
 				"	p.Value as PropertyValue,\r\n" + 
+				"	p.Description as PropertyDescription,\r\n" + 
 				"	pt.PropertyTypeId as PropertyTypeId,\r\n" + 
 				"    pt.Name as PropertyType,\r\n" + 
 				"    m.MotivationId as MotivationId,\r\n" + 
@@ -150,6 +155,7 @@ public class PropertyResponse {
 	    GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
 	    Gson gson = gsonBuilder.create();
 	    Property property = gson.fromJson(body, Property.class);
+		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
 
 	    
 	    //Check if all mandatory fields are included
@@ -159,22 +165,32 @@ public class PropertyResponse {
 	    						+ "WHERE Value = '" + property.PropertyValue + "'"
 	    						+ "AND PropertyTypeId = (SELECT PropertyTypeID FROM PropertyType WHERE Name = '" + property.PropertyType + "')";
 			String PropertyId = executeQuery(checkQuery, "PropertyId");
-			if (PropertyId != "") {
-				String propertyInsert = "INSERT INTO Property (Value, PropertyTypeId) "
-							+ "VALUES ('" + property.PropertyValue + "'"
-							+ ", (SELECT PropertyTypeID "
+			if (PropertyId == "") {
+				// Property doesn't exist yet
+
+				// Add property
+				String propertyInsert = "";
+				propertyInsert += "INSERT INTO Property (Value, Description, PropertyTypeId) "
+							+ "VALUES ('" + property.PropertyValue + "'";
+				if(!property.PropertyDescription.equals("")) {
+					propertyInsert += ",'" + property.PropertyDescription + "'";
+				}
+				else {
+					propertyInsert += ",null";
+				}
+				propertyInsert += ", (SELECT PropertyTypeID "
 							+ "FROM PropertyType "
 							+ "WHERE Name = '" + property.PropertyType + "'))";
 				String propertyInsertResponse = executeQuery(propertyInsert, "Insert");
 
-				MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
 				if (queryParams.keySet().contains("ItemId")) {
+					// Add Property to Item
+					
 					PropertyId = executeQuery(checkQuery, "PropertyId");
 					String itemPropertyInsert = "INSERT INTO ItemProperty (ItemId, PropertyId, UserGenerated) "
 												+ "VALUES (" + queryParams.get("ItemId").get(0) + ", " + PropertyId + ", 1)";
 					String itemPropertyInsertResponse = executeQuery(itemPropertyInsert, "Insert");
-					//ResponseBuilder rBuild = Response.ok(itemPropertyInsertResponse);
-					ResponseBuilder rBuild = Response.ok(itemPropertyInsert);
+					ResponseBuilder rBuild = Response.ok(itemPropertyInsertResponse);
 			        return rBuild.build();
 				}
 				else {
@@ -182,12 +198,24 @@ public class PropertyResponse {
 			        return rBuild.build();
 				}
 			}
-	    	
-	    	
-			
-			
-			ResponseBuilder rBuild = Response.ok("test");
-	        return rBuild.build();
+			else {
+				// Property already exists
+				
+				if (queryParams.keySet().contains("ItemId")) {
+					// Add Property to Item
+					
+					String itemPropertyInsert = "INSERT INTO ItemProperty (ItemId, PropertyId, UserGenerated) "
+												+ "VALUES (" + queryParams.get("ItemId").get(0) + ", " + PropertyId + ", 1)";
+					String itemPropertyInsertResponse = executeQuery(itemPropertyInsert, "Insert");
+					ResponseBuilder rBuild = Response.ok(itemPropertyInsertResponse);
+			        return rBuild.build();
+				}
+				else {
+					
+					ResponseBuilder rBuild = Response.ok("Property already exists");
+			        return rBuild.build();
+				}
+			}
 	    } else {
 			ResponseBuilder rBuild = Response.status(Response.Status.BAD_REQUEST);
 	        return rBuild.build();

@@ -3,6 +3,7 @@ package objects;
 public class Property {
 	public Integer PropertyId;
 	public String PropertyValue;
+	public String PropertyDescription;
 	public Integer PropertyTypeId;
 	public String PropertyType;
 	public Integer MotivationId;
@@ -14,6 +15,9 @@ public class Property {
 	}
 	public void setPropertyValue(String propertyValue) {
 		PropertyValue = propertyValue;
+	}
+	public void setPropertyDescription(String propertyDescription) {
+		PropertyDescription = propertyDescription;
 	}
 	public void setPropertyTypeId(Integer propertyTypeId) {
 		PropertyTypeId = propertyTypeId;

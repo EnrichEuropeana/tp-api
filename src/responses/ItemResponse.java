@@ -97,12 +97,19 @@ public class ItemResponse {
 			  if (rs.getString("PropertyId") != null) {
 				  String[] PropertyIds = rs.getString("PropertyId").split("&~&");
 				  String[] PropertyValues = rs.getString("PropertyValue").split("&~&");
+				  String[] PropertyDescriptions = new String[PropertyIds.length];
+				  if (rs.getString("PropertyDescription") != null) {
+					  PropertyDescriptions = rs.getString("PropertyDescription").split("&~&");
+				  }
 				  String[] PropertyTypeNames = rs.getString("PropertyTypeName").split("&~&");
 				  String[] PropertyEditables = rs.getString("PropertyEditable").split("&~&");
 				  for (int i = 0; i < PropertyIds.length; i++) {
 					  Property property = new Property();
 					  property.setPropertyId(Integer.parseInt(PropertyIds[i]));
 					  property.setPropertyValue(PropertyValues[i]);
+					  if (PropertyDescriptions[i] != null) {
+						  property.setPropertyDescription(PropertyDescriptions[i]);
+					  }
 					  property.setPropertyType(PropertyTypeNames[i]);
 					  property.setEditable(PropertyEditables[i]);
 					  PropertyList.add(property);
@@ -473,6 +480,7 @@ public class ItemResponse {
 				"    a.PropertyId as PropertyId,\r\n" + 
 				"    a.PropertyTypeName as PropertyTypeName,\r\n" + 
 				"    a.PropertyValue as PropertyValue,\r\n" + 
+				"    a.PropertyDescription as PropertyDescription,\r\n" + 
 				"    a.PropertyEditable as PropertyEditable,\r\n" + 
 				"    b.CommentId as CommentId,\r\n" + 
 				"    b.CommentText as CommentText,\r\n" + 
@@ -621,6 +629,7 @@ public class ItemResponse {
 				", group_concat(p.PropertyId SEPARATOR '&~&') as PropertyId" +
 				", group_concat(pt.Name SEPARATOR '&~&') as PropertyTypeName " +
 				", group_concat(p.Value SEPARATOR '&~&') as PropertyValue " +
+				", group_concat(p.Description SEPARATOR '&~&') as PropertyDescription " +
 				", group_concat(pt.Editable + 0 SEPARATOR '&~&') as PropertyEditable " +
 				"FROM Item i " + 
 				"LEFT JOIN ItemProperty ip on i.ItemId = ip.ItemId " + 
@@ -874,6 +883,7 @@ public class ItemResponse {
 					"    prop.PropertyId AS PropertyId,\r\n" + 
 					"    prop.PropertyTypeName AS PropertyTypeName,\r\n" + 
 					"    prop.PropertyValue AS PropertyValue,\r\n" + 
+					"    prop.PropertyDescription AS PropertyDescription,\r\n" + 
 					"    prop.PropertyEditable AS PropertyEditable,\r\n" + 
 					"    comments.CommentId AS CommentId,\r\n" + 
 					"    comments.CommentText AS CommentText,\r\n" + 
@@ -987,6 +997,8 @@ public class ItemResponse {
 					"				SEPARATOR '&~&') AS PropertyTypeName,\r\n" + 
 					"			GROUP_CONCAT(p.Value\r\n" + 
 					"				SEPARATOR '&~&') AS PropertyValue,\r\n" + 
+					"			GROUP_CONCAT(p.Description\r\n" + 
+					"				SEPARATOR '&~&') AS PropertyDescription,\r\n" + 
 					"			GROUP_CONCAT(pt.Editable + 0\r\n" + 
 					"				SEPARATOR '&~&') AS PropertyEditable\r\n" + 
 					"		FROM\r\n" + 
