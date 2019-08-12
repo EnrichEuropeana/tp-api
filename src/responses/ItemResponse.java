@@ -629,7 +629,7 @@ public class ItemResponse {
 				", group_concat(p.PropertyId SEPARATOR '&~&') as PropertyId" +
 				", group_concat(pt.Name SEPARATOR '&~&') as PropertyTypeName " +
 				", group_concat(p.Value SEPARATOR '&~&') as PropertyValue " +
-				", group_concat(p.Description SEPARATOR '&~&') as PropertyDescription " +
+				", group_concat(IFNULL(p.Description, 'NULL') SEPARATOR '&~&') as PropertyDescription " +
 				", group_concat(pt.Editable + 0 SEPARATOR '&~&') as PropertyEditable " +
 				"FROM Item i " + 
 				"LEFT JOIN ItemProperty ip on i.ItemId = ip.ItemId " + 
@@ -997,7 +997,7 @@ public class ItemResponse {
 					"				SEPARATOR '&~&') AS PropertyTypeName,\r\n" + 
 					"			GROUP_CONCAT(p.Value\r\n" + 
 					"				SEPARATOR '&~&') AS PropertyValue,\r\n" + 
-					"			GROUP_CONCAT(p.Description\r\n" + 
+					"			GROUP_CONCAT(IFNULL(p.Description, 'NULL')" + 
 					"				SEPARATOR '&~&') AS PropertyDescription,\r\n" + 
 					"			GROUP_CONCAT(pt.Editable + 0\r\n" + 
 					"				SEPARATOR '&~&') AS PropertyEditable\r\n" + 
