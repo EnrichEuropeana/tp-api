@@ -657,9 +657,9 @@ public class ItemResponse {
 				", group_concat(pl.Name SEPARATOR '&~&') as PlaceName " +
 				", group_concat(pl.Latitude SEPARATOR '&~&') as PlaceLatitude " +
 				", group_concat(pl.Longitude SEPARATOR '&~&') as PlaceLongitude " +
-				", group_concat(pl.Link SEPARATOR '&~&') as PlaceLink " +
+				", group_concat(IFNULL(pl.Link, 'NULL') SEPARATOR '&~&') as PlaceLink " +
 				", group_concat(pl.Zoom SEPARATOR '&~&') as PlaceZoom " +
-				", group_concat(pl.Comment SEPARATOR '&~&') as PlaceComment " +
+				", group_concat(IFNULL(pl.Comment, 'NULL') SEPARATOR '&~&') as PlaceComment " +
 				", group_concat(pl.UserId SEPARATOR '&~&') as PlaceUserId " +
 				", group_concat(pl.UserGenerated + 0 SEPARATOR '&~&') as PlaceUserGenerated " +
 				"FROM Item i " + 
@@ -1038,11 +1038,11 @@ public class ItemResponse {
 					"				SEPARATOR '&~&') AS PlaceLatitude,\r\n" + 
 					"			GROUP_CONCAT(pl.Longitude\r\n" + 
 					"				SEPARATOR '&~&') AS PlaceLongitude,\r\n" + 
-					"			GROUP_CONCAT(pl.Link\r\n" + 
+					"			GROUP_CONCAT(IFNULL(pl.Link, 'NULL')\r\n" + 
 					"				SEPARATOR '&~&') AS PlaceLink,\r\n" + 
 					"			GROUP_CONCAT(pl.Zoom\r\n" + 
 					"				SEPARATOR '&~&') AS PlaceZoom,\r\n" + 
-					"			GROUP_CONCAT(pl.Comment\r\n" + 
+					"			GROUP_CONCAT(IFNULL(pl.Comment, 'NULL')\r\n" + 
 					"				SEPARATOR '&~&') AS PlaceComment,\r\n" + 
 					"			GROUP_CONCAT(pl.UserId\r\n" + 
 					"				SEPARATOR '&~&') AS PlaceUserId,\r\n" + 

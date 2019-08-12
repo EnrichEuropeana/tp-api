@@ -172,7 +172,7 @@ public class PropertyResponse {
 				String propertyInsert = "";
 				propertyInsert += "INSERT INTO Property (Value, Description, PropertyTypeId) "
 							+ "VALUES ('" + property.PropertyValue + "'";
-				if(!property.PropertyDescription.equals("")) {
+				if(property.PropertyDescription != null && !property.PropertyDescription.equals("")) {
 					propertyInsert += ",'" + property.PropertyDescription + "'";
 				}
 				else {
