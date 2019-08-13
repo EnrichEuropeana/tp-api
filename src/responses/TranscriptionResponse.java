@@ -113,6 +113,7 @@ public class TranscriptionResponse {
 			  transcription.setItemId(rs.getInt("ItemId"));
 			  transcription.setCurrentVersion(rs.getString("CurrentVersion"));
 			  transcription.setEuropeanaAnnotationId(rs.getInt("EuropeanaAnnotationId"));
+			  transcription.setNoText(rs.getString("NoText"));
 
 			  // Add Languages
 			  List<Language> LanguageList = new ArrayList<Language>();
@@ -169,6 +170,7 @@ public class TranscriptionResponse {
 				"    t.ItemId,\r\n" + 
 				"    t.CurrentVersion,\r\n" + 
 				"    t.EuropeanaAnnotationId,\r\n" + 
+				"    t.NoText,\r\n" + 
 				"    u.WP_UserId,\r\n" + 
 				"    l.LanguageId AS LanguageId,\r\n" + 
 				"    l.Name AS LanguageName,\r\n" + 
@@ -273,12 +275,13 @@ public class TranscriptionResponse {
 	    							+ "WHERE ItemId = " + transcription.ItemId;
 				String updateResponse = executeQuery(updateQuery, "Update");
 	    	}
-			String query = "INSERT INTO Transcription (Text, UserId, ItemId, CurrentVersion) "
+			String query = "INSERT INTO Transcription (Text, UserId, ItemId, CurrentVersion, NoText) "
 							+ "VALUES ('" + transcription.Text + "'"
 								+ ", (SELECT UserId FROM User "
 								+ "		WHERE WP_UserId = " + transcription.UserId + ")"
 								+ ", " + transcription.ItemId
-								+ ", " + transcription.CurrentVersion + ")";
+								+ ", " + transcription.CurrentVersion
+								+ ", " + transcription.NoText + ")";
 			String resource = executeQuery(query, "Insert");
 			if (transcription.Languages != null) {
 				for (int i = 0; i < transcription.Languages.size(); i++) {
@@ -325,6 +328,7 @@ public class TranscriptionResponse {
 				"    t.ItemId,\r\n" + 
 				"    t.CurrentVersion,\r\n" + 
 				"    t.EuropeanaAnnotationId,\r\n" + 
+				"    t.NoText,\r\n" + 
 				"    u.WP_UserId,\r\n" + 
 				"    l.LanguageId AS LanguageId,\r\n" + 
 				"    l.Name AS LanguageName,\r\n" + 

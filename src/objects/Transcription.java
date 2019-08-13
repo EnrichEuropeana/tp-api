@@ -11,6 +11,7 @@ public class Transcription {
 	public Integer ItemId;
 	public String CurrentVersion;
 	public Integer EuropeanaAnnotationId;
+	public String NoText;
 	public List<Language> Languages;
 	
 	
@@ -37,6 +38,9 @@ public class Transcription {
 	}
 	public void setEuropeanaAnnotationId(Integer europeanaAnnotationId) {
 		EuropeanaAnnotationId = europeanaAnnotationId;
+	}
+	public void setNoText(String noText) {
+		NoText = noText;
 	}
 	public void setLanguages(List<Language> languages) {
 		Languages = languages;

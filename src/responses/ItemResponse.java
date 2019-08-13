@@ -153,6 +153,7 @@ public class ItemResponse {
 				  String[] TranscriptionTimestamps = rs.getString("TranscriptionTimestamp").split("&~&");
 				  String[] TranscriptionWP_UserIds = rs.getString("TranscriptionWP_UserId").split("&~&");
 				  String[] TranscriptionEuropeanaAnnotationIds = new String[TranscriptionIds.length];
+				  String[] TranscriptionNoTexts = rs.getString("TranscriptionNoText").split("&~&");
 				  if (rs.getString("TranscriptionEuropeanaAnnotationId") != null) {
 					  TranscriptionEuropeanaAnnotationIds = rs.getString("TranscriptionEuropeanaAnnotationId").split("&~&");
 				  }
@@ -189,6 +190,7 @@ public class ItemResponse {
 					  if (TranscriptionEuropeanaAnnotationIds[i] != null) {
 						  transcription.setEuropeanaAnnotationId(Integer.parseInt(TranscriptionEuropeanaAnnotationIds[i]));
 					  }
+					  transcription.setNoText(TranscriptionNoTexts[i]);
 
 					  List<Language> LanguageList = new ArrayList<Language>();
 					  if (rs.getString("TranscriptionLanguageId") != null) {
@@ -502,6 +504,7 @@ public class ItemResponse {
 				"    d.TranscriptionTimestamp as TranscriptionTimestamp,\r\n" + 
 				"    d.TranscriptionWP_UserId AS TranscriptionWP_UserId,\r\n" + 
 				"    d.TranscriptionEuropeanaAnnotationId AS TranscriptionEuropeanaAnnotationId,\r\n" + 
+				"    d.TranscriptionNoText as TranscriptionNoText,\r\n" + 
 				"    d.TranscriptionLanguageId AS TranscriptionLanguageId,\r\n" + 
 				"    d.TranscriptionLanguageName AS TranscriptionLanguageName,\r\n" + 
 				"    d.TranscriptionLanguageNameEnglish AS TranscriptionLanguageNameEnglish,\r\n" + 
@@ -675,6 +678,7 @@ public class ItemResponse {
 				", group_concat(t.UserId SEPARATOR '&~&') as TranscriptionUserId " +
 				", group_concat(t.CurrentVersion + 0 SEPARATOR '&~&') as TranscriptionCurrentVersion " +
 				", group_concat(t.Timestamp SEPARATOR '&~&') as TranscriptionTimestamp, " +
+				", group_concat(t.NoText + 0 SEPARATOR '&~&') as TranscriptionNoText " +
 				"			GROUP_CONCAT(t.WP_UserId\r\n" + 
 				"				SEPARATOR '&~&') AS TranscriptionWP_UserId,\r\n" + 
 				"			GROUP_CONCAT(t.EuropeanaAnnotationId\r\n" + 
@@ -905,6 +909,7 @@ public class ItemResponse {
 					"    transc.TranscriptionTimestamp AS TranscriptionTimestamp,\r\n" + 
 					"    transc.TranscriptionWP_UserId AS TranscriptionWP_UserId,\r\n" + 
 					"    transc.TranscriptionEuropeanaAnnotationId AS TranscriptionEuropeanaAnnotationId,\r\n" + 
+					"    transc.TranscriptionNoText AS TranscriptionNoText,\r\n" + 
 					"    transc.TranscriptionLanguageId AS TranscriptionLanguageId,\r\n" + 
 					"    transc.TranscriptionLanguageName AS TranscriptionLanguageName,\r\n" + 
 					"    transc.TranscriptionLanguageNameEnglish AS TranscriptionLanguageNameEnglish,\r\n" + 
@@ -1070,6 +1075,8 @@ public class ItemResponse {
 					"				SEPARATOR '&~&') AS TranscriptionWP_UserId,\r\n" + 
 					"			GROUP_CONCAT(t.EuropeanaAnnotationId ORDER BY t.Timestamp DESC\r\n" + 
 					"				SEPARATOR '&~&') AS TranscriptionEuropeanaAnnotationId,\r\n" + 
+					"			GROUP_CONCAT(t.NoText + 0 ORDER BY t.Timestamp DESC\r\n" + 
+					"				SEPARATOR '&~&') AS TranscriptionNoText,\r\n" + 
 					"    		GROUP_CONCAT(IFNULL(l.LanguageId, 'NULL') ORDER BY t.Timestamp DESC SEPARATOR '&~&') AS TranscriptionLanguageId,\r\n" + 
 					"    		GROUP_CONCAT(IFNULL(l.Name, 'NULL') ORDER BY t.Timestamp DESC SEPARATOR '&~&') AS TranscriptionLanguageName,\r\n" + 
 					"    		GROUP_CONCAT(IFNULL(l.NameEnglish, 'NULL') ORDER BY t.Timestamp DESC SEPARATOR '&~&') AS TranscriptionLanguageNameEnglish,\r\n" + 
