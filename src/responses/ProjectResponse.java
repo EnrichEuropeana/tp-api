@@ -398,7 +398,8 @@ public class ProjectResponse {
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-	   return query;
+	   //return "query couldn't be executed";
+		return query;
 	}
 	
 	//Get entry by id
@@ -485,7 +486,7 @@ public class ProjectResponse {
 							}
 						}
 					}
-					else if (entry.getValue().isJsonArray()){
+					else if (entry.getValue().isJsonArray()){	
 						if (!keys.contains(entry.getKey())) {
 							String key = "";
 							String value = "";
@@ -507,6 +508,12 @@ public class ProjectResponse {
 											key = entry.getKey();
 											value = element.get("@value").toString();
 										}
+									}
+								}
+								else {
+									if (key == "") {
+										key = entry.getKey();
+										value = entry.getValue().getAsJsonArray().get(j).toString();
 									}
 								}
 							}
