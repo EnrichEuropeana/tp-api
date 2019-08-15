@@ -146,8 +146,7 @@ public class PlaceResponse {
 							+ "		WHERE WP_UserId = " + place.UserId + ")"
 							+ ", " + place.UserGenerated + ")";
 			String resource = executeQuery(query, "Insert");
-			//ResponseBuilder rBuild = Response.ok(resource);
-			ResponseBuilder rBuild = Response.ok(query);
+			ResponseBuilder rBuild = Response.ok(resource);
 	        return rBuild.build();
 	    } else {
 			ResponseBuilder rBuild = Response.status(Response.Status.BAD_REQUEST);

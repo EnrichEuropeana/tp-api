@@ -691,18 +691,18 @@ public class ProjectResponse {
 					
 					if (i == 0) {
 						itemQuery += "("
-						+ "\"" + storyTitle.replace("\"", "") + " Item "  + i + "\"" +  ", "
+						+ "\"" + storyTitle.replace("\"", "") + " Item "  + (i + 1) + "\"" +  ", "
 						+ "(SELECT StoryId FROM Story ORDER BY StoryId DESC LIMIT 1), "
 						+ "\"" + imageLink.replace("\"", "\\\"") + "\"" + ", "
-						+ i + ", "
+						+ (i + 1) + ", "
 						+ "\"" + manifestUrl + "\"" + ")";
 					}
 					else {
 						itemQuery += ", ("
-								+ "\"" + storyTitle.replace("\"", "") + " Item "  + i + "\"" +  ", "
+								+ "\"" + storyTitle.replace("\"", "") + " Item "  + (i + 1) + "\"" +  ", "
 								+ "(SELECT StoryId FROM Story ORDER BY StoryId DESC LIMIT 1), "
 								+ "\"" + imageLink.replace("\"", "\\\"") + "\"" + ", "
-								+ i + ", "
+								+ (i + 1) + ", "
 								+ "\"" + manifestUrl + "\"" + ")";
 					}
 				}
