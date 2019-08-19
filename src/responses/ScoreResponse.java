@@ -29,7 +29,7 @@ public class ScoreResponse {
 
 	public String executeQuery(String query, String type) throws SQLException{
 		   List<Score> scoreList = new ArrayList<Score>();
-	       try (InputStream input = new FileInputStream("/home/enrich/tomcat/apache-tomcat-9.0.13/webapps/dev_tp-api/WEB-INF/config.properties")) {
+	       try (InputStream input = new FileInputStream("/home/enrich/tomcat/apache-tomcat-9.0.13/webapps/tp-api/WEB-INF/config.properties")) {
 
 	            Properties prop = new Properties();
 
