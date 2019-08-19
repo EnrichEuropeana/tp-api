@@ -23,7 +23,7 @@ import java.sql.*;
 
 import com.google.gson.*;
 
-@Path("/ProfileStatistics")
+@Path("/profileStatistics")
 public class ProfileStatisticsResponse {
 
 
@@ -65,7 +65,7 @@ public class ProfileStatisticsResponse {
 			  ProfileStatistics profileStatistics = new ProfileStatistics();
 			  profileStatistics.setWP_UserId(rs.getInt("WP_UserId"));
 			  profileStatistics.setMiles(rs.getInt("Miles"));
-			  profileStatistics.setCharacters(rs.getInt("Characters"));
+			  profileStatistics.setTranscriptionCharacters(rs.getInt("TranscriptionCharacters"));
 			  profileStatistics.setLocations(rs.getInt("Locations"));
 			  profileStatistics.setEnrichments(rs.getInt("Enrichments"));
 			  profileStatistics.setDocumentCount(rs.getInt("DocumentCount"));
@@ -131,11 +131,8 @@ public class ProfileStatisticsResponse {
 	//Get entry by id
 	@Path("/{WP_UserId}")
 	@Produces("application/json;charset=utf-8")
-	@POST
-	public Response getEntry(@PathParam("WP_UserId") int WP_UserId, String body) throws SQLException {
-		JsonParser jsonParser = new JsonParser();
-		JsonElement jsonTree = jsonParser.parse(body);
-		JsonObject bodyObject = jsonTree.getAsJsonObject();
+	@GET
+	public Response getEntry(@PathParam("WP_UserId") int WP_UserId) throws SQLException {
 		String query =  "SELECT " + 
 						"    u.WP_UserId as WP_UserId," + 
 						"    SUM(CASE" + 
@@ -145,7 +142,7 @@ public class ProfileStatisticsResponse {
 						"    SUM(CASE" + 
 						"        WHEN st.Name = 'Transcription' THEN Amount" + 
 						"        ELSE 0" + 
-						"    END) AS Characters," + 
+						"    END) AS TranscriptionCharacters," + 
 						"    SUM(CASE" + 
 						"        WHEN st.Name = 'Enrichment' THEN Amount" + 
 						"        ELSE 0" + 

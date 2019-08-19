@@ -3,7 +3,7 @@ package objects;
 public class ProfileStatistics {
 	public Integer WP_UserId;
 	public Integer Miles;
-	public Integer Characters;
+	public Integer TranscriptionCharacters;
 	public Integer Locations;
 	public Integer Enrichments;
 	public Integer DocumentCount;
@@ -14,8 +14,8 @@ public class ProfileStatistics {
 	public void setMiles(Integer miles) {
 		Miles = miles;
 	}
-	public void setCharacters(Integer characters) {
-		Characters = characters;
+	public void setTranscriptionCharacters(Integer transcriptionCharacters) {
+		TranscriptionCharacters = transcriptionCharacters;
 	}
 	public void setLocations(Integer locations) {
 		Locations = locations;
