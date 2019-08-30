@@ -32,6 +32,20 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.commons.io.IOUtils;
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -351,7 +365,7 @@ public class ProjectResponse {
 	}
 	
 
-	public String executeInsertQuery(String query, String type) throws SQLException{
+	public String executeInsertQuery(String query, String type) throws SQLException, ClientProtocolException, IOException{
 		try (InputStream input = new FileInputStream("/home/enrich/tomcat/apache-tomcat-9.0.13/webapps/tp-api/WEB-INF/config.properties")) {
 
             Properties prop = new Properties();
@@ -363,6 +377,30 @@ public class ProjectResponse {
             final String DB_URL = prop.getProperty("DB_URL");
             final String USER = prop.getProperty("USER");
             final String PASS = prop.getProperty("PASS");
+            
+    		HttpClient httpclient = HttpClients.createDefault();
+    		
+            HttpPost httppost = new HttpPost("https://keycloak-server-test.eanadev.org/auth/realms/DataExchangeInfrastructure/protocol/openid-connect/token");
+    	
+    	        List<NameValuePair> params = new ArrayList<NameValuePair>(2);
+    	        params.add(new BasicNameValuePair("grant_type", "client_credentials"));
+    	        params.add(new BasicNameValuePair("client_secret", prop.getProperty("SECRET_KEY")));
+    	        params.add(new BasicNameValuePair("client_id", "tp-api-client"));
+    	        httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
+    	        HttpResponse response = httpclient.execute(httppost);
+    	        HttpEntity entity = response.getEntity();
+    	
+    	        if (entity != null) {
+    	            try (InputStream instream = entity.getContent()) {
+    	                StringWriter writer = new StringWriter();
+    	                IOUtils.copy(instream, writer, StandardCharsets.UTF_8);
+    	                JsonObject data = new JsonParser().parse(writer.toString()).getAsJsonObject();
+
+    	    	        //String authHeader = data.get("access_token").toString();
+    	    	        //httppost2.setHeader(HttpHeaders.AUTHORIZATION, authHeader);
+    	            }
+    	        }
+        
 		
 	   // Register JDBC driver
 	   try {
@@ -462,6 +500,10 @@ public class ProjectResponse {
 		String storyTitle = "";
 		String recordId = "";
 		String imageLink = "";
+		
+		if (data.getAsJsonObject().has("iiif_url")) {
+			manifestUrl = data.getAsJsonObject().get("iiif_url").getAsString();
+		}
 
 		for (int i = 0; i < keyCount; i++) {
 			for(Map.Entry<String, JsonElement> entry : dataArray.get(i).getAsJsonObject().entrySet()) {
@@ -573,7 +615,7 @@ public class ProjectResponse {
 									if (manifestUrl == "") {
 										manifestUrl = dataArray.get(i).getAsJsonObject().get("dcterms:isReferencedBy").getAsJsonObject().get("@id").getAsString();
 									}
-									manifestUrl = dataArray.get(i).getAsJsonObject().get("dcterms:isReferencedBy").getAsJsonObject().get("@id").getAsString();
+									//manifestUrl = dataArray.get(i).getAsJsonObject().get("dcterms:isReferencedBy").getAsJsonObject().get("@id").getAsString();
 								}
 							}
 							else {
@@ -649,71 +691,114 @@ public class ProjectResponse {
 			}
 		}
 		else {
-			URL url = new URL(manifestUrl);
-			HttpURLConnection con = (HttpURLConnection) url.openConnection();
-			String redirect = con.getHeaderField("Location");
-		    try {
-				URL url2 = new URL(con.getURL().toString());	
-				if (redirect != null){
-					con = (HttpURLConnection) new URL(redirect).openConnection();
-					url2 = new URL(redirect);		
-				}
-				else {
-					con = (HttpURLConnection) new URL(con.getURL().toString()).openConnection();
-				}
-				con.setRequestMethod("GET");
-				con.setRequestProperty("Content-Type", "application/json");
-				BufferedReader in = new BufferedReader(
-				  new InputStreamReader(url2.openStream(), "UTF-8"));
-				String inputLine;
-				StringBuffer content = new StringBuffer();
-				while ((inputLine = in.readLine()) != null) {
-				    content.append(inputLine);
-				}
-				in.close();
-				con.disconnect();
-			
-				//String json = readUrl(manifestUrl);
-				JsonObject manifest = (JsonObject) new JsonParser().parse(content.toString());
-				
-				JsonArray imageArray = manifest.get("sequences").getAsJsonArray().get(0).getAsJsonObject().get("canvases").getAsJsonArray();
-				int imageCount = imageArray.size();
+			try (InputStream input = new FileInputStream("/home/enrich/tomcat/apache-tomcat-9.0.13/webapps/tp-api/WEB-INF/config.properties")) {
 
-				itemQuery = "INSERT INTO Item ("
-						+ "Title, "
-						+ "StoryId, "
-						+ "ImageLink, "
-						+ "OrderIndex, "
-						+ "Manifest"
-						+ ") VALUES ";
-				for (int i = 0; i < imageCount; i++) {
-					imageLink = imageArray.get(i).getAsJsonObject().get("images").getAsJsonArray().get(0).getAsJsonObject().get("resource").getAsJsonObject().toString();
-					
-					if (i == 0) {
-						itemQuery += "("
-						+ "\"" + storyTitle.replace("\"", "") + " Item "  + (i + 1) + "\"" +  ", "
-						+ "(SELECT StoryId FROM Story ORDER BY StoryId DESC LIMIT 1), "
-						+ "\"" + imageLink.replace("\"", "\\\"") + "\"" + ", "
-						+ (i + 1) + ", "
-						+ "\"" + manifestUrl + "\"" + ")";
-					}
-					else {
-						itemQuery += ", ("
-								+ "\"" + storyTitle.replace("\"", "") + " Item "  + (i + 1) + "\"" +  ", "
-								+ "(SELECT StoryId FROM Story ORDER BY StoryId DESC LIMIT 1), "
-								+ "\"" + imageLink.replace("\"", "\\\"") + "\"" + ", "
-								+ (i + 1) + ", "
-								+ "\"" + manifestUrl + "\"" + ")";
-					}
-				}
-				String itemResponse = executeInsertQuery(itemQuery, "Import");
-				if (itemResponse == "Failed") {
-					ResponseBuilder rBuild = Response.status(Response.Status.BAD_REQUEST);
-			        return rBuild.build();
-				}
-		    } catch (IOException e) {
-		        throw new RuntimeException(e);
-		    }
+	            Properties prop = new Properties();
+
+	            // load a properties file
+	            prop.load(input);
+
+	            // get the property value and print it out
+	            final String DB_URL = prop.getProperty("DB_URL");
+	            final String USER = prop.getProperty("USER");
+	            final String PASS = prop.getProperty("PASS");
+	            
+	    		HttpClient httpclient = HttpClients.createDefault();
+	    		
+	            HttpPost httppost = new HttpPost("https://keycloak-server-test.eanadev.org/auth/realms/DataExchangeInfrastructure/protocol/openid-connect/token");
+    	
+    	        List<NameValuePair> params = new ArrayList<NameValuePair>(2);
+    	        params.add(new BasicNameValuePair("grant_type", "client_credentials"));
+    	        params.add(new BasicNameValuePair("client_secret", prop.getProperty("SECRET_KEY")));
+    	        params.add(new BasicNameValuePair("client_id", "tp-api-client"));
+    	        httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
+    	        HttpResponse response = httpclient.execute(httppost);
+    	        HttpEntity entity = response.getEntity();
+    	
+    	        if (entity != null) {
+    	            try (InputStream instream = entity.getContent()) {
+    	                StringWriter writer = new StringWriter();
+    	                IOUtils.copy(instream, writer, StandardCharsets.UTF_8);
+    	                JsonObject authData = new JsonParser().parse(writer.toString()).getAsJsonObject();
+
+    	    	        String authHeader = authData.get("access_token").toString();
+    	    	        //httppost2.setHeader(HttpHeaders.AUTHORIZATION, authHeader);
+        	            
+        	            URL url = new URL(manifestUrl);
+        				HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        				String redirect = con.getHeaderField("Location");
+        			    try {
+        					URL url2 = new URL(con.getURL().toString());	
+        					if (redirect != null){
+        						con = (HttpURLConnection) new URL(redirect).openConnection();
+        						url2 = new URL(redirect);		
+        					}
+        					else {
+        						con = (HttpURLConnection) new URL(con.getURL().toString()).openConnection();
+        					}
+        					con.setRequestMethod("GET");
+        					con.setRequestProperty("Content-Type", "application/json");
+        					if (1==1) {
+        						ResponseBuilder rBuild = Response.ok(authHeader);
+        				        return rBuild.build();
+        					}
+        					con.setRequestProperty("Authorization", "Bearer " + authHeader);
+        					BufferedReader in = new BufferedReader(
+        					  new InputStreamReader(url2.openStream(), "UTF-8"));
+        					String inputLine;
+        					StringBuffer content = new StringBuffer();
+        					while ((inputLine = in.readLine()) != null) {
+        					    content.append(inputLine);
+        					}
+        					in.close();
+        					con.disconnect();
+        					new JsonParser().parse(body).getAsJsonObject();
+        					//String json = readUrl(manifestUrl);
+        					JsonObject manifest = new JsonParser().parse(content.toString()).getAsJsonObject();
+        					
+        					JsonArray imageArray = manifest.get("sequences").getAsJsonArray().get(0).getAsJsonObject().get("canvases").getAsJsonArray();
+        					int imageCount = imageArray.size();
+        	
+        					itemQuery = "INSERT INTO Item ("
+        							+ "Title, "
+        							+ "StoryId, "
+        							+ "ImageLink, "
+        							+ "OrderIndex, "
+        							+ "Manifest"
+        							+ ") VALUES ";
+        					for (int i = 0; i < imageCount; i++) {
+        						imageLink = imageArray.get(i).getAsJsonObject().get("images").getAsJsonArray().get(0).getAsJsonObject().get("resource").getAsJsonObject().toString();
+        						
+        						if (i == 0) {
+        							itemQuery += "("
+        							+ "\"" + storyTitle.replace("\"", "") + " Item "  + (i + 1) + "\"" +  ", "
+        							+ "(SELECT StoryId FROM Story ORDER BY StoryId DESC LIMIT 1), "
+        							+ "\"" + imageLink.replace("\"", "\\\"") + "\"" + ", "
+        							+ (i + 1) + ", "
+        							+ "\"" + manifestUrl + "\"" + ")";
+        						}
+        						else {
+        							itemQuery += ", ("
+        									+ "\"" + storyTitle.replace("\"", "") + " Item "  + (i + 1) + "\"" +  ", "
+        									+ "(SELECT StoryId FROM Story ORDER BY StoryId DESC LIMIT 1), "
+        									+ "\"" + imageLink.replace("\"", "\\\"") + "\"" + ", "
+        									+ (i + 1) + ", "
+        									+ "\"" + manifestUrl + "\"" + ")";
+        						}
+        					}
+        					String itemResponse = executeInsertQuery(itemQuery, "Import");
+        					if (itemResponse == "Failed") {
+        						ResponseBuilder rBuild = Response.status(Response.Status.BAD_REQUEST);
+        				        return rBuild.build();
+        					}
+        				    
+        			    }
+        		    	catch (IOException e) {
+        			        throw new RuntimeException(e);
+        			    }
+    	            }
+    	        }
+			}
 		}
 		
 		
