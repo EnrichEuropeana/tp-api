@@ -58,6 +58,7 @@ import objects.ApiKey;
 import objects.Dataset;
 import objects.Project;
 import objects.Story;
+import sun.misc.BASE64Encoder;
 
 @Path("/projects")
 public class ProjectResponse {
@@ -723,79 +724,61 @@ public class ProjectResponse {
 
     	    	        String authHeader = authData.get("access_token").toString();
     	    	        //httppost2.setHeader(HttpHeaders.AUTHORIZATION, authHeader);
-        	            
+
         	            URL url = new URL(manifestUrl);
         				HttpURLConnection con = (HttpURLConnection) url.openConnection();
-        				String redirect = con.getHeaderField("Location");
-        			    try {
-        					URL url2 = new URL(con.getURL().toString());	
-        					if (redirect != null){
-        						con = (HttpURLConnection) new URL(redirect).openConnection();
-        						url2 = new URL(redirect);		
-        					}
-        					else {
-        						con = (HttpURLConnection) new URL(con.getURL().toString()).openConnection();
-        					}
-        					con.setRequestMethod("GET");
-        					con.setRequestProperty("Content-Type", "application/json");
-        					if (1==1) {
-        						ResponseBuilder rBuild = Response.ok(authHeader);
-        				        return rBuild.build();
-        					}
-        					con.setRequestProperty("Authorization", "Bearer " + authHeader);
-        					BufferedReader in = new BufferedReader(
-        					  new InputStreamReader(url2.openStream(), "UTF-8"));
-        					String inputLine;
-        					StringBuffer content = new StringBuffer();
-        					while ((inputLine = in.readLine()) != null) {
-        					    content.append(inputLine);
-        					}
-        					in.close();
-        					con.disconnect();
-        					new JsonParser().parse(body).getAsJsonObject();
-        					//String json = readUrl(manifestUrl);
-        					JsonObject manifest = new JsonParser().parse(content.toString()).getAsJsonObject();
-        					
-        					JsonArray imageArray = manifest.get("sequences").getAsJsonArray().get(0).getAsJsonObject().get("canvases").getAsJsonArray();
-        					int imageCount = imageArray.size();
-        	
-        					itemQuery = "INSERT INTO Item ("
-        							+ "Title, "
-        							+ "StoryId, "
-        							+ "ImageLink, "
-        							+ "OrderIndex, "
-        							+ "Manifest"
-        							+ ") VALUES ";
-        					for (int i = 0; i < imageCount; i++) {
-        						imageLink = imageArray.get(i).getAsJsonObject().get("images").getAsJsonArray().get(0).getAsJsonObject().get("resource").getAsJsonObject().toString();
-        						
-        						if (i == 0) {
-        							itemQuery += "("
-        							+ "\"" + storyTitle.replace("\"", "") + " Item "  + (i + 1) + "\"" +  ", "
-        							+ "(SELECT StoryId FROM Story ORDER BY StoryId DESC LIMIT 1), "
-        							+ "\"" + imageLink.replace("\"", "\\\"") + "\"" + ", "
-        							+ (i + 1) + ", "
-        							+ "\"" + manifestUrl + "\"" + ")";
-        						}
-        						else {
-        							itemQuery += ", ("
-        									+ "\"" + storyTitle.replace("\"", "") + " Item "  + (i + 1) + "\"" +  ", "
-        									+ "(SELECT StoryId FROM Story ORDER BY StoryId DESC LIMIT 1), "
-        									+ "\"" + imageLink.replace("\"", "\\\"") + "\"" + ", "
-        									+ (i + 1) + ", "
-        									+ "\"" + manifestUrl + "\"" + ")";
-        						}
-        					}
-        					String itemResponse = executeInsertQuery(itemQuery, "Import");
-        					if (itemResponse == "Failed") {
-        						ResponseBuilder rBuild = Response.status(Response.Status.BAD_REQUEST);
-        				        return rBuild.build();
-        					}
-        				    
-        			    }
-        		    	catch (IOException e) {
-        			        throw new RuntimeException(e);
-        			    }
+						
+						con.setRequestMethod("GET");
+						con.setRequestProperty("Content-Type", "application/json");
+					    con.setRequestProperty("Authorization", "Bearer " + authHeader.replace("\"", "") );
+
+						BufferedReader in = new BufferedReader(
+						  new InputStreamReader(con.getInputStream(), "UTF-8"));
+						String inputLine;
+						StringBuffer content = new StringBuffer();
+						while ((inputLine = in.readLine()) != null) {
+						    content.append(inputLine);
+						}
+						in.close();
+						con.disconnect();
+						
+    					JsonObject manifest = new JsonParser().parse(content.toString()).getAsJsonObject();
+    					
+    					JsonArray imageArray = manifest.get("sequences").getAsJsonArray().get(0).getAsJsonObject().get("canvases").getAsJsonArray();
+    					int imageCount = imageArray.size();
+    	
+    					itemQuery = "INSERT INTO Item ("
+    							+ "Title, "
+    							+ "StoryId, "
+    							+ "ImageLink, "
+    							+ "OrderIndex, "
+    							+ "Manifest"
+    							+ ") VALUES ";
+    					for (int i = 0; i < imageCount; i++) {
+    						imageLink = imageArray.get(i).getAsJsonObject().get("images").getAsJsonArray().get(0).getAsJsonObject().get("resource").getAsJsonObject().toString();
+    						
+    						if (i == 0) {
+    							itemQuery += "("
+    							+ "\"" + storyTitle.replace("\"", "") + " Item "  + (i + 1) + "\"" +  ", "
+    							+ "(SELECT StoryId FROM Story ORDER BY StoryId DESC LIMIT 1), "
+    							+ "\"" + imageLink.replace("\"", "\\\"") + "\"" + ", "
+    							+ (i + 1) + ", "
+    							+ "\"" + manifestUrl + "\"" + ")";
+    						}
+    						else {
+    							itemQuery += ", ("
+    									+ "\"" + storyTitle.replace("\"", "") + " Item "  + (i + 1) + "\"" +  ", "
+    									+ "(SELECT StoryId FROM Story ORDER BY StoryId DESC LIMIT 1), "
+    									+ "\"" + imageLink.replace("\"", "\\\"") + "\"" + ", "
+    									+ (i + 1) + ", "
+    									+ "\"" + manifestUrl + "\"" + ")";
+    						}
+    					}
+    					String itemResponse = executeInsertQuery(itemQuery, "Import");
+    					if (itemResponse == "Failed") {
+    						ResponseBuilder rBuild = Response.status(Response.Status.BAD_REQUEST);
+    				        return rBuild.build();
+    					}
     	            }
     	        }
 			}
