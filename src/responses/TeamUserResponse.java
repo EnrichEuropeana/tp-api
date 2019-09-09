@@ -23,7 +23,7 @@ import java.sql.*;
 
 import com.google.gson.*;
 
-@Path("/TeamUser")
+@Path("/teamUsers")
 public class TeamUserResponse {
 	
 	
@@ -51,9 +51,13 @@ public class TeamUserResponse {
 		   if (type != "Select") {
 			   int success = stmt.executeUpdate(query);
 			   if (success > 0) {
+				   stmt.close();
+				   conn.close();
 				   return type +" succesful";
 			   }
 			   else {
+				   stmt.close();
+				   conn.close();
 				   return type +" could not be executed";
 			   }
 		   }
@@ -101,34 +105,32 @@ public class TeamUserResponse {
 	
 
 	//Add new entry
-	@Path("/add")
+	@Path("")
 	@POST
-	public String add(String body) throws SQLException {	
+	public Response add(String body) throws SQLException {	
 	    GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
 	    Gson gson = gsonBuilder.create();
 	    TeamUser teamUser = gson.fromJson(body, TeamUser.class);
 	    
-	    //Check if all mandatory fields are included
-	    if (teamUser.TeamId != null && teamUser.UserId != null) {
-			String query = "INSERT INTO TeamUser (CampaignId, ItemId, TeamId) "
-							+ "VALUES ('" + teamUser.TeamId + "'"
-									+ ", " + teamUser.UserId + ")";
-			String resource = executeQuery(query, "Insert");
-			return resource;
-	    } else {
-	    	return "Fields missing";
-	    }
+		String query = "INSERT INTO TeamUser (TeamId, UserId) "
+						+ "VALUES (" + teamUser.TeamId
+								+ ", (SELECT UserId FROM User WHERE WP_UserId = " + teamUser.UserId + "))";
+		String resource = executeQuery(query, "Insert");
+		ResponseBuilder rBuild = Response.ok(resource);
+		//ResponseBuilder rBuild = Response.ok(query);
+        return rBuild.build();
 	}
 
 	
 
 	//Delete entry by id
-	@Path("/{id}")
+	@Path("/{teamId}/{userId}")
 	@DELETE
-	public String delete(@PathParam("id") int id) throws SQLException {
-		String resource = executeQuery("DELETE FROM TeamUser WHERE TeamUserId = " + id, "Delete");
+	public String delete(@PathParam("teamId") int teamId, @PathParam("userId") int userId) throws SQLException {
+		String resource = executeQuery("DELETE FROM TeamUser WHERE UserId = (SELECT UserId FROM User WHERE WP_UserId = " + userId + ") AND TeamId = " + teamId, "Delete");
 		return resource;
 	}
+	
 	
 
 	//Get entry by id

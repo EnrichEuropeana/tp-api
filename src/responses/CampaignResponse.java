@@ -13,6 +13,8 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
 import objects.Campaign;
+import objects.Team;
+import objects.User;
 
 import java.util.*;
 import java.io.FileInputStream;
@@ -23,7 +25,7 @@ import java.sql.*;
 
 import com.google.gson.*;
 
-@Path("/Campaign")
+@Path("/campaigns")
 public class CampaignResponse {
 
 
@@ -51,9 +53,13 @@ public class CampaignResponse {
 		   if (type != "Select") {
 			   int success = stmt.executeUpdate(query);
 			   if (success > 0) {
+				   stmt.close();
+				   conn.close();
 				   return type +" succesful";
 			   }
 			   else {
+				   stmt.close();
+				   conn.close();
 				   return type +" could not be executed";
 			   }
 		   }
@@ -61,8 +67,23 @@ public class CampaignResponse {
 		   
 		   // Extract data from result set
 		   while(rs.next()){
+				  // Add Teams
+				  List<Team> TeamList = new ArrayList<Team>();
+				  if (rs.getString("TeamId") != null) {
+					  String[] TeamIds = rs.getString("TeamId").split(",");
+					  String[] TeamNames = rs.getString("TeamName").split(",");
+					  String[] TeamShortNames = rs.getString("TeamShortName").split(",");
+					  for (int i = 0; i < TeamIds.length; i++) {
+						  Team team = new Team();
+						  team.setTeamId(Integer.parseInt(TeamIds[i]));
+						  team.setName(TeamNames[i]);
+						  team.setShortName(TeamShortNames[i]);
+						  TeamList.add(team);
+					  }
+				  }
 		      //Retrieve by column name
 			  Campaign campaign = new Campaign();
+			  campaign.setTeams(TeamList);
 			  campaign.setCampaignId(rs.getInt("CampaignId"));
 			  campaign.setName(rs.getString("Name"));
 			  campaign.setStart(rs.getTimestamp("Start"));
@@ -91,69 +112,100 @@ public class CampaignResponse {
 	    return result;
 	}
 
-	//Get all Entries
-	@Path("/all")
+	//Search using custom filters
+	@Path("")
 	@Produces("application/json;charset=utf-8")
 	@GET
-	public Response getAll() throws SQLException {
-		String query = "SELECT * FROM Campaign WHERE 1";
+	public Response search(@Context UriInfo uriInfo) throws SQLException {
+		String query = "SELECT * FROM   \r\n" + 
+				"				(  \r\n" + 
+				"				SELECT  \r\n" + 
+				"					c.CampaignId AS CampaignId,\r\n" + 
+				"				    c.Name AS Name,  \r\n" + 
+				"				    c.Start AS Start,  \r\n" + 
+				"				    c.End AS End,  \r\n" + 
+				"				    c.Public AS Public,  \r\n" + 
+				"				    t.TeamId AS TeamId,  \r\n" + 
+				"				    t.Name AS TeamName,  \r\n" + 
+				"				    t.ShortName AS TeamShortName\r\n" + 
+				"				FROM  \r\n" + 
+				"				    Campaign c  \r\n" + 
+				"				        LEFT JOIN  \r\n" + 
+				"					(  \r\n" + 
+				"						SELECT   \r\n" + 
+				"							tc.CampaignId,  \r\n" + 
+				"							group_concat(t.TeamId) as TeamId,   \r\n" + 
+				"							group_concat(t.Name) as Name,   \r\n" + 
+				"							group_concat(t.ShortName) as ShortName   \r\n" + 
+				"						FROM TeamCampaign tc   \r\n" + 
+				"							JOIN  \r\n" + 
+				"						Team t ON tc.TeamId = t.TeamId  \r\n" + 
+				"				        GROUP BY tc.CampaignId  \r\n" + 
+				"					) t ON c.CampaignId = t.CampaignId  \r\n" + 
+				"				) a   \r\n" + 
+				"				WHERE  \r\n" + 
+				"				    1";
+		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
+		
+		for(String key : queryParams.keySet()){
+			String[] values = queryParams.getFirst(key).split(",");
+			query += " AND (";
+		    int valueCount = values.length;
+		    int i = 1;
+		    for(String value : values) {
+		    	query += key + " = '" + value + "'";
+			    if (i < valueCount) {
+			    	query += " OR ";
+			    }
+			    i++;
+		    }
+		    query += ")";
+		}
+		query += " ORDER BY CampaignId DESC";
 		String resource = executeQuery(query, "Select");
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
 	}
-	
 
 	//Add new entry
-	@Path("/add")
+	@Path("")
 	@POST
-	public String add(String body) throws SQLException {	
+	public Response add(String body) throws SQLException {	
 	    GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
 	    Gson gson = gsonBuilder.create();
 	    Campaign campaign = gson.fromJson(body, Campaign.class);
 	    
-	    //Check if all mandatory fields are included
-	    if (campaign.Name != null && campaign.Public != null) {
-			String query = "INSERT INTO Campaign (Name, Start, End, Public) "
-							+ "VALUES ('" + campaign.Name + "'"
-								+ ", '" + campaign.Start + "'"
-								+ ", '" + campaign.End + "'"
-								+ ", " + campaign.Public + ")";
-			String resource = executeQuery(query, "Insert");
-			return resource;
-	    } else {
-	    	return "Fields missing";
-	    }
+		String query = "INSERT INTO Campaign (Name, Start, End, Public) "
+						+ "VALUES ('" + campaign.Name + "'"
+							+ ", '" + campaign.Start + "'"
+							+ ", '" + campaign.End + "'"
+							+ ", " + campaign.Public + ")";
+		String resource = executeQuery(query, "Insert");
+		ResponseBuilder rBuild = Response.ok(resource);
+        return rBuild.build();
 	}
 	
 
 	//Edit entry by id
 	@Path("/{id}")
 	@POST
-	public String update(@PathParam("id") int id, String body) throws SQLException {
+	public Response update(@PathParam("id") int id, String body) throws SQLException {
 	    GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
 	    Gson gson = gsonBuilder.create();
-	    JsonObject  changes = gson.fromJson(body, JsonObject.class);
+	    Campaign changes = gson.fromJson(body, Campaign.class);
+	    
 	    
 	    //Check if NOT NULL field is attempted to be changed to NULL
-	    if ((changes.get("Name") == null || !changes.get("Name").isJsonNull())
-	    		&& (changes.get("Public") == null || !changes.get("Public").isJsonNull())) {
-		    String query = "UPDATE Campaign SET ";
-		    
-		    int keyCount = changes.entrySet().size();
-		    int i = 1;
-			for(Map.Entry<String, JsonElement> entry : changes.entrySet()) {
-			    query += entry.getKey() + " = " + entry.getValue();
-			    if (i < keyCount) {
-			    	query += ", ";
-			    }
-			    i++;
-			}
-			query += " WHERE CampaignId = " + id;
-			String resource = executeQuery(query, "Update");
-			return resource;
-	    } else {
-	    	return "Prohibited change to null";
-	    }
+	    String query = "UPDATE Campaign "
+	    				+ "SET Name = '" + changes.Name + "', "
+   	    				 + "Start = '" + changes.Start + "', "
+ 	    				 + "End = '" + changes.End + "', "
+	    				 + "Public = " + changes.Public;
+		query += " WHERE CampaignId = " + id;
+		String resource = executeQuery(query, "Update");
+		ResponseBuilder rBuild = Response.ok(resource);
+		//ResponseBuilder rBuild = Response.ok(query);
+        return rBuild.build();
 	}
 	
 
@@ -176,30 +228,4 @@ public class CampaignResponse {
         return rBuild.build();
 	}
 
-	//Search using custom filters
-	@Path("/search")
-	@Produces("application/json;charset=utf-8")
-	@GET
-	public Response search(@Context UriInfo uriInfo) throws SQLException {
-		String query = "SELECT * FROM Campaign WHERE 1";
-		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
-		
-		for(String key : queryParams.keySet()){
-			String[] values = queryParams.getFirst(key).split(",");
-			query += " AND (";
-		    int valueCount = values.length;
-		    int i = 1;
-		    for(String value : values) {
-		    	query += key + " = '" + value + "'";
-			    if (i < valueCount) {
-			    	query += " OR ";
-			    }
-			    i++;
-		    }
-		    query += ")";
-		}
-		String resource = executeQuery(query, "Select");
-		ResponseBuilder rBuild = Response.ok(resource);
-        return rBuild.build();
-	}
 }

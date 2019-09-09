@@ -34,7 +34,7 @@ public class AnnotationExportResponse {
 
 	public String executeQuery(String query, String type) throws SQLException{
 		   List<AnnotationExport> annotationExports = new ArrayList<AnnotationExport>();
-	       try (InputStream input = new FileInputStream("/home/enrich/tomcat/apache-tomcat-9.0.13/webapps/tp-api/WEB-INF/config.properties")) {
+	       try (InputStream input = new FileInputStream("/home/enrich/tomcat/apache-tomcat-9.0.13/webapps/tp-apitp-api/WEB-INF/config.properties")) {
 
 	            Properties prop = new Properties();
 
@@ -56,9 +56,13 @@ public class AnnotationExportResponse {
 		   if (type != "Select") {
 			   int success = stmt.executeUpdate(query);
 			   if (success > 0) {
+				   stmt.close();
+				   conn.close();
 				   return type +" succesful";
 			   }
 			   else {
+				   stmt.close();
+				   conn.close();
 				   return "Failed";
 			   }
 		   }

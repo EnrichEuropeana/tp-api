@@ -68,9 +68,13 @@ public class StoryMinimalResponse {
 			   }
 			   int success = stmt.executeUpdate(query);
 			   if (success > 0) {
+				   stmt.close();
+				   conn.close();
 				   return type +" succesful";
 			   }
 			   else {
+				   stmt.close();
+				   conn.close();
 				   return type +" could not be executed";
 			   }
 		   }
@@ -147,8 +151,8 @@ public class StoryMinimalResponse {
 				"								SELECT MIN(ItemId) FROM Item GROUP BY StoryId\r\n" + 
 				"							) LIMIT 25 " + offset +
 				"						) i " +
-				" 					ON s.StoryId = i.StoryId " +
-				"					ORDER BY StoryId DESC";
+				" 					ON s.StoryId = i.StoryId " + 
+				"				    ORDER BY StoryId DESC";
 		String resource = executeQuery(query, "Select");
 		ResponseBuilder rBuild = Response.ok(resource);
 		//ResponseBuilder rBuild = Response.ok(query);
