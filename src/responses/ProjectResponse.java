@@ -3,6 +3,7 @@ package responses;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -413,17 +414,25 @@ public class ProjectResponse {
 		   Statement stmt = conn.createStatement();
 		   if (type != "Select") {
 			   int success = stmt.executeUpdate(query);
+			   /*
+				if (1==1) {
+					return query;
+				}
+				*/
 			   if (success > 0) {
 				   conn.close();
+				   stmt.close();
 				   return type +" succesful";
 			   }
 			   else {
 				   conn.close();
+				   stmt.close();
 				   return "Failed";
 			   }
 		   }
 		   else {
 			   conn.close();
+			   stmt.close();
 			   return "test2";
 		   }
 	   } catch(SQLException se) {
@@ -445,6 +454,14 @@ public class ProjectResponse {
 	@Path("/{project_id}/stories")
 	@POST
 	public Response insertStory(@PathParam("project_id") int projectId, @Context UriInfo uriInfo, String body, @Context HttpHeaders headers) throws Exception {
+	    FileWriter fileWriter = new FileWriter("request.txt");
+	    fileWriter.write(body);
+	    fileWriter.close();
+
+	    FileWriter fileWriter2 = new FileWriter("query.txt");
+	    fileWriter2.write("test");
+	    fileWriter2.close();
+		
 		boolean auth = false;
 		String authorizationToken = "";
 		if (headers.getRequestHeader(HttpHeaders.AUTHORIZATION) != null) {
@@ -668,7 +685,7 @@ public class ProjectResponse {
 			ResponseBuilder rBuild = Response.status(Response.Status.BAD_REQUEST);
 	        return rBuild.build();
 		}
-		
+
 		String itemQuery = "";
 		if (manifestUrl == "") {
 			itemQuery = "";
@@ -715,7 +732,7 @@ public class ProjectResponse {
     	        httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
     	        HttpResponse response = httpclient.execute(httppost);
     	        HttpEntity entity = response.getEntity();
-    	
+
     	        if (entity != null) {
     	            try (InputStream instream = entity.getContent()) {
     	                StringWriter writer = new StringWriter();
@@ -756,7 +773,7 @@ public class ProjectResponse {
     							+ ") VALUES ";
     					for (int i = 0; i < imageCount; i++) {
     						imageLink = imageArray.get(i).getAsJsonObject().get("images").getAsJsonArray().get(0).getAsJsonObject().get("resource").getAsJsonObject().toString();
-    						
+
     						if (i == 0) {
     							itemQuery += "("
     							+ "\"" + storyTitle.replace("\"", "") + " Item "  + (i + 1) + "\"" +  ", "
@@ -775,6 +792,8 @@ public class ProjectResponse {
     						}
     					}
     					String itemResponse = executeInsertQuery(itemQuery, "Import");
+    					
+    					
     					if (itemResponse == "Failed") {
     						ResponseBuilder rBuild = Response.status(Response.Status.BAD_REQUEST);
     				        return rBuild.build();
@@ -783,8 +802,7 @@ public class ProjectResponse {
     	        }
 			}
 		}
-		
-		
+
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
 	}
