@@ -53,13 +53,13 @@ public class StoryResponse {
 	            final String USER = prop.getProperty("USER");
 	            final String PASS = prop.getProperty("PASS");
 		   // Register JDBC driver
+				Class.forName("com.mysql.jdbc.Driver");
+				
+				   // Open a connection
+				   Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+				   // Execute SQL query
+				   Statement stmt = conn.createStatement();
 		   try {
-			Class.forName("com.mysql.jdbc.Driver");
-		
-		   // Open a connection
-		   Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
-		   // Execute SQL query
-		   Statement stmt = conn.createStatement();
 		   if (type != "Select") {
 			   int success = stmt.executeUpdate(query);
 			   if (success > 0) {
@@ -147,7 +147,7 @@ public class StoryResponse {
 					  ItemDateEnds = rs.getString("DateEnd").split("§~§");
 				  }
 				  String[] ItemDatasetIds = null;
-				  if (rs.getString("DateEnd") != null) {
+				  if (rs.getString("DatasetId") != null) {
 					  ItemDatasetIds = rs.getString("DatasetId").split("§~§");
 				  }
 				  String[] ItemImageLinks = rs.getString("ImageLink").split("§~§");
@@ -281,12 +281,16 @@ public class StoryResponse {
 		   } catch(SQLException se) {
 		       //Handle errors for JDBC
 			   se.printStackTrace();
-		   } catch (ClassNotFoundException e) {
-			   e.printStackTrace();
-		}
+		   } finally {
+			    try { stmt.close(); } catch (Exception e) { /* ignored */ }
+			    try { conn.close(); } catch (Exception e) { /* ignored */ }
+		   }
 			} catch (FileNotFoundException e1) {
 				e1.printStackTrace();
 			} catch (IOException e1) {
+				e1.printStackTrace();
+			} catch (ClassNotFoundException e1) {
+				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 	    Gson gsonBuilder = new GsonBuilder().create();
@@ -398,18 +402,18 @@ public class StoryResponse {
 				", s.DateEnd as StoryDateEnd" +
 				", s.OrderIndex as StoryOrderIndex" +
 				", group_concat(i.ItemId SEPARATOR '§~§') as ItemId" +
-				", group_concat(i.Title SEPARATOR '§~§') as Title" +
+				", group_concat(IFNULL(i.Title, 'NULL') SEPARATOR '§~§') as Title" +
 				", group_concat(i.CompletionStatusColorCode SEPARATOR '§~§') as CompletionStatusColorCode" +
 				", group_concat(i.CompletionStatusName SEPARATOR '§~§') as CompletionStatusName" +
 				", group_concat(i.CompletionStatusId SEPARATOR '§~§') as CompletionStatusId" +
-				", group_concat(i.ProjectItemId SEPARATOR '§~§') as ProjectItemId" +
-				", group_concat(i.Description SEPARATOR '§~§') as Description" +
-				", group_concat(i.DateStart SEPARATOR '§~§') as DateStart" +
-				", group_concat(i.DateEnd SEPARATOR '§~§') as DateEnd" +
-				", group_concat(i.DatasetId SEPARATOR '§~§') as DatasetId" +
-				", group_concat(i.ImageLink SEPARATOR '§~§') as ImageLink" +
-				", group_concat(i.OrderIndex SEPARATOR '§~§') as OrderIndex" +
-				", group_concat(i.Timestamp SEPARATOR '§~§') as Timestamp" +
+				", group_concat(IFNULL(i.ProjectItemId, 'NULL') SEPARATOR '§~§') as ProjectItemId" +
+				", group_concat(IFNULL(i.Description, 'NULL') SEPARATOR '§~§') as Description" +
+				", group_concat(IFNULL(i.DateStart, 'NULL') SEPARATOR '§~§') as DateStart" +
+				", group_concat(IFNULL(i.DateEnd, 'NULL') SEPARATOR '§~§') as DateEnd" +
+				", group_concat(IFNULL(i.DatasetId, 'NULL') SEPARATOR '§~§') as DatasetId" +
+				", group_concat(IFNULL(i.ImageLink, 'NULL') SEPARATOR '§~§') as ImageLink" +
+				", group_concat(IFNULL(i.OrderIndex, 'NULL') SEPARATOR '§~§') as OrderIndex" +
+				", group_concat(IFNULL(i.Timestamp, 'NULL') SEPARATOR '§~§') as Timestamp" +
 				", group_concat(c.PlaceId SEPARATOR '§~§') as PlaceId " +
 				", group_concat(c.PlaceName SEPARATOR '§~§') as PlaceName " +
 				", group_concat(c.PlaceLatitude SEPARATOR '§~§') as PlaceLatitude " +

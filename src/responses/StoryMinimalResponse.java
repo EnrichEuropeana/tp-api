@@ -15,6 +15,7 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 
 import objects.Annotation;
 import objects.Comment;
+import objects.CompletionStatus;
 import objects.Item;
 import objects.Place;
 import objects.Property;
@@ -52,13 +53,13 @@ public class StoryMinimalResponse {
 	            final String USER = prop.getProperty("USER");
 	            final String PASS = prop.getProperty("PASS");
 		   // Register JDBC driver
+				Class.forName("com.mysql.jdbc.Driver");
+				
+				   // Open a connection
+				   Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+				   // Execute SQL query
+				   Statement stmt = conn.createStatement();
 		   try {
-			Class.forName("com.mysql.jdbc.Driver");
-		
-		   // Open a connection
-		   Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
-		   // Execute SQL query
-		   Statement stmt = conn.createStatement();
 		   if (type != "Select") {
 			   if (type == "Select count") {
 				   ResultSet rs = stmt.executeQuery(query);
@@ -88,25 +89,27 @@ public class StoryMinimalResponse {
 			  story.setdcTitle(rs.getString("StorydcTitle"));
 			  story.setdcDescription(rs.getString("StorydcDescription"));
 			  story.setPreviewImageLink(rs.getString("StoryPreviewImageLink"));
-			   /*
-			  // Iterate through Items of the Story
-			  List<Item> ItemList = new ArrayList<Item>();
-			  if (rs.getString("ItemId") != null) {
-				  String[] ItemIds = rs.getString("ItemId").split("§~§");
-				  String[] ItemCompletionStatusNames = rs.getString("CompletionStatusName").split("§~§");
-				  String[] ItemCompletionStatusIds = rs.getString("CompletionStatusId").split("§~§");
+			  
+			  // Iterate through CompletionStatus of the Items
+			  List<CompletionStatus> CompletionStatusList = new ArrayList<CompletionStatus>();
+			  if (rs.getString("CompletionStatus") != null) {
+				  String[] CompletionStatus = rs.getString("CompletionStatus").split(",");
+				  String[] ColorCodes = rs.getString("ColorCode").split(",");
+				  String[] ColorCodeGradients = rs.getString("ColorCodeGradient").split(",");
+				  String[] Amounts = rs.getString("Amount").split(",");
 				  
 
-				  for (int j = 0; j < ItemIds.length; j++) {
-					  Item item = new Item();
-					  item.setItemId(Integer.parseInt(ItemIds[j]));
-					  item.setCompletionStatusName(ItemCompletionStatusNames[j]);
-					  item.setCompletionStatusId(Integer.parseInt(ItemCompletionStatusIds[j]));
+				  for (int j = 0; j < CompletionStatus.length; j++) {
+					  CompletionStatus completionStatus = new CompletionStatus();
+					  completionStatus.setName(CompletionStatus[j]);
+					  completionStatus.setColorCode(ColorCodes[j]);
+					  completionStatus.setColorCodeGradient(ColorCodeGradients[j]);
+					  completionStatus.setAmount(Integer.parseInt(Amounts[j]));
 					  
-					  ItemList.add(item);
+					  CompletionStatusList.add(completionStatus);
 				  }
 			  }
-			  story.setItems(ItemList);*/
+			  story.setCompletionStatus(CompletionStatusList);
 			  storyList.add(story);
 		   }
 		
@@ -117,12 +120,16 @@ public class StoryMinimalResponse {
 		   } catch(SQLException se) {
 		       //Handle errors for JDBC
 			   se.printStackTrace();
-		   } catch (ClassNotFoundException e) {
-			   e.printStackTrace();
-		}
+		   } finally {
+			    try { stmt.close(); } catch (Exception e) { /* ignored */ }
+			    try { conn.close(); } catch (Exception e) { /* ignored */ }
+		   }
 			} catch (FileNotFoundException e1) {
 				e1.printStackTrace();
 			} catch (IOException e1) {
+				e1.printStackTrace();
+			} catch (ClassNotFoundException e1) {
+				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 	    Gson gsonBuilder = new GsonBuilder().create();
@@ -136,23 +143,73 @@ public class StoryMinimalResponse {
 	@Produces("application/json;charset=utf-8")
 	@GET
 	public Response search(@Context UriInfo uriInfo, @QueryParam("pa") int page) throws SQLException {
-		String offset = "";
-		if (page > 0) {
-			offset = " OFFSET " + ((page - 1) * 25);
+		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
+		String query = "SELECT \r\n" + 
+				"	s.StoryId,\r\n" + 
+				"    MIN(b.ImageLink) as StoryPreviewImageLink,\r\n" + 
+				"	GROUP_CONCAT(IFNULL(CompletionStatus, 'NULL')) AS CompletionStatus,\r\n" + 
+				"	GROUP_CONCAT(IFNULL(ColorCode, 'NULL')) AS ColorCode,\r\n" + 
+				"	GROUP_CONCAT(IFNULL(ColorCodeGradient, 'NULL')) AS ColorCodeGradient,\r\n" + 
+				"	GROUP_CONCAT(IFNULL(Count, 'NULL')) AS Amount,\r\n" + 
+				"    s.StorydcTitle as StorydcTitle,\r\n" + 
+				"    s.StorydcDescription as StorydcDescription\r\n" + 
+				"FROM (\r\n" + 
+				"	SELECT \r\n" + 
+				"		StoryId, \r\n" + 
+				"        MIN(ItemId) as ItemId,\r\n" + 
+				"		c.Name as CompletionStatus,\r\n" + 
+				"		c.ColorCode as ColorCode,\r\n" + 
+				"		c.ColorCodeGradient as ColorCodeGradient,\r\n" + 
+				"		Count(*) as Count\r\n" + 
+				"	FROM Item i\r\n" + 
+				"	JOIN CompletionStatus c ON c.CompletionStatusId = i.CompletionStatusId \r\n";
+		if (queryParams.containsKey("storyId")) {
+			String[] values = queryParams.getFirst("storyId").split(",");
+			query += " WHERE StoryId IN (";
+		    int valueCount = values.length;
+		    int i = 1;
+		    for(String value : values) {
+		    	query += value;
+			    if (i < valueCount) {
+			    	query += ", ";
+			    }
+			    i++;
+		    }
+		    query += ") ";
 		}
-		String query = "SELECT s.StoryId as StoryId \r\n" + 
-				"				, `dc:title` as StorydcTitle\r\n" + 
-				"				, `dc:description` as StorydcDescription\r\n" + 
-				"				, i.ImageLink as StoryPreviewImageLink\r\n" + 
-				"					FROM Story s " +
-				"					JOIN " +
-				"						(SELECT StoryId, ImageLink, ItemId FROM Item WHERE ItemId IN\r\n" + 
-				"							(\r\n" + 
-				"								SELECT MIN(ItemId) FROM Item GROUP BY StoryId\r\n" + 
-				"							) LIMIT 25 " + offset +
-				"						) i " +
-				" 					ON s.StoryId = i.StoryId " + 
-				"				    ORDER BY StoryId DESC";
+	    query += "	GROUP BY StoryId, c.Name, c.ColorCode, c.ColorCodeGradient\r\n" + 
+				") a\r\n" + 
+				"JOIN \r\n" + 
+				"	(\r\n" + 
+				"	SELECT \r\n" + 
+				"		ItemId,\r\n" + 
+				"        ImageLink\r\n" + 
+				"	FROM Item i\r\n";
+		if (queryParams.containsKey("storyId")) {
+			String[] values = queryParams.getFirst("storyId").split(",");
+			query += " WHERE StoryId IN (";
+		    int valueCount = values.length;
+		    int i = 1;
+		    for(String value : values) {
+		    	query += value;
+			    if (i < valueCount) {
+			    	query += ", ";
+			    }
+			    i++;
+		    }
+		    query += ") ";
+		}
+	    query += "    ) b ON a.ItemId = b.ItemId\r\n" + 
+				"JOIN \r\n" + 
+				"	(\r\n" + 
+				"    SELECT \r\n" + 
+				"		StoryId as StoryId,\r\n" + 
+				"		`dc:title` as StorydcTitle,\r\n" + 
+				"		`dc:description` as StorydcDescription\r\n" + 
+				"	FROM\r\n" + 
+				"		Story\r\n" + 
+				"	) s ON s.StoryId = a.StoryId\r\n" + 
+				"GROUP BY StoryId;";
 		String resource = executeQuery(query, "Select");
 		ResponseBuilder rBuild = Response.ok(resource);
 		//ResponseBuilder rBuild = Response.ok(query);

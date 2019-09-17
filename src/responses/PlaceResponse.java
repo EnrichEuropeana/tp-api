@@ -33,21 +33,23 @@ public class PlaceResponse {
 
 	            Properties prop = new Properties();
 
-	            // load a properties file
+	            // Load a properties file
 	            prop.load(input);
 
-	            // get the property value and print it out
+	            // Save property values
 	            final String DB_URL = prop.getProperty("DB_URL");
 	            final String USER = prop.getProperty("USER");
 	            final String PASS = prop.getProperty("PASS");
-		   // Register JDBC driver
+	            
+	            // Register JDBC driver
+				Class.forName("com.mysql.jdbc.Driver");
+				
+			   // Open a connection
+			   Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+			   
+			   // Execute SQL query
+			   Statement stmt = conn.createStatement();
 		   try {
-			Class.forName("com.mysql.jdbc.Driver");
-		
-		   // Open a connection
-		   Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
-		   // Execute SQL query
-		   Statement stmt = conn.createStatement();
 		   if (type != "Select") {
 			   int success = stmt.executeUpdate(query);
 			   if (success > 0) {
@@ -87,12 +89,16 @@ public class PlaceResponse {
 		   } catch(SQLException se) {
 		       //Handle errors for JDBC
 			   se.printStackTrace();
-		   } catch (ClassNotFoundException e) {
-			   e.printStackTrace();
-		}
+		   } finally {
+			    try { stmt.close(); } catch (Exception e) { /* ignored */ }
+			    try { conn.close(); } catch (Exception e) { /* ignored */ }
+		   }
 			} catch (FileNotFoundException e1) {
 				e1.printStackTrace();
 			} catch (IOException e1) {
+				e1.printStackTrace();
+			} catch (ClassNotFoundException e1) {
+				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 	    Gson gsonBuilder = new GsonBuilder().create();
@@ -168,8 +174,6 @@ public class PlaceResponse {
 	    Gson gson = gsonBuilder.create();
 	    Place  changes = gson.fromJson(body, Place.class);
 	    
-	    
-	    //Check if NOT NULL field is attempted to be changed to NULL
 	    String query = "UPDATE Place "
 	    				+ "SET Name = '" + changes.Name + "', "
    	    				 + "Latitude = " + changes.Latitude + ", "
@@ -178,7 +182,6 @@ public class PlaceResponse {
 		query += " WHERE PlaceId = " + id;
 		String resource = executeQuery(query, "Update");
 		ResponseBuilder rBuild = Response.ok(resource);
-		//ResponseBuilder rBuild = Response.ok(query);
         return rBuild.build();
 	}
 	

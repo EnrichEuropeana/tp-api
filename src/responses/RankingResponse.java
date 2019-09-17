@@ -41,13 +41,13 @@ public class RankingResponse {
 	            final String USER = prop.getProperty("USER");
 	            final String PASS = prop.getProperty("PASS");
 		   // Register JDBC driver
+				Class.forName("com.mysql.jdbc.Driver");
+				
+				   // Open a connection
+				   Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+				   // Execute SQL query
+				   Statement stmt = conn.createStatement();
 		   try {
-			Class.forName("com.mysql.jdbc.Driver");
-		
-		   // Open a connection
-		   Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
-		   // Execute SQL query
-		   Statement stmt = conn.createStatement();
 		   if (type != "Select") {
 			   if (type == "UserCount") {
 				   ResultSet rs = stmt.executeQuery(query);
@@ -91,12 +91,16 @@ public class RankingResponse {
 		   } catch(SQLException se) {
 		       //Handle errors for JDBC
 			   se.printStackTrace();
-		   } catch (ClassNotFoundException e) {
-			   e.printStackTrace();
-		}
+		   } finally {
+			    try { stmt.close(); } catch (Exception e) { /* ignored */ }
+			    try { conn.close(); } catch (Exception e) { /* ignored */ }
+		   }
 			} catch (FileNotFoundException e1) {
 				e1.printStackTrace();
 			} catch (IOException e1) {
+				e1.printStackTrace();
+			} catch (ClassNotFoundException e1) {
+				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 	    Gson gsonBuilder = new GsonBuilder().create();
@@ -193,10 +197,10 @@ public class RankingResponse {
 					    " 	s.TeamName as TeamName, \r\n" +
 						"    SUM(s.Miles) as Miles,\r\n" + 
 						"    SUM(s.Miles) / (SELECT COUNT(*) FROM TeamUser WHERE TeamId = s.TeamId) as MilesPerPerson,\r\n" + 
-						"    SUM(s.Locations) Locations,\r\n" + 
-						"    SUM(s.TranscriptionCharacters) TranscriptionCharacters,\r\n" + 
-						"    SUM(s.DescriptionCharacters) DescriptionCharacters,\r\n" + 
-						"    SUM(s.Enrichments) Enrichments\r\n" + 
+						"    SUM(s.Locations) as Locations,\r\n" + 
+						"    SUM(s.TranscriptionCharacters) as TranscriptionCharacters,\r\n" + 
+						"    SUM(s.DescriptionCharacters) as DescriptionCharacters,\r\n" + 
+						"    SUM(s.Enrichments) as Enrichments\r\n" + 
 						"FROM \r\n" + 
 						"(\r\n" + 
 						"	SELECT \r\n" + 
@@ -205,8 +209,8 @@ public class RankingResponse {
 						"        u.UserId as UserId,\r\n" + 
 						"		s.Amount * st.Rate as Miles,\r\n" + 
 						"		CASE WHEN st.Name = \"Location\" THEN Amount ELSE 0 END Locations,\r\n" + 
-						"		CASE WHEN st.Name = \"Transcription\" THEN (Amount - 10) ELSE 0 END TranscriptionCharacters,\r\n" + 
-						"		CASE WHEN st.Name = \"Description\" THEN (Amount - 10) ELSE 0 END DescriptionCharacters,\r\n" + 
+						"		CASE WHEN st.Name = \"Transcription\" THEN Amount ELSE 0 END TranscriptionCharacters,\r\n" + 
+						"		CASE WHEN st.Name = \"Description\" THEN Amount ELSE 0 END DescriptionCharacters,\r\n" + 
 						"		CASE WHEN st.Name = \"Enrichment\" THEN Amount ELSE 0 END Enrichments,\r\n" + 
 						"        s.Timestamp as Timestamp\r\n" + 
 						"	From Score s\r\n" + 
