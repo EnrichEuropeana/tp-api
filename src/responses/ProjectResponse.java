@@ -454,14 +454,10 @@ public class ProjectResponse {
 	@Path("/{project_id}/stories")
 	@POST
 	public Response insertStory(@PathParam("project_id") int projectId, @Context UriInfo uriInfo, String body, @Context HttpHeaders headers) throws Exception {
-	    FileWriter fileWriter = new FileWriter("request.txt");
-	    fileWriter.write(body);
-	    fileWriter.close();
 
-	    FileWriter fileWriter2 = new FileWriter("query.txt");
-	    fileWriter2.write("test");
-	    fileWriter2.close();
-		
+	    FileWriter fileWriter = new FileWriter("request2.txt");
+	    fileWriter.write("test");
+	    fileWriter.close();
 		boolean auth = false;
 		String authorizationToken = "";
 		if (headers.getRequestHeader(HttpHeaders.AUTHORIZATION) != null) {
