@@ -163,7 +163,7 @@ public class StoryMinimalResponse {
 				"		Count(*) as Count\r\n" + 
 				"	FROM Item i\r\n" + 
 				"	JOIN CompletionStatus c ON c.CompletionStatusId = i.CompletionStatusId \r\n";
-		if (queryParams.containsKey("storyId")) {
+		if (queryParams.containsKey("storyId") && queryParams.getFirst("storyId") != "") {
 			String[] values = queryParams.getFirst("storyId").split(",");
 			query += " WHERE StoryId IN (";
 		    int valueCount = values.length;
