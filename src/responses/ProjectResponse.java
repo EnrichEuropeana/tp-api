@@ -740,6 +740,14 @@ public class ProjectResponse {
 
         	            URL url = new URL(manifestUrl);
         				HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        				String redirect = con.getHeaderField("Location");
+        					
+        				if (redirect != null){
+        					con = (HttpURLConnection) new URL(redirect).openConnection();
+        				}
+        				else {
+        					con = (HttpURLConnection) new URL(con.getURL().toString()).openConnection();
+        				}
 						
 						con.setRequestMethod("GET");
 						con.setRequestProperty("Content-Type", "application/json");
@@ -754,7 +762,6 @@ public class ProjectResponse {
 						}
 						in.close();
 						con.disconnect();
-						
     					JsonObject manifest = new JsonParser().parse(content.toString()).getAsJsonObject();
     					
     					JsonArray imageArray = manifest.get("sequences").getAsJsonArray().get(0).getAsJsonObject().get("canvases").getAsJsonArray();
