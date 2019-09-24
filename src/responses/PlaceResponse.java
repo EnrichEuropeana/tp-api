@@ -112,10 +112,23 @@ public class PlaceResponse {
 	@Produces("application/json;charset=utf-8")
 	@GET
 	public Response search(@Context UriInfo uriInfo) throws SQLException {
-		String query = "SELECT \r\n" + 
-				"	*\r\n" + 
-				"FROM Place p\r\n" + 
-				"LEFT JOIN Item i On p.ItemId = i.ItemId WHERE 1";
+		String query = "SELECT * FROM \r\n" + 
+				"(\r\n" + 
+				"	SELECT \r\n" + 
+				"		p.PlaceId as PlaceId,\r\n" + 
+				"		p.Name as Name ,\r\n" + 
+				"		p.Latitude as Latitude ,\r\n" + 
+				"		p.Longitude as Longitude ,\r\n" + 
+				"		i.ItemId as ItemId ,\r\n" + 
+				"		i.Title as Title ,\r\n" + 
+				"		p.Link as Link ,\r\n" + 
+				"		p.Zoom as Zoom ,\r\n" + 
+				"		p.Comment as Comment ,\r\n" + 
+				"		p.UserGenerated as UserGenerated ,\r\n" + 
+				"		(SELECT WP_UserId FROM User WHERE UserId = p.UserId) as UserId\r\n" + 
+				"	FROM Place p \r\n" + 
+				"	LEFT JOIN Item i On p.ItemId = i.ItemId \r\n" + 
+				") a WHERE 1 ";
 		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
 		
 		for(String key : queryParams.keySet()){
