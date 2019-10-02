@@ -34,7 +34,7 @@ public class AnnotationExportResponse {
 
 	public String executeQuery(String query, String type) throws SQLException{
 		   List<AnnotationExport> annotationExports = new ArrayList<AnnotationExport>();
-	       try (InputStream input = new FileInputStream("/home/enrich/tomcat/apache-tomcat-9.0.13/webapps/tp-apitp-api/WEB-INF/config.properties")) {
+	       try (InputStream input = new FileInputStream("/home/enrich/tomcat/apache-tomcat-9.0.13/webapps/tp-api/WEB-INF/config.properties")) {
 
 	            Properties prop = new Properties();
 
@@ -75,13 +75,16 @@ public class AnnotationExportResponse {
 			  annotationExport.setEuropeanaAnnotationId(rs.getInt("EuropeanaAnnotationId"));
 			  annotationExport.setAnnotationId(rs.getInt("AnnotationId"));
 			  annotationExport.setText(rs.getString("Text"));
+			  annotationExport.setTextNoTags(rs.getString("TextNoTags"));
 			  annotationExport.setTimestamp(rs.getTimestamp("Timestamp"));
 			  annotationExport.setX_Coord(rs.getFloat("X_Coord"));
 			  annotationExport.setY_Coord(rs.getFloat("Y_Coord"));
 			  annotationExport.setWidth(rs.getFloat("Width"));
 			  annotationExport.setHeight(rs.getFloat("Height"));
 			  annotationExport.setMotivation(rs.getString("Motivation"));
-			  annotationExport.setItemId(rs.getString("ItemId"));
+			  annotationExport.setOrderIndex(rs.getInt("OrderIndex"));
+			  annotationExport.setTranscribathonItemId(rs.getInt("TranscribathonItemId"));
+			  annotationExport.setTranscribathonStoryId(rs.getInt("TranscribathonStoryId"));
 			  annotationExport.setStoryUrl(rs.getString("StoryUrl"));
 			  annotationExport.setStoryId(rs.getString("StoryId"));
 			  annotationExports.add(annotationExport);
@@ -191,6 +194,7 @@ public class AnnotationExportResponse {
 				"(SELECT  " + 
 				"	 a.AnnotationId, " +
 				"    a.Text, " + 
+				"    a.TextNoTags, " + 
 				"    a.Timestamp, " + 
 				"    a.X_Coord, " + 
 				"    a.Y_Coord, " + 
@@ -199,6 +203,9 @@ public class AnnotationExportResponse {
 				"    a.EuropeanaAnnotationId, " + 
 				"    m.Name AS Motivation, " + 
 				"    i.ProjectItemId as ItemId, " + 
+				"    i.OrderIndex as OrderIndex, " + 
+				"    i.ItemId as TranscribathonItemId, " + 
+				"    s.StoryId as TranscribathonStoryId, " + 
 				"    s.`edm:landingPage` as StoryUrl, " + 
 				"    s.ExternalRecordId as StoryId " + 
 				"FROM " + 
@@ -215,6 +222,7 @@ public class AnnotationExportResponse {
 				"	SELECT  " + 
 				"	 t.TranscriptionId, " +
 				"    t.Text, " + 
+				"    t.TextNoTags, " + 
 				"    t.Timestamp, " + 
 				"    t.EuropeanaAnnotationId, " + 
 				"    0 AS X_Coord, " + 
@@ -222,7 +230,10 @@ public class AnnotationExportResponse {
 				"    0 AS Width, " + 
 				"    0 AS Height, " + 
 				"    'transcribing' AS Motivation, " + 
-				"    i.ProjectItemId, " + 
+				"    i.ProjectItemId, " +  
+				"    i.OrderIndex, " + 
+				"    i.ItemId, " + 
+				"    s.StoryId, " + 
 				"    s.`edm:landingPage`, " + 
 				"    s.ExternalRecordId " + 
 				"FROM " + 
@@ -256,6 +267,7 @@ public class AnnotationExportResponse {
 	        return rBuild.build();
 		}
 		ResponseBuilder rBuild = Response.ok(resource);
+		//ResponseBuilder rBuild = Response.ok(query);
         return rBuild.build();
 	}
 

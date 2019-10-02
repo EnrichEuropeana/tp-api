@@ -163,7 +163,7 @@ public class StoryMinimalResponse {
 				"		Count(*) as Count\r\n" + 
 				"	FROM Item i\r\n" + 
 				"	JOIN CompletionStatus c ON c.CompletionStatusId = i.CompletionStatusId \r\n";
-		if (queryParams.containsKey("storyId") && queryParams.getFirst("storyId") != "") {
+		if (queryParams.containsKey("storyId")) {
 			String[] values = queryParams.getFirst("storyId").split(",");
 			query += " WHERE StoryId IN (";
 		    int valueCount = values.length;
@@ -185,7 +185,7 @@ public class StoryMinimalResponse {
 				"		ItemId,\r\n" + 
 				"        ImageLink\r\n" + 
 				"	FROM Item i\r\n";
-		if (queryParams.containsKey("storyId")) {
+		if (queryParams.containsKey("storyId") && queryParams.getFirst("storyId") != "") {
 			String[] values = queryParams.getFirst("storyId").split(",");
 			query += " WHERE StoryId IN (";
 		    int valueCount = values.length;
@@ -379,6 +379,7 @@ public class StoryMinimalResponse {
 						"GROUP BY s.StoryId ";
 		String resource = executeQuery(query, "Select");
 		ResponseBuilder rBuild = Response.ok(resource);
+		//ResponseBuilder rBuild = Response.ok(query);
         return rBuild.build();
 	}
 

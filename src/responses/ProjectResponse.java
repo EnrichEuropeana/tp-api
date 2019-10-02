@@ -455,9 +455,12 @@ public class ProjectResponse {
 	@POST
 	public Response insertStory(@PathParam("project_id") int projectId, @Context UriInfo uriInfo, String body, @Context HttpHeaders headers) throws Exception {
 
-	    FileWriter fileWriter = new FileWriter("request2.txt");
+		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
+		
+	    FileWriter fileWriter = new FileWriter(queryParams.getFirst("importName") + ".txt");
 	    fileWriter.write("test");
 	    fileWriter.close();
+
 		boolean auth = false;
 		String authorizationToken = "";
 		if (headers.getRequestHeader(HttpHeaders.AUTHORIZATION) != null) {

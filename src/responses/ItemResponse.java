@@ -155,7 +155,6 @@ public class ItemResponse {
 				  String[] TranscriptionUserIds = rs.getString("TranscriptionUserId").split("&~&", -1);
 				  String[] TranscriptionCurrentVersions = rs.getString("TranscriptionCurrentVersion").split("&~&", -1);
 				  String[] TranscriptionTimestamps = rs.getString("TranscriptionTimestamp").split("&~&", -1);
-				  String[] TranscriptionWP_UserIds = rs.getString("TranscriptionWP_UserId").split("&~&", -1);
 				  String[] TranscriptionEuropeanaAnnotationIds = new String[TranscriptionIds.length];
 				  String[] TranscriptionNoTexts = rs.getString("TranscriptionNoText").split("&~&", -1);
 				  if (rs.getString("TranscriptionEuropeanaAnnotationId") != null) {
@@ -191,7 +190,6 @@ public class ItemResponse {
 					  transcription.setUserId(Integer.parseInt(TranscriptionUserIds[i]));
 					  transcription.setCurrentVersion(TranscriptionCurrentVersions[i]);
 				      transcription.setTimestamp(TranscriptionTimestamps[i]);
-					  transcription.setWP_UserId(Integer.parseInt(TranscriptionWP_UserIds[i]));
 					  if (TranscriptionEuropeanaAnnotationIds[i] != null) {
 						  transcription.setEuropeanaAnnotationId(Integer.parseInt(TranscriptionEuropeanaAnnotationIds[i]));
 					  }
@@ -454,323 +452,342 @@ public class ItemResponse {
 	@Produces("application/json;charset=utf-8")
 	@GET
 	public Response getAll(@Context UriInfo uriInfo) throws SQLException {
-		String query =  "SELECT * FROM (" +
-				"SELECT \r\n" + 
-				"    i.ItemId as ItemId, \r\n" + 
-				"    i.Title as Title, \r\n" + 
-				"    i.CompletionStatusId as CompletionStatusId, \r\n" + 
-				"    i.CompletionStatusName as CompletionStatusName, \r\n" + 
-				"    i.CompletionStatusColorCode as CompletionStatusColorCode, \r\n" + 
-				"    i.TranscriptionStatusId as TranscriptionStatusId, \r\n" + 
-				"    i.TranscriptionStatusName as TranscriptionStatusName, \r\n" + 
-				"    i.TranscriptionStatusColorCode as TranscriptionStatusColorCode, \r\n" + 
-				"    i.DescriptionStatusId as DescriptionStatusId, \r\n" + 
-				"    i.DescriptionStatusName as DescriptionStatusName, \r\n" + 
-				"    i.DescriptionStatusColorCode as DescriptionStatusColorCode, \r\n" + 
-				"    i.LocationStatusId as LocationStatusId, \r\n" + 
-				"    i.LocationStatusName as LocationStatusName, \r\n" + 
-				"    i.LocationStatusColorCode as LocationStatusColorCode, \r\n" + 
-				"    i.TaggingStatusId as TaggingStatusId, \r\n" + 
-				"    i.TaggingStatusName as TaggingStatusName, \r\n" + 
-				"    i.TaggingStatusColorCode as TaggingStatusColorCode, \r\n" + 
-				"    i.AutomaticEnrichmentStatusId as AutomaticEnrichmentStatusId, \r\n" + 
-				"    i.AutomaticEnrichmentStatusName as AutomaticEnrichmentStatusName, \r\n" + 
-				"    i.AutomaticEnrichmentStatusColorCode as AutomaticEnrichmentStatusColorCode, \r\n" + 
-				"    i.ProjectItemId as ProjectItemId, \r\n" + 
-				"    i.Description as Description, \r\n" + 
-				"    i.DescriptionLanguage as DescriptionLanguage, \r\n" + 
-				"    i.DateStart as DateStart, \r\n" + 
-				"    i.DateEnd as DateEnd, \r\n" + 
-				"    i.DatasetId as DatasetId, \r\n" + 
-				"    i.ImageLink as ImageLink, \r\n" + 
-				"    i.OrderIndex as OrderIndex, \r\n" + 
-				"    i.Timestamp as Timestamp,\r\n" + 
-				"    i.LockedTime as LockedTime,\r\n" + 
-				"    i.LockedUser as LockedUser,\r\n" + 
-				"    i.Manifest as Manifest,\r\n" + 
-				"    a.PropertyId as PropertyId,\r\n" + 
-				"    a.PropertyTypeName as PropertyTypeName,\r\n" + 
-				"    a.PropertyValue as PropertyValue,\r\n" + 
-				"    a.PropertyDescription as PropertyDescription,\r\n" + 
-				"    a.PropertyEditable as PropertyEditable,\r\n" + 
-				"    b.CommentId as CommentId,\r\n" + 
-				"    b.CommentText as CommentText,\r\n" + 
-				"    b.CommentUserId as CommentUserId,\r\n" + 
-				"    b.CommentTimestamp as CommentTimestamp,\r\n" + 
-				"    c.PlaceId as PlaceId,\r\n" + 
-				"    c.PlaceName as PlaceName,\r\n" + 
-				"    c.PlaceLatitude as PlaceLatitude,\r\n" + 
-				"    c.PlaceLongitude as PlaceLongitude,\r\n" + 
-				"    c.PlaceLink as PlaceLink,\r\n" + 
-				"    c.PlaceZoom as PlaceZoom,\r\n" + 
-				"    c.PlaceComment as PlaceComment,\r\n" +
-				"    c.PlaceUserId as PlaceUserID,\r\n" + 
-				"    c.PlaceUserGenerated as PlaceUserGenerated,\r\n" + 
-				"    d.TranscriptionId as TranscriptionId,\r\n" + 
-				"    d.TranscriptionText as TranscriptionText,\r\n" + 
-				"    d.TranscriptionTextNoTags as TranscriptionTextNoTags,\r\n" + 
-				"    d.TranscriptionUserId as TranscriptionUserId,\r\n" + 
-				"    d.TranscriptionCurrentVersion as TranscriptionCurrentVersion,\r\n" + 
-				"    d.TranscriptionTimestamp as TranscriptionTimestamp,\r\n" + 
-				"    d.TranscriptionWP_UserId AS TranscriptionWP_UserId,\r\n" + 
-				"    d.TranscriptionEuropeanaAnnotationId AS TranscriptionEuropeanaAnnotationId,\r\n" + 
-				"    d.TranscriptionNoText as TranscriptionNoText,\r\n" + 
-				"    d.TranscriptionLanguageId AS TranscriptionLanguageId,\r\n" + 
-				"    d.TranscriptionLanguageName AS TranscriptionLanguageName,\r\n" + 
-				"    d.TranscriptionLanguageNameEnglish AS TranscriptionLanguageNameEnglish,\r\n" + 
-				"    d.TranscriptionLanguageShortName AS TranscriptionLanguageShortName,\r\n" + 
-				"    d.TranscriptionLanguageCode AS TranscriptionLanguageCode,\r\n" + 
-				"    e.AnnotationId as AnnotationId,\r\n" + 
-				"    e.AnnotationType as AnnotationType,\r\n" + 
-				"    e.AnnotationText as AnnotationText,\r\n" + 
-				"    e.AnnotationUserId as AnnotationUserId,\r\n" + 
-				"    e.AnnotationX_Coord as AnnotationX_Coord,\r\n" + 
-				"    e.AnnotationY_Coord as AnnotationY_Coord,\r\n" + 
-				"    e.AnnotationWidth as AnnotationWidth,\r\n" + 
-				"    e.AnnotationHeight as AnnotationHeight,\r\n" + 
-				"    f.PersonId as PersonId,\r\n" + 
-				"    f.PersonFirstName as PersonFirstName,\r\n" + 
-				"    f.PersonLastName as PersonLastName,\r\n" + 
-				"    f.PersonBirthPlace as PersonBirthPlace,\r\n" + 
-				"    f.PersonBirthDate as PersonBirthDate,\r\n" + 
-				"    f.PersonDeathPlace as PersonDeathPlace,\r\n" + 
-				"    f.PersonDeathDate as PersonDeathDate,\r\n" +
-				"    f.PersonLink as PersonLink,\r\n" + 
-				"    f.PersonDescription as PersonDescription,\r\n" + 
-				"    s.StoryId as StoryId\r\n" + 
-				"	, s.`dc:title` as StorydcTitle \r\n" + 
-				"	, s.`dc:description` as StorydcDescription \r\n" + 
-				"	, s.`edm:landingPage` as StoryedmLandingPage \r\n" + 
-				"	, s.ExternalRecordId as StoryExternalRecordId \r\n" + 
-				"	, s.PlaceName as StoryPlaceName \r\n" + 
-				"	, s.PlaceLatitude as StoryPlaceLatitude \r\n" + 
-				"	, s.PlaceLongitude as StoryPlaceLongitude \r\n" + 
-				"	, s.PlaceZoom as StoryPlaceZoom \r\n" + 
-				"	, s.PlaceLink as StoryPlaceLink \r\n" + 
-				"	, s.PlaceComment as StoryPlaceComment \r\n" + 
-				"	, s.PlaceUserId as StoryPlaceUserId \r\n" + 
-				"	, s.PlaceUserGenerated as StoryPlaceUserGenerated \r\n" + 
-				", s.`dc:creator` as StorydcCreator" +
-				", s.`dc:source` as StorydcSource" +
-				", s.`edm:country` as StoryedmCountry" +
-				", s.`edm:dataProvider` as StoryedmDataProvider" +
-				", s.`edm:provider` as StoryedmProvider" +
-				", s.`edm:year` as StoryedmYear" +
-				", s.`dc:publisher` as StorydcPublisher" +
-				", s.`dc:coverage` as StorydcCoverage" +
-				", s.`dc:date` as StorydcDate" +
-				", s.`dc:type` as StorydcType" +
-				", s.`dc:relation` as StorydcRelation" +
-				", s.`dcterms:medium` as StorydctermsMedium" +
-				", s.`edm:datasetName` as StoryedmDatasetName" +
-				"	, s.`dc:contributor` as StorydcContributor \r\n" + 
-				"	, s.`edm:rights` as StoryedmRights \r\n" + 
-				"	, s.`edm:begin` as StoryedmBegin \r\n" + 
-				"	, s.`edm:end` as StoryedmEnd \r\n" + 
-				"	, s.`edm:isShownAt` as StoryedmIsShownAt \r\n" + 
-				"	, s.`dc:Rights` as StorydcRights \r\n" + 
-				"	, s.`dc:language` as StorydcLanguage \r\n" + 
-				"	, s.`edm:language` as StoryedmLanguage \r\n" + 
-				"	, s.ProjectId as StoryProjectId \r\n" + 
-				"	, s.Summary as StorySummary \r\n" + 
-				"	, s.ParentStory as StoryParentStory \r\n" + 
-				"	, s.SearchText as StorySearchText \r\n" + 
-				"	, s.DateStart as StoryDateStart \r\n" + 
-				"	, s.DateEnd as StoryDateEnd \r\n" + 
-				"	, s.OrderIndex as StoryOrderIndex  FROM " +
-				"(" +
-				"SELECT * " +
-				"FROM Item i " + 
-			    "LEFT JOIN ( " +
-					"SELECT i.ItemId as CompletionStatusItemId" +
-					", c.Name as CompletionStatusName " + 
-					", c.ColorCode as CompletionStatusColorCode " + 
-			        "FROM CompletionStatus c " +
-			        "JOIN Item i " +
-			        "ON i.CompletionStatusId = c.CompletionStatusId " +
-			        ") status  " +
-			    "ON i.ItemId = status.CompletionStatusItemId " +
-			    "LEFT JOIN ( " +
-					"SELECT i.ItemId as TranscriptionStatusItemId" +
-					", c.Name as TranscriptionStatusName " + 
-					", c.ColorCode as TranscriptionStatusColorCode " + 
-			        "FROM CompletionStatus c " +
-			        "JOIN Item i " +
-			        "ON i.TranscriptionStatusId = c.CompletionStatusId " +
-			        ") trStatus  " +
-			    "ON i.ItemId = trStatus.TranscriptionStatusItemId " +
-			    "LEFT JOIN ( " +
-					"SELECT i.ItemId as DescriptionStatusItemId" +
-					", c.Name as DescriptionStatusName " + 
-					", c.ColorCode as DescriptionStatusColorCode " + 
-			        "FROM CompletionStatus c " +
-			        "JOIN Item i " +
-			        "ON i.DescriptionStatusId = c.CompletionStatusId " +
-			        ") deStatus  " +
-			    "ON i.ItemId = deStatus.DescriptionStatusItemId " +
-			    "LEFT JOIN ( " +
-					"SELECT i.ItemId as LocationStatusItemId" +
-					", c.Name as LocationStatusName " + 
-					", c.ColorCode as LocationStatusColorCode " + 
-			        "FROM CompletionStatus c " +
-			        "JOIN Item i " +
-			        "ON i.LocationStatusId = c.CompletionStatusId " +
-			        ") loStatus  " +
-			    "ON i.ItemId = loStatus.LocationStatusItemId " +
-			    "LEFT JOIN ( " +
-					"SELECT i.ItemId as TaggingStatusItemId" +
-					", c.Name as TaggingStatusName " + 
-					", c.ColorCode as TaggingStatusColorCode " + 
-			        "FROM CompletionStatus c " +
-			        "JOIN Item i " +
-			        "ON i.TaggingStatusId = c.CompletionStatusId " +
-			        ") taStatus  " +
-			    "ON i.ItemId = taStatus.TaggingStatusItemId " +
-			    "LEFT JOIN ( " +
-					"SELECT i.ItemId as AutomaticEnrichmentStatusItemId" +
-					", c.Name as AutomaticEnrichmentStatusName " + 
-					", c.ColorCode as AutomaticEnrichmentStatusColorCode " + 
-			        "FROM CompletionStatus c " +
-			        "JOIN Item i " +
-			        "ON i.AutomaticEnrichmentStatusId = c.CompletionStatusId " +
-			        ") auStatus  " +
-			    "ON i.ItemId = auStatus.AutomaticEnrichmentStatusItemId " +
-				") i " +
-			"LEFT JOIN " + 
-			"(" +
-				"SELECT i.ItemId as ItemId " +
-				", group_concat(p.PropertyId SEPARATOR '&~&') as PropertyId" +
-				", group_concat(pt.Name SEPARATOR '&~&') as PropertyTypeName " +
-				", group_concat(p.Value SEPARATOR '&~&') as PropertyValue " +
-				", group_concat(IFNULL(p.Description, 'NULL') SEPARATOR '&~&') as PropertyDescription " +
-				", group_concat(pt.Editable + 0 SEPARATOR '&~&') as PropertyEditable " +
-				"FROM Item i " + 
-				"LEFT JOIN ItemProperty ip on i.ItemId = ip.ItemId " + 
-				"LEFT JOIN Property p on ip.PropertyId = p.PropertyId " + 
-				"LEFT JOIN PropertyType pt on p.PropertyTypeId = pt.PropertyTypeId " + 
-				"GROUP BY i.ItemId " +
-			") a " +
-			"ON i.ItemId = a.ItemId " +
-			"LEFT JOIN " + 
-			"(" + 
-				"SELECT i.ItemId as ItemId" +
-				", group_concat(c.CommentId SEPARATOR '&~&') as CommentId " +
-				", group_concat(c.Text SEPARATOR '&~&') as CommentText " +
-				", group_concat(c.UserId SEPARATOR '&~&') as CommentUserId " +
-				", group_concat(c.Timestamp SEPARATOR '&~&') as CommentTimestamp " +
-				"FROM Item i " + 
-				"LEFT JOIN Comment c on i.ItemId = c.ItemId " +  
-				"GROUP BY i.ItemId " +
-			") b " +
-			"ON i.ItemId = b.ItemId " +
-			"LEFT JOIN " + 
-			"(" + 
-				"SELECT i.ItemId as ItemId" +
-				", group_concat(pl.PlaceId SEPARATOR '&~&') as PlaceId " +
-				", group_concat(pl.Name SEPARATOR '&~&') as PlaceName " +
-				", group_concat(pl.Latitude SEPARATOR '&~&') as PlaceLatitude " +
-				", group_concat(pl.Longitude SEPARATOR '&~&') as PlaceLongitude " +
-				", group_concat(IFNULL(pl.Link, 'NULL') SEPARATOR '&~&') as PlaceLink " +
-				", group_concat(pl.Zoom SEPARATOR '&~&') as PlaceZoom " +
-				", group_concat(IFNULL(pl.Comment, 'NULL') SEPARATOR '&~&') as PlaceComment " +
-				", group_concat(pl.UserId SEPARATOR '&~&') as PlaceUserId " +
-				", group_concat(pl.UserGenerated + 0 SEPARATOR '&~&') as PlaceUserGenerated " +
-				"FROM Item i " + 
-				"LEFT JOIN Place pl on i.ItemId = pl.ItemId " +  
-				"GROUP BY i.ItemId " +
-			") c " + 
-			"ON i.ItemId = c.ItemId " +
-			"LEFT JOIN " + 
-			"(" + 
-				"SELECT i.ItemId as ItemId" +
-				", group_concat(t.TranscriptionId SEPARATOR '&~&') as TranscriptionId " +
-				", group_concat(t.Text SEPARATOR '&~&') as TranscriptionText " +
-				", group_concat(t.TextNoTags SEPARATOR '&~&') as TranscriptionTextNoTags " +
-				", group_concat(t.UserId SEPARATOR '&~&') as TranscriptionUserId " +
-				", group_concat(t.CurrentVersion + 0 SEPARATOR '&~&') as TranscriptionCurrentVersion " +
-				", group_concat(t.Timestamp SEPARATOR '&~&') as TranscriptionTimestamp, " +
-				", group_concat(t.NoText + 0 SEPARATOR '&~&') as TranscriptionNoText " +
-				"			GROUP_CONCAT(t.WP_UserId\r\n" + 
-				"				SEPARATOR '&~&') AS TranscriptionWP_UserId,\r\n" + 
-				"			GROUP_CONCAT(t.EuropeanaAnnotationId\r\n" + 
-				"				SEPARATOR '&~&') AS TranscriptionEuropeanaAnnotationId,\r\n" + 
-				"    		GROUP_CONCAT(IFNULL(l.LanguageId, 'NULL') SEPARATOR '&~&') AS TranscriptionLanguageId,\r\n" + 
-				"    		GROUP_CONCAT(IFNULL(l.Name, 'NULL') SEPARATOR '&~&') AS TranscriptionLanguageName,\r\n" + 
-				"    		GROUP_CONCAT(IFNULL(l.NameEnglish, 'NULL') SEPARATOR '&~&') AS TranscriptionLanguageNameEnglish,\r\n" + 
-				"    		GROUP_CONCAT(IFNULL(l.ShortName, 'NULL') SEPARATOR '&~&') AS TranscriptionLanguageShortName,\r\n" + 
-				"    		GROUP_CONCAT(IFNULL(l.Code, 'NULL') SEPARATOR '&~&') AS TranscriptionLanguageCode " + 
-				"		FROM\r\n" + 
-				"    	(" +
-				"			SELECT \r\n" + 
-				"        		*\r\n" + 
-				"    		FROM\r\n" + 
-				"        		Transcription t\r\n" + 
-				"		) t\r\n" + 
-				"        LEFT JOIN\r\n" + 
-				"    	(SELECT \r\n" + 
-				"        	WP_UserId, UserId\r\n" + 
-				"    	FROM\r\n" + 
-				"        	User) u ON t.UserId = u.UserId\r\n" + 
-				"        LEFT JOIN\r\n" + 
-				"    	(" +
-				"			SELECT \r\n" + 
-				"        		tl.TranscriptionId,\r\n" + 
-				"            	GROUP_CONCAT(IFNULL(l.LanguageId, 'NULL') SEPARATOR '�~�') AS LanguageId,\r\n" + 
-				"            	GROUP_CONCAT(IFNULL(l.Name, 'NULL') SEPARATOR '�~�') AS Name,\r\n" + 
-				"            	GROUP_CONCAT(IFNULL(l.NameEnglish, 'NULL') SEPARATOR '�~�') AS NameEnglish,\r\n" + 
-				"            	GROUP_CONCAT(IFNULL(l.ShortName, 'NULL') SEPARATOR '�~�') AS ShortName,\r\n" + 
-				"            	GROUP_CONCAT(IFNULL(l.Code, 'NULL') SEPARATOR '�~�') AS Code\r\n" + 
-				"    		FROM\r\n" + 
-				"        		TranscriptionLanguage tl\r\n" + 
-				"    		JOIN Language l ON l.LanguageId = tl.LanguageId\r\n" + 
-				"    		GROUP BY tl.TranscriptionId" +
-				"		) " +
-				"		l ON t.TranscriptionId = l.TranscriptionId " + 
-				"ORDER BY t.Timestamp ASC " +  
-				"GROUP BY i.ItemId " +
-			") d " +
-			"ON i.ItemId = d.ItemId " +
-			"LEFT JOIN " + 
-			"(" + 
-				"SELECT i.ItemId as ItemId" +
-				", group_concat(a.AnnotationId SEPARATOR '&~&') as AnnotationId " +
-				", group_concat(at.Name SEPARATOR '&~&') as AnnotationType " +
-				", group_concat(a.Text SEPARATOR '&~&') as AnnotationText " +
-				", group_concat(a.UserId SEPARATOR '&~&') as AnnotationUserId " +
-				", group_concat(a.X_Coord SEPARATOR '&~&') as AnnotationX_Coord " +
-				", group_concat(a.Y_Coord SEPARATOR '&~&') as AnnotationY_Coord " +
-				", group_concat(a.Width SEPARATOR '&~&') as AnnotationWidth " +
-				", group_concat(a.Height SEPARATOR '&~&') as AnnotationHeight " +
-				"FROM Item i " + 
-				"LEFT JOIN Annotation a on i.ItemId = a.ItemId " +
-				"LEFT JOIN AnnotationType at on a.AnnotationTypeId = at.AnnotationTypeId " +  
-				"GROUP BY i.ItemId " +
-			") e " + 
-			"ON i.ItemId = e.ItemId " +
-			"LEFT JOIN " + 
-			"(" + 
-				"SELECT i.ItemId as ItemId" +
-				", group_concat(pe.PersonId SEPARATOR '&~&') as PersonId " +
-				", group_concat(pe.FirstName SEPARATOR '&~&') as Person " +
-				", group_concat(pe.LastName SEPARATOR '&~&') as Person " +
-				", group_concat(pe.BirthPlace SEPARATOR '&~&') as PersonBirthPlace " +
-				", group_concat(pe.BirthDate SEPARATOR '&~&') as PersonBirthDate " +
-				", group_concat(pe.DeathPlace SEPARATOR '&~&') as PersonDeathPlace " +
-				", group_concat(pe.DeathDate SEPARATOR '&~&') as PersonDeathDate " +
-				", group_concat(pe.Link SEPARATOR '&~&') as PersonLink " +
-				", group_concat(pe.Description SEPARATOR '&~&') as PersonDescription " +
-				"FROM Item i " + 
-				"LEFT JOIN Person pe on i.ItemId = pe.ItemId " +  
-				"GROUP BY i.ItemId " +
-			") f " + 
-			"ON i.ItemId = f.ItemId " +
-			"LEFT JOIN " + 
-			"(" +
-				"SELECT * " +
-				"FROM Story " + 
-			") s " +
-			"ON i.StoryId = s.StoryId ) a " +
-			"WHERE 1";
+		String query =  "SELECT \r\n" + 
+				"    *\r\n" + 
+				"FROM\r\n" + 
+				"    (SELECT \r\n" + 
+				"        i.ItemId AS ItemId,\r\n" + 
+				"            i.Title AS Title,\r\n" + 
+				"            i.CompletionStatusId AS CompletionStatusId,\r\n" + 
+				"            i.CompletionStatusName AS CompletionStatusName,\r\n" + 
+				"            i.CompletionStatusColorCode AS CompletionStatusColorCode,\r\n" + 
+				"            i.TranscriptionStatusId AS TranscriptionStatusId,\r\n" + 
+				"            i.TranscriptionStatusName AS TranscriptionStatusName,\r\n" + 
+				"            i.TranscriptionStatusColorCode AS TranscriptionStatusColorCode,\r\n" + 
+				"            i.DescriptionStatusId AS DescriptionStatusId,\r\n" + 
+				"            i.DescriptionStatusName AS DescriptionStatusName,\r\n" + 
+				"            i.DescriptionStatusColorCode AS DescriptionStatusColorCode,\r\n" + 
+				"            i.LocationStatusId AS LocationStatusId,\r\n" + 
+				"            i.LocationStatusName AS LocationStatusName,\r\n" + 
+				"            i.LocationStatusColorCode AS LocationStatusColorCode,\r\n" + 
+				"            i.TaggingStatusId AS TaggingStatusId,\r\n" + 
+				"            i.TaggingStatusName AS TaggingStatusName,\r\n" + 
+				"            i.TaggingStatusColorCode AS TaggingStatusColorCode,\r\n" + 
+				"            i.AutomaticEnrichmentStatusId AS AutomaticEnrichmentStatusId,\r\n" + 
+				"            i.AutomaticEnrichmentStatusName AS AutomaticEnrichmentStatusName,\r\n" + 
+				"            i.AutomaticEnrichmentStatusColorCode AS AutomaticEnrichmentStatusColorCode,\r\n" + 
+				"            i.ProjectItemId AS ProjectItemId,\r\n" + 
+				"            i.Description AS Description,\r\n" + 
+				"            i.DescriptionLanguage AS DescriptionLanguage,\r\n" + 
+				"            i.DateStart AS DateStart,\r\n" + 
+				"            i.DateEnd AS DateEnd,\r\n" + 
+				"            i.DatasetId AS DatasetId,\r\n" + 
+				"            i.ImageLink AS ImageLink,\r\n" + 
+				"            i.OrderIndex AS OrderIndex,\r\n" + 
+				"            i.Timestamp AS Timestamp,\r\n" + 
+				"            i.LockedTime AS LockedTime,\r\n" + 
+				"            i.LockedUser AS LockedUser,\r\n" + 
+				"            i.Manifest AS Manifest,\r\n" + 
+				"            a.PropertyId AS PropertyId,\r\n" + 
+				"            a.PropertyTypeName AS PropertyTypeName,\r\n" + 
+				"            a.PropertyValue AS PropertyValue,\r\n" + 
+				"            a.PropertyDescription AS PropertyDescription,\r\n" + 
+				"            a.PropertyEditable AS PropertyEditable,\r\n" + 
+				"            b.CommentId AS CommentId,\r\n" + 
+				"            b.CommentText AS CommentText,\r\n" + 
+				"            b.CommentUserId AS CommentUserId,\r\n" + 
+				"            b.CommentTimestamp AS CommentTimestamp,\r\n" + 
+				"            c.PlaceId AS PlaceId,\r\n" + 
+				"            c.PlaceName AS PlaceName,\r\n" + 
+				"            c.PlaceLatitude AS PlaceLatitude,\r\n" + 
+				"            c.PlaceLongitude AS PlaceLongitude,\r\n" + 
+				"            c.PlaceLink AS PlaceLink,\r\n" + 
+				"            c.PlaceZoom AS PlaceZoom,\r\n" + 
+				"            c.PlaceComment AS PlaceComment,\r\n" + 
+				"            c.PlaceUserId AS PlaceUserID,\r\n" + 
+				"            c.PlaceUserGenerated AS PlaceUserGenerated,\r\n" + 
+				"            d.TranscriptionId AS TranscriptionId,\r\n" + 
+				"            d.TranscriptionText AS TranscriptionText,\r\n" + 
+				"            d.TranscriptionTextNoTags AS TranscriptionTextNoTags,\r\n" + 
+				"            d.TranscriptionUserId AS TranscriptionUserId,\r\n" + 
+				"            d.TranscriptionCurrentVersion AS TranscriptionCurrentVersion,\r\n" + 
+				"            d.TranscriptionTimestamp AS TranscriptionTimestamp,\r\n" + 
+				"            d.TranscriptionEuropeanaAnnotationId AS TranscriptionEuropeanaAnnotationId,\r\n" + 
+				"            d.TranscriptionNoText AS TranscriptionNoText,\r\n" + 
+				"            d.TranscriptionLanguageId AS TranscriptionLanguageId,\r\n" + 
+				"            d.TranscriptionLanguageName AS TranscriptionLanguageName,\r\n" + 
+				"            d.TranscriptionLanguageNameEnglish AS TranscriptionLanguageNameEnglish,\r\n" + 
+				"            d.TranscriptionLanguageShortName AS TranscriptionLanguageShortName,\r\n" + 
+				"            d.TranscriptionLanguageCode AS TranscriptionLanguageCode,\r\n" + 
+				"            e.AnnotationId AS AnnotationId,\r\n" + 
+				"            e.AnnotationType AS AnnotationType,\r\n" + 
+				"            e.AnnotationText AS AnnotationText,\r\n" + 
+				"            e.AnnotationUserId AS AnnotationUserId,\r\n" + 
+				"            e.AnnotationX_Coord AS AnnotationX_Coord,\r\n" + 
+				"            e.AnnotationY_Coord AS AnnotationY_Coord,\r\n" + 
+				"            e.AnnotationWidth AS AnnotationWidth,\r\n" + 
+				"            e.AnnotationHeight AS AnnotationHeight,\r\n" + 
+				"            f.PersonId AS PersonId,\r\n" + 
+				"            f.PersonFirstName AS PersonFirstName,\r\n" + 
+				"            f.PersonLastName AS PersonLastName,\r\n" + 
+				"            f.PersonBirthPlace AS PersonBirthPlace,\r\n" + 
+				"            f.PersonBirthDate AS PersonBirthDate,\r\n" + 
+				"            f.PersonDeathPlace AS PersonDeathPlace,\r\n" + 
+				"            f.PersonDeathDate AS PersonDeathDate,\r\n" + 
+				"            f.PersonLink AS PersonLink,\r\n" + 
+				"            f.PersonDescription AS PersonDescription,\r\n" + 
+				"            s.StoryId AS StoryId,\r\n" + 
+				"            s.`dc:title` AS StorydcTitle,\r\n" + 
+				"            s.`dc:description` AS StorydcDescription,\r\n" + 
+				"            s.`edm:landingPage` AS StoryedmLandingPage,\r\n" + 
+				"            s.ExternalRecordId AS StoryExternalRecordId,\r\n" + 
+				"            s.PlaceName AS StoryPlaceName,\r\n" + 
+				"            s.PlaceLatitude AS StoryPlaceLatitude,\r\n" + 
+				"            s.PlaceLongitude AS StoryPlaceLongitude,\r\n" + 
+				"            s.PlaceZoom AS StoryPlaceZoom,\r\n" + 
+				"            s.PlaceLink AS StoryPlaceLink,\r\n" + 
+				"            s.PlaceComment AS StoryPlaceComment,\r\n" + 
+				"            s.PlaceUserId AS StoryPlaceUserId,\r\n" + 
+				"            s.PlaceUserGenerated AS StoryPlaceUserGenerated,\r\n" + 
+				"            s.`dc:creator` AS StorydcCreator,\r\n" + 
+				"            s.`dc:source` AS StorydcSource,\r\n" + 
+				"            s.`edm:country` AS StoryedmCountry,\r\n" + 
+				"            s.`edm:dataProvider` AS StoryedmDataProvider,\r\n" + 
+				"            s.`edm:provider` AS StoryedmProvider,\r\n" + 
+				"            s.`edm:year` AS StoryedmYear,\r\n" + 
+				"            s.`dc:publisher` AS StorydcPublisher,\r\n" + 
+				"            s.`dc:coverage` AS StorydcCoverage,\r\n" + 
+				"            s.`dc:date` AS StorydcDate,\r\n" + 
+				"            s.`dc:type` AS StorydcType,\r\n" + 
+				"            s.`dc:relation` AS StorydcRelation,\r\n" + 
+				"            s.`dcterms:medium` AS StorydctermsMedium,\r\n" + 
+				"            s.`edm:datasetName` AS StoryedmDatasetName,\r\n" + 
+				"            s.`dc:contributor` AS StorydcContributor,\r\n" + 
+				"            s.`edm:rights` AS StoryedmRights,\r\n" + 
+				"            s.`edm:begin` AS StoryedmBegin,\r\n" + 
+				"            s.`edm:end` AS StoryedmEnd,\r\n" + 
+				"            s.`edm:isShownAt` AS StoryedmIsShownAt,\r\n" + 
+				"            s.`dc:Rights` AS StorydcRights,\r\n" + 
+				"            s.`dc:language` AS StorydcLanguage,\r\n" + 
+				"            s.`edm:language` AS StoryedmLanguage,\r\n" + 
+				"            s.ProjectId AS StoryProjectId,\r\n" + 
+				"            s.Summary AS StorySummary,\r\n" + 
+				"            s.ParentStory AS StoryParentStory,\r\n" + 
+				"            s.SearchText AS StorySearchText,\r\n" + 
+				"            s.DateStart AS StoryDateStart,\r\n" + 
+				"            s.DateEnd AS StoryDateEnd,\r\n" + 
+				"            s.OrderIndex AS StoryOrderIndex\r\n" + 
+				"    FROM\r\n" + 
+				"        (SELECT \r\n" + 
+				"        *\r\n" + 
+				"    FROM\r\n" + 
+				"        Item i\r\n" + 
+				"    LEFT JOIN (SELECT \r\n" + 
+				"        i.ItemId AS CompletionStatusItemId,\r\n" + 
+				"            c.Name AS CompletionStatusName,\r\n" + 
+				"            c.ColorCode AS CompletionStatusColorCode\r\n" + 
+				"    FROM\r\n" + 
+				"        CompletionStatus c\r\n" + 
+				"    JOIN Item i ON i.CompletionStatusId = c.CompletionStatusId) status ON i.ItemId = status.CompletionStatusItemId\r\n" + 
+				"    LEFT JOIN (SELECT \r\n" + 
+				"        i.ItemId AS TranscriptionStatusItemId,\r\n" + 
+				"            c.Name AS TranscriptionStatusName,\r\n" + 
+				"            c.ColorCode AS TranscriptionStatusColorCode\r\n" + 
+				"    FROM\r\n" + 
+				"        CompletionStatus c\r\n" + 
+				"    JOIN Item i ON i.TranscriptionStatusId = c.CompletionStatusId) trStatus ON i.ItemId = trStatus.TranscriptionStatusItemId\r\n" + 
+				"    LEFT JOIN (SELECT \r\n" + 
+				"        i.ItemId AS DescriptionStatusItemId,\r\n" + 
+				"            c.Name AS DescriptionStatusName,\r\n" + 
+				"            c.ColorCode AS DescriptionStatusColorCode\r\n" + 
+				"    FROM\r\n" + 
+				"        CompletionStatus c\r\n" + 
+				"    JOIN Item i ON i.DescriptionStatusId = c.CompletionStatusId) deStatus ON i.ItemId = deStatus.DescriptionStatusItemId\r\n" + 
+				"    LEFT JOIN (SELECT \r\n" + 
+				"        i.ItemId AS LocationStatusItemId,\r\n" + 
+				"            c.Name AS LocationStatusName,\r\n" + 
+				"            c.ColorCode AS LocationStatusColorCode\r\n" + 
+				"    FROM\r\n" + 
+				"        CompletionStatus c\r\n" + 
+				"    JOIN Item i ON i.LocationStatusId = c.CompletionStatusId) loStatus ON i.ItemId = loStatus.LocationStatusItemId\r\n" + 
+				"    LEFT JOIN (SELECT \r\n" + 
+				"        i.ItemId AS TaggingStatusItemId,\r\n" + 
+				"            c.Name AS TaggingStatusName,\r\n" + 
+				"            c.ColorCode AS TaggingStatusColorCode\r\n" + 
+				"    FROM\r\n" + 
+				"        CompletionStatus c\r\n" + 
+				"    JOIN Item i ON i.TaggingStatusId = c.CompletionStatusId) taStatus ON i.ItemId = taStatus.TaggingStatusItemId\r\n" + 
+				"    LEFT JOIN (SELECT \r\n" + 
+				"        i.ItemId AS AutomaticEnrichmentStatusItemId,\r\n" + 
+				"            c.Name AS AutomaticEnrichmentStatusName,\r\n" + 
+				"            c.ColorCode AS AutomaticEnrichmentStatusColorCode\r\n" + 
+				"    FROM\r\n" + 
+				"        CompletionStatus c\r\n" + 
+				"    JOIN Item i ON i.AutomaticEnrichmentStatusId = c.CompletionStatusId) auStatus ON i.ItemId = auStatus.AutomaticEnrichmentStatusItemId) i\r\n" + 
+				"    LEFT JOIN (SELECT \r\n" + 
+				"        i.ItemId AS ItemId,\r\n" + 
+				"            GROUP_CONCAT(p.PropertyId\r\n" + 
+				"                SEPARATOR '&~&') AS PropertyId,\r\n" + 
+				"            GROUP_CONCAT(pt.Name\r\n" + 
+				"                SEPARATOR '&~&') AS PropertyTypeName,\r\n" + 
+				"            GROUP_CONCAT(p.Value\r\n" + 
+				"                SEPARATOR '&~&') AS PropertyValue,\r\n" + 
+				"            GROUP_CONCAT(IFNULL(p.Description, 'NULL')\r\n" + 
+				"                SEPARATOR '&~&') AS PropertyDescription,\r\n" + 
+				"            GROUP_CONCAT(pt.Editable + 0\r\n" + 
+				"                SEPARATOR '&~&') AS PropertyEditable\r\n" + 
+				"    FROM\r\n" + 
+				"        Item i\r\n" + 
+				"    LEFT JOIN ItemProperty ip ON i.ItemId = ip.ItemId\r\n" + 
+				"    LEFT JOIN Property p ON ip.PropertyId = p.PropertyId\r\n" + 
+				"    LEFT JOIN PropertyType pt ON p.PropertyTypeId = pt.PropertyTypeId\r\n" + 
+				"    GROUP BY i.ItemId) a ON i.ItemId = a.ItemId\r\n" + 
+				"    LEFT JOIN (SELECT \r\n" + 
+				"        i.ItemId AS ItemId,\r\n" + 
+				"            GROUP_CONCAT(c.CommentId\r\n" + 
+				"                SEPARATOR '&~&') AS CommentId,\r\n" + 
+				"            GROUP_CONCAT(c.Text\r\n" + 
+				"                SEPARATOR '&~&') AS CommentText,\r\n" + 
+				"            GROUP_CONCAT(c.UserId\r\n" + 
+				"                SEPARATOR '&~&') AS CommentUserId,\r\n" + 
+				"            GROUP_CONCAT(c.Timestamp\r\n" + 
+				"                SEPARATOR '&~&') AS CommentTimestamp\r\n" + 
+				"    FROM\r\n" + 
+				"        Item i\r\n" + 
+				"    LEFT JOIN Comment c ON i.ItemId = c.ItemId\r\n" + 
+				"    GROUP BY i.ItemId) b ON i.ItemId = b.ItemId\r\n" + 
+				"    LEFT JOIN (SELECT \r\n" + 
+				"        i.ItemId AS ItemId,\r\n" + 
+				"            GROUP_CONCAT(pl.PlaceId\r\n" + 
+				"                SEPARATOR '&~&') AS PlaceId,\r\n" + 
+				"            GROUP_CONCAT(pl.Name\r\n" + 
+				"                SEPARATOR '&~&') AS PlaceName,\r\n" + 
+				"            GROUP_CONCAT(pl.Latitude\r\n" + 
+				"                SEPARATOR '&~&') AS PlaceLatitude,\r\n" + 
+				"            GROUP_CONCAT(pl.Longitude\r\n" + 
+				"                SEPARATOR '&~&') AS PlaceLongitude,\r\n" + 
+				"            GROUP_CONCAT(IFNULL(pl.Link, 'NULL')\r\n" + 
+				"                SEPARATOR '&~&') AS PlaceLink,\r\n" + 
+				"            GROUP_CONCAT(pl.Zoom\r\n" + 
+				"                SEPARATOR '&~&') AS PlaceZoom,\r\n" + 
+				"            GROUP_CONCAT(IFNULL(pl.Comment, 'NULL')\r\n" + 
+				"                SEPARATOR '&~&') AS PlaceComment,\r\n" + 
+				"            GROUP_CONCAT(pl.UserId\r\n" + 
+				"                SEPARATOR '&~&') AS PlaceUserId,\r\n" + 
+				"            GROUP_CONCAT(pl.UserGenerated + 0\r\n" + 
+				"                SEPARATOR '&~&') AS PlaceUserGenerated\r\n" + 
+				"    FROM\r\n" + 
+				"        Item i\r\n" + 
+				"    LEFT JOIN Place pl ON i.ItemId = pl.ItemId\r\n" + 
+				"    GROUP BY i.ItemId) c ON i.ItemId = c.ItemId\r\n" + 
+				"    LEFT JOIN (SELECT \r\n" + 
+				"        i.ItemId AS ItemId,\r\n" + 
+				"            GROUP_CONCAT(t.TranscriptionId\r\n" + 
+				"                SEPARATOR '&~&') AS TranscriptionId,\r\n" + 
+				"            GROUP_CONCAT(t.Text\r\n" + 
+				"                SEPARATOR '&~&') AS TranscriptionText,\r\n" + 
+				"            GROUP_CONCAT(t.TextNoTags\r\n" + 
+				"                SEPARATOR '&~&') AS TranscriptionTextNoTags,\r\n" + 
+				"            GROUP_CONCAT(t.UserId\r\n" + 
+				"                SEPARATOR '&~&') AS TranscriptionUserId,\r\n" + 
+				"            GROUP_CONCAT(t.CurrentVersion + 0\r\n" + 
+				"                SEPARATOR '&~&') AS TranscriptionCurrentVersion,\r\n" + 
+				"            GROUP_CONCAT(t.Timestamp\r\n" + 
+				"                SEPARATOR '&~&') AS TranscriptionTimestamp,\r\n" + 
+				"            GROUP_CONCAT(t.NoText\r\n" + 
+				"                SEPARATOR '&~&') AS TranscriptionNoText,\r\n" + 
+				"            GROUP_CONCAT(t.EuropeanaAnnotationId\r\n" + 
+				"                SEPARATOR '&~&') AS TranscriptionEuropeanaAnnotationId,\r\n" + 
+				"            GROUP_CONCAT(IFNULL(l.LanguageId, 'NULL')\r\n" + 
+				"                SEPARATOR '&~&') AS TranscriptionLanguageId,\r\n" + 
+				"            GROUP_CONCAT(IFNULL(l.Name, 'NULL')\r\n" + 
+				"                SEPARATOR '&~&') AS TranscriptionLanguageName,\r\n" + 
+				"            GROUP_CONCAT(IFNULL(l.NameEnglish, 'NULL')\r\n" + 
+				"                SEPARATOR '&~&') AS TranscriptionLanguageNameEnglish,\r\n" + 
+				"            GROUP_CONCAT(IFNULL(l.ShortName, 'NULL')\r\n" + 
+				"                SEPARATOR '&~&') AS TranscriptionLanguageShortName,\r\n" + 
+				"            GROUP_CONCAT(IFNULL(l.Code, 'NULL')\r\n" + 
+				"                SEPARATOR '&~&') AS TranscriptionLanguageCode\r\n" + 
+				"    FROM\r\n" + 
+				"        Item i\r\n" + 
+				"    LEFT JOIN (SELECT \r\n" + 
+				"        *\r\n" + 
+				"    FROM\r\n" + 
+				"        Transcription t) t ON i.ItemId = t.ItemId\r\n" + 
+				"    LEFT JOIN (SELECT \r\n" + 
+				"        WP_UserId, UserId\r\n" + 
+				"    FROM\r\n" + 
+				"        User) u ON t.UserId = u.UserId\r\n" + 
+				"    LEFT JOIN (SELECT \r\n" + 
+				"        tl.TranscriptionId,\r\n" + 
+				"            GROUP_CONCAT(IFNULL(l.LanguageId, 'NULL')\r\n" + 
+				"                SEPARATOR '&~&') AS LanguageId,\r\n" + 
+				"            GROUP_CONCAT(IFNULL(l.Name, 'NULL')\r\n" + 
+				"                SEPARATOR '&~&') AS Name,\r\n" + 
+				"            GROUP_CONCAT(IFNULL(l.NameEnglish, 'NULL')\r\n" + 
+				"                SEPARATOR '&~&') AS NameEnglish,\r\n" + 
+				"            GROUP_CONCAT(IFNULL(l.ShortName, 'NULL')\r\n" + 
+				"                SEPARATOR '&~&') AS ShortName,\r\n" + 
+				"            GROUP_CONCAT(IFNULL(l.Code, 'NULL')\r\n" + 
+				"                SEPARATOR '&~&') AS Code\r\n" + 
+				"    FROM\r\n" + 
+				"        TranscriptionLanguage tl\r\n" + 
+				"    JOIN Language l ON l.LanguageId = tl.LanguageId\r\n" + 
+				"    GROUP BY tl.TranscriptionId) l ON t.TranscriptionId = l.TranscriptionId\r\n" + 
+				"    GROUP BY i.ItemId) d ON i.ItemId = d.ItemId\r\n" + 
+				"    LEFT JOIN (SELECT \r\n" + 
+				"        i.ItemId AS ItemId,\r\n" + 
+				"            GROUP_CONCAT(a.AnnotationId\r\n" + 
+				"                SEPARATOR '&~&') AS AnnotationId,\r\n" + 
+				"            GROUP_CONCAT(at.Name\r\n" + 
+				"                SEPARATOR '&~&') AS AnnotationType,\r\n" + 
+				"            GROUP_CONCAT(a.Text\r\n" + 
+				"                SEPARATOR '&~&') AS AnnotationText,\r\n" + 
+				"            GROUP_CONCAT(a.UserId\r\n" + 
+				"                SEPARATOR '&~&') AS AnnotationUserId,\r\n" + 
+				"            GROUP_CONCAT(a.X_Coord\r\n" + 
+				"                SEPARATOR '&~&') AS AnnotationX_Coord,\r\n" + 
+				"            GROUP_CONCAT(a.Y_Coord\r\n" + 
+				"                SEPARATOR '&~&') AS AnnotationY_Coord,\r\n" + 
+				"            GROUP_CONCAT(a.Width\r\n" + 
+				"                SEPARATOR '&~&') AS AnnotationWidth,\r\n" + 
+				"            GROUP_CONCAT(a.Height\r\n" + 
+				"                SEPARATOR '&~&') AS AnnotationHeight\r\n" + 
+				"    FROM\r\n" + 
+				"        Item i\r\n" + 
+				"    LEFT JOIN Annotation a ON i.ItemId = a.ItemId\r\n" + 
+				"    LEFT JOIN AnnotationType at ON a.AnnotationTypeId = at.AnnotationTypeId\r\n" + 
+				"    GROUP BY i.ItemId) e ON i.ItemId = e.ItemId\r\n" + 
+				"    LEFT JOIN (SELECT \r\n" + 
+				"        i.ItemId AS ItemId,\r\n" + 
+				"            GROUP_CONCAT(pe.PersonId\r\n" + 
+				"                SEPARATOR '&~&') AS PersonId,\r\n" + 
+				"            GROUP_CONCAT(pe.FirstName\r\n" + 
+				"                SEPARATOR '&~&') AS PersonFirstName,\r\n" + 
+				"            GROUP_CONCAT(pe.LastName\r\n" + 
+				"                SEPARATOR '&~&') AS PersonLastName,\r\n" + 
+				"            GROUP_CONCAT(pe.BirthPlace\r\n" + 
+				"                SEPARATOR '&~&') AS PersonBirthPlace,\r\n" + 
+				"            GROUP_CONCAT(pe.BirthDate\r\n" + 
+				"                SEPARATOR '&~&') AS PersonBirthDate,\r\n" + 
+				"            GROUP_CONCAT(pe.DeathPlace\r\n" + 
+				"                SEPARATOR '&~&') AS PersonDeathPlace,\r\n" + 
+				"            GROUP_CONCAT(pe.DeathDate\r\n" + 
+				"                SEPARATOR '&~&') AS PersonDeathDate,\r\n" + 
+				"            GROUP_CONCAT(pe.Link\r\n" + 
+				"                SEPARATOR '&~&') AS PersonLink,\r\n" + 
+				"            GROUP_CONCAT(pe.Description\r\n" + 
+				"                SEPARATOR '&~&') AS PersonDescription\r\n" + 
+				"    FROM\r\n" + 
+				"        Item i\r\n" + 
+				"    LEFT JOIN Person pe ON i.ItemId = pe.ItemId\r\n" + 
+				"    GROUP BY i.ItemId) f ON i.ItemId = f.ItemId\r\n" + 
+				"    LEFT JOIN (SELECT \r\n" + 
+				"        *\r\n" + 
+				"    FROM\r\n" + 
+				"        Story) s ON i.StoryId = s.StoryId) a\r\n" + 
+				"WHERE\r\n" + 
+				"    1 ";
 
 		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
 		
