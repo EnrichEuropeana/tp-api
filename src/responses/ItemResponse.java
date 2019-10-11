@@ -131,6 +131,8 @@ public class ItemResponse {
 				  String[] PlaceComment = rs.getString("PlaceComment").split("&~&", -1);
 				  String[] PlaceUserId = rs.getString("PlaceUserId").split("&~&", -1);
 				  String[] PlaceUserGenerated = rs.getString("PlaceUserGenerated").split("&~&", -1);
+				  String[] PlaceWikidataNames = rs.getString("PlaceWikidataName").split("&~&", -1);
+				  String[] PlaceWikidataIds = rs.getString("PlaceWikidataId").split("&~&", -1);
 				  for (int i = 0; i < PlaceIds.length; i++) {
 					  Place place = new Place();
 					  place.setPlaceId(Integer.parseInt(PlaceIds[i]));
@@ -142,6 +144,8 @@ public class ItemResponse {
 					  place.setComment(PlaceComment[i]);
 					  place.setUserId(Integer.parseInt(PlaceUserId[i]));
 					  place.setUserGenerated(PlaceUserGenerated[i]);
+					  place.setWikidataName(PlaceWikidataNames[i]);
+					  place.setWikidataId(PlaceWikidataIds[i]);
 					  PlaceList.add(place);
 				  }
 			  }
@@ -374,6 +378,8 @@ public class ItemResponse {
 			  item.setDescriptionLanguage(rs.getInt("DescriptionLanguage"));
 			  item.setDateStart(rs.getTimestamp("DateStart"));
 			  item.setDateEnd(rs.getTimestamp("DateEnd"));
+			  item.setDateStartDisplay(rs.getString("DateStartDisplay"));
+			  item.setDateEndDisplay(rs.getString("DateEndDisplay"));
 			  item.setDatasetId(rs.getInt("DatasetId"));
 			  item.setImageLink(rs.getString("ImageLink"));
 			  item.setOrderIndex(rs.getInt("OrderIndex"));
@@ -481,6 +487,8 @@ public class ItemResponse {
 				"            i.DescriptionLanguage AS DescriptionLanguage,\r\n" + 
 				"            i.DateStart AS DateStart,\r\n" + 
 				"            i.DateEnd AS DateEnd,\r\n" + 
+				"            i.DateStartDisplay AS DateStartDisplay,\r\n" + 
+				"            i.DateEndDisplay AS DateEndDisplay,\r\n" + 
 				"            i.DatasetId AS DatasetId,\r\n" + 
 				"            i.ImageLink AS ImageLink,\r\n" + 
 				"            i.OrderIndex AS OrderIndex,\r\n" + 
@@ -506,6 +514,8 @@ public class ItemResponse {
 				"            c.PlaceComment AS PlaceComment,\r\n" + 
 				"            c.PlaceUserId AS PlaceUserID,\r\n" + 
 				"            c.PlaceUserGenerated AS PlaceUserGenerated,\r\n" + 
+				"            c.PlaceWikidataName AS PlaceWikidataName,\r\n" + 
+				"            c.PlaceWikidataId AS PlaceWikidataId,\r\n" + 
 				"            d.TranscriptionId AS TranscriptionId,\r\n" + 
 				"            d.TranscriptionText AS TranscriptionText,\r\n" + 
 				"            d.TranscriptionTextNoTags AS TranscriptionTextNoTags,\r\n" + 
@@ -675,7 +685,11 @@ public class ItemResponse {
 				"            GROUP_CONCAT(pl.UserId\r\n" + 
 				"                SEPARATOR '&~&') AS PlaceUserId,\r\n" + 
 				"            GROUP_CONCAT(pl.UserGenerated + 0\r\n" + 
-				"                SEPARATOR '&~&') AS PlaceUserGenerated\r\n" + 
+				"                SEPARATOR '&~&') AS PlaceUserGenerated,\r\n" + 
+				"            GROUP_CONCAT(IFNULL(pl.WikidataName, 'NULL')\r\n" + 
+				"                SEPARATOR '&~&') AS PlaceWikidataName,\r\n" + 
+				"            GROUP_CONCAT(IFNULL(pl.WikidataId, 'NULL')\r\n" + 
+				"                SEPARATOR '&~&') AS PlaceWikidataId\r\n" + 
 				"    FROM\r\n" + 
 				"        Item i\r\n" + 
 				"    LEFT JOIN Place pl ON i.ItemId = pl.ItemId\r\n" + 
@@ -838,7 +852,7 @@ public class ItemResponse {
 	//Edit entry by id
 	@Path("/{id}")
 	@POST
-	public String update(@PathParam("id") int id, String body) throws SQLException {
+	public Response update(@PathParam("id") int id, String body) throws SQLException {
 	    GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
 	    Gson gson = gsonBuilder.create();
 	    JsonObject  changes = gson.fromJson(body, JsonObject.class);
@@ -859,9 +873,12 @@ public class ItemResponse {
 			}
 			query += " WHERE ItemId = " + id;
 			String resource = executeQuery(query, "Update");
-			return resource;
+			//ResponseBuilder rBuild = Response.ok(resource);
+			ResponseBuilder rBuild = Response.ok(query);
+	        return rBuild.build();
 	    } else {
-	    	return "Prohibited change to null";
+			ResponseBuilder rBuild = Response.status(Response.Status.BAD_REQUEST);
+	        return rBuild.build();
 	    }
 	}
 
@@ -907,6 +924,8 @@ public class ItemResponse {
 					"    i.DescriptionLanguage AS DescriptionLanguage,\r\n" + 
 					"    i.DateStart AS DateStart,\r\n" + 
 					"    i.DateEnd AS DateEnd,\r\n" + 
+					"    i.DateStartDisplay AS DateStartDisplay,\r\n" + 
+					"    i.DateEndDisplay AS DateEndDisplay,\r\n" + 
 					"    i.DatasetId AS DatasetId,\r\n" + 
 					"    i.ImageLink AS ImageLink,\r\n" + 
 					"    i.OrderIndex AS OrderIndex,\r\n" + 
@@ -932,6 +951,8 @@ public class ItemResponse {
 					"    place.PlaceComment AS PlaceComment, \r\n" + 
 					"    place.PlaceUserId AS PlaceUserId,\r\n" + 
 					"    place.PlaceUserGenerated AS PlaceUserGenerated,\r\n" + 
+					"    place.PlaceWikidataName AS PlaceWikidataName,\r\n" + 
+					"    place.PlaceWikidataId AS PlaceWikidataId,\r\n" + 
 					"    transc.TranscriptionId AS TranscriptionId,\r\n" + 
 					"    transc.TranscriptionText AS TranscriptionText,\r\n" + 
 					"    transc.TranscriptionTextNoTags AS TranscriptionTextNoTags,\r\n" + 
@@ -1083,7 +1104,11 @@ public class ItemResponse {
 					"			GROUP_CONCAT(pl.UserId\r\n" + 
 					"				SEPARATOR '&~&') AS PlaceUserId,\r\n" + 
 					"			GROUP_CONCAT(pl.UserGenerated + 0\r\n" + 
-					"				SEPARATOR '&~&') AS PlaceUserGenerated\r\n" + 
+					"				SEPARATOR '&~&') AS PlaceUserGenerated,\r\n" + 
+					"			GROUP_CONCAT(IFNULL(pl.WikidataName, 'NULL')\r\n" + 
+					"				SEPARATOR '&~&') AS PlaceWikidataName,\r\n" + 
+					"			GROUP_CONCAT(IFNULL(pl.WikidataId, 'NULL')\r\n" + 
+					"				SEPARATOR '&~&') AS PlaceWikidataId\r\n" + 
 					"		FROM\r\n" + 
 					"			Place pl\r\n" + 
 					"		GROUP BY pl.ItemId\r\n" + 

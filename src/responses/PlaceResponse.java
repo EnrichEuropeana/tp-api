@@ -80,6 +80,8 @@ public class PlaceResponse {
 			  Place.setComment(rs.getString("Comment"));
 			  Place.setUserId(rs.getInt("UserId"));
 			  Place.setUserGenerated(rs.getString("UserGenerated"));
+			  Place.setWikidataName(rs.getString("WikidataName"));
+			  Place.setWikidataId(rs.getString("WikidataId"));
 			  placeList.add(Place);
 		   }
 		
@@ -112,9 +114,7 @@ public class PlaceResponse {
 	@Produces("application/json;charset=utf-8")
 	@GET
 	public Response search(@Context UriInfo uriInfo) throws SQLException {
-		String query = "SELECT * FROM \r\n" + 
-				"(\r\n" + 
-				"	SELECT \r\n" + 
+		String query = "SELECT * FROM (SELECT \r\n" + 
 				"		p.PlaceId as PlaceId,\r\n" + 
 				"		p.Name as Name ,\r\n" + 
 				"		p.Latitude as Latitude ,\r\n" + 
@@ -125,10 +125,11 @@ public class PlaceResponse {
 				"		p.Zoom as Zoom ,\r\n" + 
 				"		p.Comment as Comment ,\r\n" + 
 				"		p.UserGenerated as UserGenerated ,\r\n" + 
+				"		p.WikidataName as WikidataName ,\r\n" + 
+				"		p.WikidataId as WikidataId ,\r\n" + 
 				"		(SELECT WP_UserId FROM User WHERE UserId = p.UserId) as UserId\r\n" + 
-				"	FROM Place p \r\n" + 
-				"	LEFT JOIN Item i On p.ItemId = i.ItemId \r\n" + 
-				") a WHERE 1 ";
+				"FROM Place p\r\n" + 
+				"LEFT JOIN Item i On p.ItemId = i.ItemId) a WHERE 1";
 		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
 		
 		for(String key : queryParams.keySet()){

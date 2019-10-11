@@ -129,7 +129,7 @@ public class RankingResponse {
 						"		s.Amount * st.Rate as Miles,\r\n" + 
 						"		CASE WHEN st.Name = \"Location\" THEN Amount ELSE 0 END Locations,\r\n" + 
 						"		CASE WHEN st.Name = \"Transcription\" THEN Amount ELSE 0 END TranscriptionCharacters,\r\n" + 
-						"		CASE WHEN st.Name = \"Description\" THEN Amount ELSE 0 END DescriptionCharacters,\r\n" + 
+						"		CASE WHEN st.Name = \"Description\" THEN Amount ELSE 0 END Descriptions,\r\n" + 
 						"		CASE WHEN st.Name = \"Enrichment\" THEN Amount ELSE 0 END Enrichments,\r\n" + 
 						"        s.Timestamp as Timestamp\r\n" + 
 						"	From Score s\r\n" + 
