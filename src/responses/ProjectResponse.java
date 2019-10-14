@@ -737,14 +737,14 @@ public class ProjectResponse {
     	                JsonObject authData = new JsonParser().parse(writer.toString()).getAsJsonObject();
 
     	    	        String authHeader = authData.get("access_token").toString();
-    	    	        //httppost2.setHeader(HttpHeaders.AUTHORIZATION, authHeader);
+
         	            URL url = new URL(manifestUrl);
         				HttpURLConnection con = (HttpURLConnection) url.openConnection();
 						
 						con.setRequestMethod("GET");
 						con.setRequestProperty("Content-Type", "application/json");
 					    con.setRequestProperty("Authorization", "Bearer " + authHeader.replace("\"", "") );
-
+					    
 					    if (converted == false) {
 	    	    	        String redirect = con.getHeaderField("Location");
 	    					
@@ -755,6 +755,7 @@ public class ProjectResponse {
 		    					con = (HttpURLConnection) new URL(con.getURL().toString()).openConnection();
 		    				}
 					    }
+					    
 
 						BufferedReader in = new BufferedReader(
 						  new InputStreamReader(con.getInputStream(), "UTF-8"));
@@ -819,7 +820,32 @@ public class ProjectResponse {
 		FileWriter fileWriter = new FileWriter(file);
 		fileWriter.write(body);
 	    fileWriter.close();
-		
+
+	    URL storySolr = new URL("http://fresenia.man.poznan.pl:8983/solr/Stories/dataimport?command=full-import&clean=true");
+	    HttpURLConnection con = (HttpURLConnection) storySolr.openConnection();
+	    con.setRequestMethod("GET");
+	    BufferedReader in = new BufferedReader(
+	    new InputStreamReader(con.getInputStream()));
+	    String inputLine;
+	    StringBuffer content = new StringBuffer();
+	    while ((inputLine = in.readLine()) != null) {
+	        content.append(inputLine);
+	    }
+	    in.close();
+	    con.disconnect();
+	    
+	    URL itemSolr = new URL("http://fresenia.man.poznan.pl:8983/solr/Items/dataimport?command=full-import&clean=true");
+	    con = (HttpURLConnection) itemSolr.openConnection();
+	    con.setRequestMethod("GET");
+	    in = new BufferedReader(
+	    new InputStreamReader(con.getInputStream()));
+	    content = new StringBuffer();
+	    while ((inputLine = in.readLine()) != null) {
+	        content.append(inputLine);
+	    }
+	    in.close();
+	    con.disconnect();
+	    
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
 	}
