@@ -20,7 +20,7 @@ public class Ranking {
 	public void setTeamName(String teamName) {
 		TeamName = teamName;
 	}
-	public void setMilesPerPerson(Float milesPerPerson) {
+	public void setMilesPerPerson(Float milesPerPerson) { 
 		MilesPerPerson = milesPerPerson;
 	}
 	public void setMiles(Float miles) {

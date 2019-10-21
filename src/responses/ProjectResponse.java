@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -296,6 +297,37 @@ public class ProjectResponse {
 	    	return "Fields missing";
 	    }
 	}
+
+	
+	//Add new entry
+	@Path("/test")
+	@POST
+	public String test(String body) throws SQLException, IOException {
+	    URL storySolr = new URL("http://fresenia.man.poznan.pl:8983/solr/Stories/dataimport?command=full-import&clean=true");
+	    HttpURLConnection con = (HttpURLConnection) storySolr.openConnection();
+	    con.setRequestMethod("GET");
+	    BufferedReader in = new BufferedReader(
+	    new InputStreamReader(con.getInputStream()));
+	    String inputLine;
+	    StringBuffer content = new StringBuffer();
+	    while ((inputLine = in.readLine()) != null) {
+	        content.append(inputLine);
+	    }
+	    in.close();
+	    con.disconnect();
+	    
+	    URL itemSolr = new URL("http://fresenia.man.poznan.pl:8983/solr/Items/dataimport?command=full-import&clean=true");
+	    con = (HttpURLConnection) itemSolr.openConnection();
+	    con.setRequestMethod("GET");
+	    in = new BufferedReader(
+	    new InputStreamReader(con.getInputStream()));
+	    content = new StringBuffer();
+	    while ((inputLine = in.readLine()) != null) {
+	        content.append(inputLine);
+	    }
+	    in.close();
+		return content.toString();
+	}
 	
 
 	//Edit entry by id
@@ -532,6 +564,13 @@ public class ProjectResponse {
 									storyTitle = entry.getValue().getAsJsonObject().get("@value").toString();
 								}
 							}
+							else {
+								int index = keys.indexOf(entry.getKey());
+								values.set(index, "\"" + values.get(index).replace("\"", "") + " || " + entry.getValue().getAsJsonObject().get("@value").toString().replace("\"", "") + "\"");
+								if (entry.getKey().equals("dc:title")) {
+									storyTitle = "\"" + storyTitle.replace("\"", "") + " || " + entry.getValue().getAsJsonObject().get("@value").toString().replace("\"", "") + "\"";
+								}
+							}
 						}
 						else if (entry.getValue().getAsJsonObject().has("@id")) {
 							if (!keys.contains(entry.getKey())) {
@@ -539,6 +578,13 @@ public class ProjectResponse {
 								values.add(entry.getValue().getAsJsonObject().get("@id").toString());
 								if (entry.getKey().equals("dc:title")) {
 									storyTitle = entry.getValue().getAsJsonObject().get("@id").toString();
+								}
+							}
+							else {
+								int index = keys.indexOf(entry.getKey());
+								values.set(index, "\"" + values.get(index).replace("\"", "") + " || " + entry.getValue().getAsJsonObject().get("@id").toString().replace("\"", "") + "\"");
+								if (entry.getKey().equals("dc:title")) {
+									storyTitle = "\"" + storyTitle.replace("\"", "") + " || " + entry.getValue().getAsJsonObject().get("@value").toString().replace("\"", "") + "\"";
 								}
 							}
 						}
@@ -565,12 +611,18 @@ public class ProjectResponse {
 											key = entry.getKey();
 											value = element.get("@value").toString();
 										}
+										else {
+											value = "\"" + value.replace("\"", "") + " || " +  element.get("@value").toString().replace("\"", "") + "\"";
+										}
 									}
 								}
 								else {
 									if (key == "") {
 										key = entry.getKey();
 										value = entry.getValue().getAsJsonArray().get(j).toString();
+									}
+									else {
+										value = "\"" + value.replace("\"", "") + " || " + entry.getValue().getAsJsonArray().get(j).toString().replace("\"", "") + "\"";
 									}
 								}
 							}
@@ -580,6 +632,13 @@ public class ProjectResponse {
 								if (entry.getKey().equals("dc:title")) {
 									storyTitle = "\"" + value.replace(",", " | ").replaceAll("[\"{}\\[\\]]", "") + "\"";
 								}						
+							}
+						}
+						else {
+							int index = keys.indexOf(entry.getKey());
+							values.set(index, values.get(index) + " || " + entry.getValue().getAsJsonObject().get("@value").toString());
+							if (entry.getKey().equals("dc:title")) {
+								storyTitle = "\"" + storyTitle.replace("\"", "") + " || " + entry.getValue().getAsJsonObject().get("@value").toString().replace("\"", "") + "\"";
 							}
 						}
 					}
@@ -605,6 +664,15 @@ public class ProjectResponse {
 								keys.add("PlaceLongitude");
 								values.add(dataArray.get(i).getAsJsonObject().get("geo:lat").toString());
 								values.add(dataArray.get(i).getAsJsonObject().get("geo:long").toString());
+							}
+						}
+						else if (dataArray.get(i).getAsJsonObject().keySet().contains("wgs84_pos:lat")
+								&& dataArray.get(i).getAsJsonObject().keySet().contains("wgs84_pos:long")) {
+							if (!keys.contains("PlaceLatitude")) {
+								keys.add("PlaceLatitude");
+								keys.add("PlaceLongitude");
+								values.add(dataArray.get(i).getAsJsonObject().get("wgs84_pos:lat").toString());
+								values.add(dataArray.get(i).getAsJsonObject().get("wgs84_pos:long").toString());
 							}
 						}
 						if (dataArray.get(i).getAsJsonObject().keySet().contains("skos:prefLabel")) {
@@ -845,7 +913,7 @@ public class ProjectResponse {
 	    }
 	    in.close();
 	    con.disconnect();
-	    
+		
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
 	}
