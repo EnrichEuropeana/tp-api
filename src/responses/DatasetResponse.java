@@ -72,7 +72,7 @@ public class DatasetResponse {
 			  Dataset Dataset = new Dataset();
 			  Dataset.setDatasetId(rs.getInt("DatasetId"));
 			  Dataset.setName(rs.getString("Name"));
-			  Dataset.setProjectId(rs.getInt("ProjectId"));
+			  Dataset.setProjectName(rs.getString("ProjectName"));
 			  datasetList.add(Dataset);
 		   }
 		
@@ -156,6 +156,7 @@ public class DatasetResponse {
 	@Produces("application/json;charset=utf-8")
 	@GET
 	public Response search(@Context UriInfo uriInfo, String body, @Context HttpHeaders headers) throws SQLException {	
+		/*
 		boolean auth = false;
 		String authorizationToken = "";
 		if (headers.getRequestHeader(HttpHeaders.AUTHORIZATION) != null) {
@@ -176,7 +177,14 @@ public class DatasetResponse {
 			ResponseBuilder authResponse = Response.status(Response.Status.UNAUTHORIZED);
 			return authResponse.build();
 		}
-		String query = "SELECT * FROM Dataset WHERE 1";
+		*/
+		String query = "SELECT "
+				+ "d.DatasetId AS DatasetId, "
+				+ "d.Name AS Name, "
+				+ "p.Name AS ProjectName "
+				+ "FROM Dataset d "
+				+ "JOIN Project p ON d.ProjectId = p.ProjectId "
+				+ "WHERE 1";
 		
 		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
 		
@@ -203,7 +211,8 @@ public class DatasetResponse {
 	//Add new entry
 	@Path("")
 	@POST
-	public Response add(String body, @Context HttpHeaders headers) throws SQLException {		
+	public Response add(String body, @Context HttpHeaders headers) throws SQLException {	
+		/*		
 		boolean auth = false;
 		String authorizationToken = "";
 		if (headers.getRequestHeader(HttpHeaders.AUTHORIZATION) != null) {
@@ -224,15 +233,15 @@ public class DatasetResponse {
 			ResponseBuilder authResponse = Response.status(Response.Status.UNAUTHORIZED);
 			return authResponse.build();
 		}
+		*/
 	    GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
 	    Gson gson = gsonBuilder.create();
 	    Dataset dataset = gson.fromJson(body, Dataset.class);
 	    
 	    //Check if all mandatory fields are included
-	    if (dataset.DatasetId != null && dataset.Name != null && dataset.ProjectId != null) {
-			String query = "INSERT INTO Dataset (DatasetId, Name, ProjectId) "
-							+ "VALUES (" + dataset.DatasetId
-							+ ", '" + dataset.Name 
+	    if (dataset.Name != null && dataset.ProjectId != null) {
+			String query = "INSERT INTO Dataset (Name, ProjectId) "
+							+ "VALUES ('" + dataset.Name  + "'"
 							+ ", " + dataset.ProjectId + ")";
 			String resource = executeQuery(query, "Insert");
 			ResponseBuilder rBuild = Response.ok(resource);
@@ -248,6 +257,7 @@ public class DatasetResponse {
 	@Path("/{id}")
 	@POST
 	public Response update(@PathParam("id") int id, String body, @Context HttpHeaders headers) throws SQLException {	
+		/*
 		boolean auth = false;
 		String authorizationToken = "";
 		if (headers.getRequestHeader(HttpHeaders.AUTHORIZATION) != null) {
@@ -268,6 +278,7 @@ public class DatasetResponse {
 			ResponseBuilder authResponse = Response.status(Response.Status.UNAUTHORIZED);
 			return authResponse.build();
 		}
+		*/
 	    GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
 	    Gson gson = gsonBuilder.create();
 	    JsonObject  changes = gson.fromJson(body, JsonObject.class);
@@ -306,6 +317,7 @@ public class DatasetResponse {
 	@Path("/{id}")
 	@DELETE
 	public Response delete(@PathParam("id") int id, @Context HttpHeaders headers) throws SQLException {
+		/*
 		boolean auth = false;
 		String authorizationToken = "";
 		if (headers.getRequestHeader(HttpHeaders.AUTHORIZATION) != null) {
@@ -326,6 +338,7 @@ public class DatasetResponse {
 			ResponseBuilder authResponse = Response.status(Response.Status.UNAUTHORIZED);
 			return authResponse.build();
 		}
+		*/
 		String resource = executeQuery("DELETE FROM Dataset WHERE DatasetId = " + id, "Delete");
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();

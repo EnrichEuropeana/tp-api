@@ -89,6 +89,7 @@ public class StoryMinimalResponse {
 			  story.setdcTitle(rs.getString("StorydcTitle"));
 			  story.setdcDescription(rs.getString("StorydcDescription"));
 			  story.setPreviewImageLink(rs.getString("StoryPreviewImageLink"));
+			  story.setPreviewImage(rs.getString("StoryPreviewImage"));
 			  
 			  // Iterate through CompletionStatus of the Items
 			  List<CompletionStatus> CompletionStatusList = new ArrayList<CompletionStatus>();
@@ -152,6 +153,7 @@ public class StoryMinimalResponse {
 				"	GROUP_CONCAT(IFNULL(ColorCodeGradient, 'NULL')) AS ColorCodeGradient,\r\n" + 
 				"	GROUP_CONCAT(IFNULL(Count, 'NULL')) AS Amount,\r\n" + 
 				"    s.StorydcTitle as StorydcTitle,\r\n" + 
+				"    s.StoryPreviewImage as StoryPreviewImage,\r\n" + 
 				"    s.StorydcDescription as StorydcDescription\r\n" + 
 				"FROM (\r\n" + 
 				"	SELECT \r\n" + 
@@ -205,6 +207,7 @@ public class StoryMinimalResponse {
 				"    SELECT \r\n" + 
 				"		StoryId as StoryId,\r\n" + 
 				"		`dc:title` as StorydcTitle,\r\n" + 
+				"		PreviewImage as StoryPreviewImage,\r\n" + 
 				"		`dc:description` as StorydcDescription\r\n" + 
 				"	FROM\r\n" + 
 				"		Story\r\n" + 
@@ -297,9 +300,6 @@ public class StoryMinimalResponse {
 		String query = "SELECT s.StoryId as StoryId" + 
 						", s.`dc:title` as StorydcTitle" +
 						", s.`dc:description` as StorydcDescription" +
-						", s.ProjectStoryUrl as StoryProjectStoryUrl" +
-						", s.DateStartDisplay as StoryDateStartDisplay" +
-						", s.DateEndDisplay as StoryDateEndDisplay" +
 						", s.PlaceName as StoryPlaceName" +
 						", s.PlaceLatitude as StoryPlaceLatitude" +
 						", s.PlaceLongitute as StoryPlaceLongitute" +
@@ -317,6 +317,7 @@ public class StoryMinimalResponse {
 						", s.DateStart as StoryDateStart" +
 						", s.DateEnd as StoryDateEnd" +
 						", s.OrderIndex as StoryOrderIndex" +
+						", s.PreviewImage as StoryPreviewImage" +
 						", group_concat(i.ItemId SEPARATOR '§~§') as ItemId" +
 						", group_concat(i.Title SEPARATOR '§~§') as Title" +
 						", group_concat(i.CompletionStatusName SEPARATOR '§~§') as CompletionStatusName" +

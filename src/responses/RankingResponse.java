@@ -182,9 +182,34 @@ public class RankingResponse {
 	@Produces("application/json;charset=utf-8")
 	@GET
 	public Response getUserCount(@Context UriInfo uriInfo) throws SQLException {
-		String query = "SELECT count(DISTINCT(UserId)) as UserCount FROM Score";
+		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
+		String query = "SELECT count(DISTINCT(u.UserId)) as UserCount "
+						+ "FROM (\r\n" 
+							+ "SELECT u.UserId, u.EventUser "
+							+ "FROM Score s JOIN User u "
+							+ "ON s.UserId = u.UserId"
+							+ ") u "
+						+ "WHERE 1";
+		for(String key : queryParams.keySet()){
+			if (key.equals("limit") || key.equals("offset") || key.equals("campaign")) {
+				continue;
+			}
+			String[] values = queryParams.getFirst(key).split(",");
+			query += " AND (";
+		    int valueCount = values.length;
+		    int i = 1;
+		    for(String value : values) {
+		    	query += key + " = '" + value + "'";
+			    if (i < valueCount) {
+			    	query += " OR ";
+			    }
+			    i++;
+		    }
+		    query += ")";
+		}
 		String resource = executeQuery(query, "UserCount");
 		ResponseBuilder rBuild = Response.ok(resource);
+		//ResponseBuilder rBuild = Response.ok(query);
         return rBuild.build();
 	}
 
@@ -198,6 +223,7 @@ public class RankingResponse {
 						"	0 as UserId, \r\n" + 
 						"	s.TeamId as TeamId, \r\n" + 
 					    " 	s.TeamName as TeamName, \r\n" +
+					    " 	s.EventUser as EventUser, \r\n" +
 						"    SUM(s.Miles) as Miles,\r\n" + 
 						"    SUM(s.Miles) / (SELECT COUNT(*) FROM TeamUser WHERE TeamId = s.TeamId) as MilesPerPerson,\r\n" + 
 						"    SUM(s.Locations) as Locations,\r\n" + 
@@ -208,6 +234,7 @@ public class RankingResponse {
 						"	SELECT \r\n" + 
 						"		tc.TeamId as TeamId, \r\n" + 
 						"		t.Name as TeamName, \r\n" + 
+						"		t.EventUser as EventUser, \r\n" + 
 						"        u.UserId as UserId,\r\n" + 
 						"		s.Amount * st.Rate as Miles,\r\n" + 
 						"		CASE WHEN st.Name = \"Location\" THEN Amount ELSE 0 END Locations,\r\n" + 
