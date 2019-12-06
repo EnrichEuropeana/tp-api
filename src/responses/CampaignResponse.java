@@ -185,7 +185,7 @@ public class CampaignResponse {
 	    Gson gson = gsonBuilder.create();
 	    Campaign campaign = gson.fromJson(body, Campaign.class);
 	    
-		String query = "INSERT INTO Campaign (Name, Start, End, Public) "
+		String query = "INSERT INTO Campaign (Name, Start, End, DatasetId, Public) "
 						+ "VALUES ('" + campaign.Name + "'"
 						+ ", '" + campaign.Start + "'"
 						+ ", '" + campaign.End + "'"
