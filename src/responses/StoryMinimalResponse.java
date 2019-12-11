@@ -250,7 +250,7 @@ public class StoryMinimalResponse {
 				query += ") ";
 			}
 		}
-		if (queryParams.containsKey("StorydcLanguage") && queryParams.getFirst("StorydcLanguage") != "") {
+		else if (queryParams.containsKey("StorydcLanguage") && queryParams.getFirst("StorydcLanguage") != "") {
 			String[] values = queryParams.getFirst("StorydcLanguage").split(",");
 			query += " AND (";
 		    int valueCount = values.length;
