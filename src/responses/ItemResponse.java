@@ -947,6 +947,7 @@ public class ItemResponse {
 			
 			if (completionStatus.equals("4") && exported.equals("0") ) {
 	    		HttpClient httpclient = HttpClients.createDefault();
+	    		/*
 				HttpPost httppost = new HttpPost("https://fresenia.man.poznan.pl/api/transcription");
 		    	
 		        String json = "{ " + 
@@ -954,21 +955,21 @@ public class ItemResponse {
 		        		"}";
 		        HttpEntity entity = new StringEntity(json, ContentType.APPLICATION_JSON);
 		        httppost.setEntity(entity);
-		        HttpResponse response = httpclient.execute(httppost);
+		        HttpResponse response = httpclient.execute(httppost);*/
 		        
 		        // Set Exported to 1 to prevent multiple exports
-				httppost = new HttpPost("https://fresenia.man.poznan.pl/tp-api/items/" + id);
+		        HttpPost httppost = new HttpPost("https://fresenia.man.poznan.pl/dev/tp-api/items/" + id);
 		    	
-		        json = "{ " + 
+				String json = "{ " + 
 		        		"	Exported: " + "b'1'" + 
 		        		"}";
-		        entity = new StringEntity(json, ContentType.APPLICATION_JSON);
+		        HttpEntity entity = new StringEntity(json, ContentType.APPLICATION_JSON);
 		        httppost.setEntity(entity);
-		        response = httpclient.execute(httppost);
+		        HttpResponse response = httpclient.execute(httppost);
             }
 			
-			ResponseBuilder rBuild = Response.ok(resource);
-			//ResponseBuilder rBuild = Response.ok(query);
+			//ResponseBuilder rBuild = Response.ok(resource);
+			ResponseBuilder rBuild = Response.ok(query);
 	        return rBuild.build();
 	    } else {
 			ResponseBuilder rBuild = Response.status(Response.Status.BAD_REQUEST);
@@ -1158,6 +1159,7 @@ public class ItemResponse {
 					"			Property p ON ip.PropertyId = p.PropertyId\r\n" + 
 					"				LEFT JOIN\r\n" + 
 					"			PropertyType pt ON p.PropertyTypeId = pt.PropertyTypeId\r\n" + 
+					"		WHERE ip.ItemId = " + id +
 					"		GROUP BY ip.ItemId\r\n" + 
 					"	) prop \r\n" + 
 					"		ON prop.ItemId = i.ItemId\r\n" + 
@@ -1174,7 +1176,8 @@ public class ItemResponse {
 					"			GROUP_CONCAT(c.Timestamp\r\n" + 
 					"				SEPARATOR '&~&') AS CommentTimestamp\r\n" + 
 					"		FROM\r\n" + 
-					"			Comment c\r\n" + 
+					"			Comment c\r\n" +
+					"		WHERE ItemId = " + id + 
 					"		GROUP BY c.ItemId\r\n" + 
 					"	) comments ON comments.ItemId = i.ItemId \r\n" + 
 					"        LEFT JOIN\r\n" + 
@@ -1205,6 +1208,7 @@ public class ItemResponse {
 					"				SEPARATOR '&~&') AS PlaceWikidataId\r\n" + 
 					"		FROM\r\n" + 
 					"			Place pl\r\n" + 
+					"		WHERE ItemId = " + id +
 					"		GROUP BY pl.ItemId\r\n" + 
 					"	) place ON place.ItemId = i.ItemId\r\n" + 
 					"        LEFT JOIN\r\n" + 
@@ -1240,6 +1244,7 @@ public class ItemResponse {
 					"        		*\r\n" + 
 					"    		FROM\r\n" + 
 					"        		Transcription t\r\n" + 
+					"			WHERE ItemId = " + id +
 					"		) t\r\n" + 
 					"        LEFT JOIN\r\n" + 
 					"    	(SELECT \r\n" + 
@@ -1287,6 +1292,7 @@ public class ItemResponse {
 					"			Annotation a\r\n" + 
 					"				LEFT JOIN\r\n" + 
 					"			AnnotationType at ON a.AnnotationTypeId = at.AnnotationTypeId\r\n" + 
+					"		WHERE ItemId = " + id +
 					"		GROUP BY a.ItemId\r\n" + 
 					"	) annot ON annot.ItemId = i.ItemId\r\n" + 
 					"        LEFT JOIN\r\n" + 
@@ -1313,6 +1319,7 @@ public class ItemResponse {
 					"				SEPARATOR '&~&') AS PersonDescription\r\n" + 
 					"		FROM\r\n" + 
 					"			Person pe\r\n" + 
+					"		WHERE ItemId = " + id +
 					"		GROUP BY pe.ItemId\r\n" + 
 					"	) person ON person.ItemId = i.ItemId\r\n" + 
 					"				LEFT JOIN\r\n" + 
