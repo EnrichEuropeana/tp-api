@@ -33,7 +33,7 @@ public class PlaceResponse {
 
 	            Properties prop = new Properties();
 
-	            // Load a properties file
+	            // Load a properties file 
 	            prop.load(input);
 
 	            // Save property values
