@@ -74,6 +74,7 @@ public class PlaceResponse {
 			  Place.setLatitude(rs.getFloat("Latitude"));
 			  Place.setLongitude(rs.getFloat("Longitude"));
 			  Place.setItemId(rs.getInt("ItemId"));
+			  Place.setStoryId(rs.getInt("StoryId"));
 			  Place.setItemTitle(rs.getString("Title"));
 			  Place.setLink(rs.getString("Link"));
 			  Place.setZoom(rs.getInt("Zoom"));
@@ -120,6 +121,7 @@ public class PlaceResponse {
 				"		p.Latitude as Latitude ,\r\n" + 
 				"		p.Longitude as Longitude ,\r\n" + 
 				"		i.ItemId as ItemId ,\r\n" + 
+				"		i.StoryId as StoryId ,\r\n" + 
 				"		i.Title as Title ,\r\n" + 
 				"		p.Link as Link ,\r\n" + 
 				"		p.Zoom as Zoom ,\r\n" + 
@@ -148,6 +150,106 @@ public class PlaceResponse {
 		}
 		String resource = executeQuery(query, "Select");
 		ResponseBuilder rBuild = Response.ok(resource);
+		//ResponseBuilder rBuild = Response.ok(query);
+        return rBuild.build();
+	}
+
+	//Search using custom filters
+	@Path("/story")
+	@Produces("application/json;charset=utf-8")
+	@GET
+	public Response allPlaces(@PathParam("id") int id, @Context UriInfo uriInfo) throws SQLException {
+		String query = "SELECT * FROM (SELECT \r\n" + 
+				"		p.PlaceId as PlaceId,\r\n" + 
+				"		p.Name as Name ,\r\n" + 
+				"		p.Latitude as Latitude ,\r\n" + 
+				"		p.Longitude as Longitude ,\r\n" + 
+				"		i.ItemId as ItemId ,\r\n" + 
+				"		i.StoryId as StoryId ,\r\n" + 
+				"		i.Title as Title ,\r\n" + 
+				"		p.Link as Link ,\r\n" + 
+				"		p.Zoom as Zoom ,\r\n" + 
+				"		p.Comment as Comment ,\r\n" + 
+				"		p.UserGenerated as UserGenerated ,\r\n" + 
+				"		p.WikidataName as WikidataName ,\r\n" + 
+				"		p.WikidataId as WikidataId ,\r\n" + 
+				"		(SELECT WP_UserId FROM User WHERE UserId = p.UserId) as UserId\r\n" + 
+				"FROM Place p\r\n" + 
+				"LEFT JOIN Item i On p.ItemId = i.ItemId) a ";
+		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
+		
+		for(String key : queryParams.keySet()){
+			String[] values = queryParams.getFirst(key).split(",");
+			query += " AND (";
+		    int valueCount = values.length;
+		    int i = 1;
+		    for(String value : values) {
+		    	query += key + " = '" + value + "'";
+			    if (i < valueCount) {
+			    	query += " OR ";
+			    }
+			    i++;
+		    }
+		    query += ")";
+		}
+		query += " UNION \r\n" + 
+				"					(\r\n" + 
+				"						SELECT null, PlaceName, PlaceLatitude, PlaceLongitude, null, StoryId, `dc:title`, null, PlaceZoom, null, null, null, null, null\r\n" + 
+				"						FROM Story\r\n" + 
+				"					)";
+		String resource = executeQuery(query, "Select");
+		ResponseBuilder rBuild = Response.ok(resource);
+		//ResponseBuilder rBuild = Response.ok(query);
+        return rBuild.build();
+	}
+
+	//Search using custom filters
+	@Path("/story/{id}")
+	@Produces("application/json;charset=utf-8")
+	@GET
+	public Response allPlacesStory(@PathParam("id") int id, @Context UriInfo uriInfo) throws SQLException {
+		String query = "SELECT * FROM (SELECT \r\n" + 
+				"		p.PlaceId as PlaceId,\r\n" + 
+				"		p.Name as Name ,\r\n" + 
+				"		p.Latitude as Latitude ,\r\n" + 
+				"		p.Longitude as Longitude ,\r\n" + 
+				"		i.ItemId as ItemId ,\r\n" + 
+				"		i.StoryId as StoryId ,\r\n" + 
+				"		i.Title as Title ,\r\n" + 
+				"		p.Link as Link ,\r\n" + 
+				"		p.Zoom as Zoom ,\r\n" + 
+				"		p.Comment as Comment ,\r\n" + 
+				"		p.UserGenerated as UserGenerated ,\r\n" + 
+				"		p.WikidataName as WikidataName ,\r\n" + 
+				"		p.WikidataId as WikidataId ,\r\n" + 
+				"		(SELECT WP_UserId FROM User WHERE UserId = p.UserId) as UserId\r\n" + 
+				"FROM Place p\r\n" + 
+				"LEFT JOIN Item i On p.ItemId = i.ItemId) a WHERE ItemId = " + id;
+		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
+		
+		for(String key : queryParams.keySet()){
+			String[] values = queryParams.getFirst(key).split(",");
+			query += " AND (";
+		    int valueCount = values.length;
+		    int i = 1;
+		    for(String value : values) {
+		    	query += key + " = '" + value + "'";
+			    if (i < valueCount) {
+			    	query += " OR ";
+			    }
+			    i++;
+		    }
+		    query += ")";
+		}
+		query += " UNION \r\n" + 
+				"					(\r\n" + 
+				"						SELECT null, PlaceName, PlaceLatitude, PlaceLongitude, null, StoryId, `dc:title`, null, PlaceZoom, null, null, null, null, null\r\n" + 
+				"						FROM Story\r\n" + 
+				"						WHERE StoryId = (SELECT StoryId FROM Item WHERE ItemId = " + id + ")" +
+				"					)";
+		String resource = executeQuery(query, "Select");
+		ResponseBuilder rBuild = Response.ok(resource);
+		//ResponseBuilder rBuild = Response.ok(query);
         return rBuild.build();
 	}
 
@@ -163,18 +265,18 @@ public class PlaceResponse {
 	    //Check if all mandatory fields are included
 	    if (place.Latitude != null && place.Longitude != null && place.ItemId != null) {
 			String query = "INSERT INTO Place (Name, Latitude, Longitude, ItemId, Link, Zoom, Comment, WikidataName, WikidataId, UserId, UserGenerated) "
-							+ "VALUES ('" + place.Name + "'"
-							+ ", " + place.Latitude
-							+ ", " + place.Longitude
-							+ ", " + place.ItemId
-							+ ", '" + place.Link + "'"
-							+ ", " + place.Zoom
-							+ ", '" + place.Comment + "'"
-							+ ", '" + place.WikidataName + "'"
-							+ ", '" + place.WikidataId + "'"
-							+ ", (SELECT UserId FROM User " 
-							+ "		WHERE WP_UserId = " + place.UserId + ")"
-							+ ", " + place.UserGenerated + ")";
+					+ "VALUES ('" + place.Name + "'"
+					+ ", " + place.Latitude
+					+ ", " + place.Longitude
+					+ ", " + place.ItemId
+					+ ", '" + place.Link + "'"
+					+ ", " + place.Zoom
+					+ ", '" + place.Comment + "'"
+					+ ", '" + place.WikidataName + "'"
+					+ ", '" + place.WikidataId + "'"
+					+ ", (SELECT UserId FROM User " 
+					+ "		WHERE WP_UserId = " + place.UserId + ")"
+					+ ", " + place.UserGenerated + ")";
 			String resource = executeQuery(query, "Insert");
 			ResponseBuilder rBuild = Response.ok(resource);
 			//ResponseBuilder rBuild = Response.ok(query);
@@ -220,14 +322,7 @@ public class PlaceResponse {
 	@Produces("application/json;charset=utf-8")
 	@GET
 	public Response getEntry(@PathParam("id") int id) throws SQLException {
-		String query = "SELECT \r\n" + 
-				"	*\r\n" + 
-				"FROM Place p\r\n" + 
-				"LEFT JOIN Item i On p.ItemId = i.ItemId WHERE 1";
-		String resource = executeQuery("SELECT \r\n" + 
-										"	*\r\n" + 
-										"FROM Place p\r\n" + 
-										"LEFT JOIN Item i On p.ItemId = i.ItemId WHERE PlaceId = " + id, "Select");
+		String resource = executeQuery("SELECT * FROM Place WHERE PlaceId = " + id, "Select");
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
 	}

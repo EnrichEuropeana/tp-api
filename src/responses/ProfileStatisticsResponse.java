@@ -148,10 +148,10 @@ public class ProfileStatisticsResponse {
 						"        ELSE 0" + 
 						"    END) AS TranscriptionCharacters," + 
 						"    SUM(CASE" + 
-						"        WHEN st.Name = 'Enrichment' THEN Amount" + 
+						"        WHEN st.Name = 'Enrichment' OR st.Name = 'Description' THEN Amount" + 
 						"        ELSE 0" + 
 						"    END) AS Enrichments," + 
-						"    SUM(ROUND(s.Amount * st.Rate)) AS Miles," + 
+						"    FLOOR(SUM(s.Amount * st.Rate)) AS Miles," + 
 						"    COUNT(DISTINCT s.ItemId) AS DocumentCount " + 
 						"FROM" + 
 						"    Score s" + 

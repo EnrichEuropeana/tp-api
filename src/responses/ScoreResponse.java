@@ -137,14 +137,16 @@ public class ScoreResponse {
 							"	s.ScoreId as ScoreId," + 
 							"	s.Amount as Amount," + 
 							"   s.ItemId as ItemId," + 
-							"   s.UserId as UserId," + 
+							"   u.WP_UserId as UserId," + 
 							"	st.ScoreTypeId as ScoreTypeId," + 
 							"    st.Name as ScoreType," + 
 							"    st.Rate as Rate," + 
 							"    s.Timestamp as Timestamp " + 
 							"FROM Score s " + 
 							"JOIN ScoreType st " + 
-							"ON s.ScoreTypeId = st.ScoreTypeId" +
+							"ON s.ScoreTypeId = st.ScoreTypeId " +
+							"JOIN User u " + 
+							"ON u.UserId = s.UserId " +
 						") a " + 
 						"WHERE 1";
 		// Get url parameters
@@ -257,14 +259,16 @@ public class ScoreResponse {
 					"	s.ScoreId as ScoreId," + 
 					"	s.Amount as Amount," + 
 					"   s.ItemId as ItemId," + 
-					"   s.UserId as UserId," + 
+					"   u.WP_UserId as UserId," + 
 					"	st.ScoreTypeId as ScoreTypeId," + 
 					"    st.Name as ScoreType," + 
 					"    st.Rate as Rate," + 
 					"    s.Timestamp as Timestamp " + 
 					"FROM Score s " + 
 					"JOIN ScoreType st " + 
-					"ON s.ScoreTypeId = st.ScoreTypeId" +
+					"ON s.ScoreTypeId = st.ScoreTypeId " +
+					"JOIN User u " + 
+					"ON u.UserId = s.UserId " +
 				") a " + 
 				"WHERE ScoreId = " + id;
 		String result = executeQuery(query, "Select");

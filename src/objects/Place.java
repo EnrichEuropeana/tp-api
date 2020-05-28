@@ -6,6 +6,7 @@ public class Place {
 	public Float Latitude;
 	public Float Longitude;
 	public Integer ItemId; 
+	public Integer StoryId; 
 	public String ItemTitle; 
 	public String Link;
 	public Integer Zoom;
@@ -35,6 +36,10 @@ public class Place {
 		this.ItemId = ItemId;
 	}
 
+	public void setStoryId (Integer StoryId) {
+		this.StoryId = StoryId;
+	}
+
 	public void setItemTitle(String itemTitle) {
 		ItemTitle = itemTitle;
 	}
@@ -50,7 +55,6 @@ public class Place {
 	public void setComment (String Comment) {
 		this.Comment = Comment;
 	}
-	
 	public void setWikidataName(String wikidataName) {
 		WikidataName = wikidataName;
 	}
@@ -58,7 +62,7 @@ public class Place {
 	public void setWikidataId(String wikidataId) {
 		WikidataId = wikidataId;
 	}
-
+	
 	public void setUserGenerated (String UserGenerated) {
 		this.UserGenerated = UserGenerated;
 	}

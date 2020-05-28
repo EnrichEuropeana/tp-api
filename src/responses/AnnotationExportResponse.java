@@ -20,12 +20,14 @@ import objects.Language;
 import objects.Person;
 
 import java.util.*;
+import java.util.Date;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.*;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 import com.google.gson.*;
 import com.google.gson.stream.MalformedJsonException;
@@ -77,7 +79,17 @@ public class AnnotationExportResponse {
 			  annotationExport.setAnnotationId(rs.getInt("AnnotationId"));
 			  annotationExport.setText(rs.getString("Text"));
 			  annotationExport.setTextNoTags(rs.getString("TextNoTags"));
-			  annotationExport.setTimestamp(rs.getTimestamp("Timestamp"));
+			  // String to Timestamp conversion
+			  try {
+		            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		            Date date = formatter.parse(rs.getString("Timestamp"));
+		            Timestamp timeStampDate = new Timestamp(date.getTime());
+				    annotationExport.setTimestamp(timeStampDate);
+	
+		        } catch (ParseException e) {
+		            System.out.println("Exception :" + e);
+		            return null;
+		        }
 			  annotationExport.setX_Coord(rs.getFloat("X_Coord"));
 			  annotationExport.setY_Coord(rs.getFloat("Y_Coord"));
 			  annotationExport.setWidth(rs.getFloat("Width"));
@@ -88,9 +100,7 @@ public class AnnotationExportResponse {
 			  annotationExport.setTranscribathonStoryId(rs.getInt("TranscribathonStoryId"));
 			  annotationExport.setStoryUrl(rs.getString("StoryUrl"));
 			  annotationExport.setStoryId(rs.getString("StoryId"));
-
-              JsonObject image = new JsonParser().parse(rs.getString("ImageLink")).getAsJsonObject();
-			  annotationExport.setImageLink(image.get("@id").toString().replace("\"", ""));
+			  annotationExport.setImageLink(rs.getString("ImageLink"));
 			  
 			  // Add Languages
 			  List<Language> LanguageList = new ArrayList<Language>();
@@ -105,7 +115,7 @@ public class AnnotationExportResponse {
 				  }
 			  }
 			  annotationExport.setLanguages(LanguageList);
-			  
+
 			  annotationExports.add(annotationExport);
 		   }
 		
@@ -208,7 +218,8 @@ public class AnnotationExportResponse {
 			ResponseBuilder authResponse = Response.status(Response.Status.UNAUTHORIZED);
 			return authResponse.build();
 		}
-		
+
+		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
 		String query = "SELECT \r\n" + 
 				"    *\r\n" + 
 				"FROM\r\n" + 
@@ -226,70 +237,103 @@ public class AnnotationExportResponse {
 				"            i.ProjectItemId AS ItemId,\r\n" + 
 				"            i.OrderIndex AS OrderIndex,\r\n" + 
 				"            i.ItemId AS TranscribathonItemId,\r\n" + 
-				"            i.ImageLink AS ImageLink,\r\n" + 
+				"            i.`edm:WebResource` AS ImageLink,\r\n" + 
 				"            s.StoryId AS TranscribathonStoryId,\r\n" + 
 				"            s.`edm:landingPage` AS StoryUrl,\r\n" + 
-				"            s.RecordId AS StoryId,\r\n" + 
-				"            null AS LanguageCode,\r\n" + 
-				"            null AS LanguageName\r\n" + 
+				"            CONCAT(s.RecordId, IFNULL(i.EuropeanaAttachment, '')) AS StoryId,\r\n" + 
+				"            NULL AS LanguageCode,\r\n" + 
+				"            NULL AS LanguageName\r\n" + 
 				"    FROM\r\n" + 
-				"        Annotation a\r\n" + 
+				"        (SELECT \r\n" + 
+				"        *\r\n" + 
+				"    FROM\r\n" + 
+				"        Story) s\r\n" + 
+				"    LEFT JOIN (SELECT * FROM Item WHERE ";
+				if (!queryParams.containsKey("includeExported") || !queryParams.getFirst("includeExported").equals("1")) {
+					query +=  " Exported = 0 AND";
+				}
+				query += " TranscriptionStatusId = 4) i ON s.StoryId = i.StoryId\r\n" + 
+				"    LEFT JOIN Annotation a ON i.ItemId = a.ItemId\r\n" + 
 				"    LEFT JOIN AnnotationType at ON a.AnnotationTypeId = at.AnnotationTypeId\r\n" + 
 				"    LEFT JOIN Motivation m ON at.MotivationId = m.MotivationId\r\n" + 
-				"    LEFT JOIN Item i ON i.ItemId = a.ItemId\r\n" + 
-				"    LEFT JOIN Story s ON s.StoryId = i.StoryId) UNION (SELECT \r\n" + 
+				"    WHERE 1 \r\n";
+				if (queryParams.containsKey("storyId")) {
+					query +=  " AND RecordId = '" + queryParams.getFirst("storyId") + "'";
+				}
+				query +=  " AND AnnotationId is not null) UNION (SELECT \r\n" + 
 				"        t.TranscriptionId,\r\n" + 
 				"            t.Text,\r\n" + 
 				"            t.TextNoTags,\r\n" + 
 				"            t.Timestamp,\r\n" + 
-				"            t.EuropeanaAnnotationId,\r\n" + 
 				"            0 AS X_Coord,\r\n" + 
 				"            0 AS Y_Coord,\r\n" + 
 				"            0 AS Width,\r\n" + 
 				"            0 AS Height,\r\n" + 
+				"            t.EuropeanaAnnotationId,\r\n" + 
 				"            'transcribing' AS Motivation,\r\n" + 
 				"            i.ProjectItemId,\r\n" + 
 				"            i.OrderIndex,\r\n" + 
 				"            i.ItemId,\r\n" + 
-				"            i.ImageLink,\r\n" + 
+				"            i.`edm:WebResource`,\r\n" + 
 				"            s.StoryId,\r\n" + 
 				"            s.`edm:landingPage`,\r\n" + 
-				"            s.RecordId,\r\n" + 
+				"            CONCAT(s.RecordId, IFNULL(i.EuropeanaAttachment, '')) AS StoryId,\r\n" + 
 				"            a.LanguageCode,\r\n" + 
 				"            a.LanguageName\r\n" + 
 				"    FROM\r\n" + 
-				"        Transcription t\r\n" + 
-				"    LEFT JOIN Item i ON i.ItemId = t.ItemId\r\n" + 
-				"    LEFT JOIN Story s ON s.StoryId = i.StoryId\r\n" + 
-				"    LEFT JOIN \r\n" + 
-				"		(\r\n" + 
-				"			SELECT \r\n" + 
-				"				t.TranscriptionId, "
-				+ "			GROUP_CONCAT(l.Code) LanguageCode,\r\n"
-				+ "			GROUP_CONCAT(l.Name) LanguageName\r\n" + 
-				"			FROM Transcription t\r\n" + 
-				"            JOIN TranscriptionLanguage tl ON t.TranscriptionId = tl.TranscriptionId\r\n" + 
-				"            JOIN Language l ON tl.LanguageId = l.LanguageId\r\n" + 
-				"            GROUP BY TranscriptionId\r\n" + 
-				"		) a ON a.TranscriptionId = t.TranscriptionId\r\n" + 
+				"        (SELECT \r\n" + 
+				"        *\r\n" + 
+				"    FROM\r\n" + 
+				"        Story\r\n" + 
+				"    WHERE 1 \r\n";
+				if (queryParams.containsKey("storyId")) {
+					query +=  " AND RecordId = '" + queryParams.getFirst("storyId") + "'";
+				}
+				query +=  ") s\r\n" + 
+				"    LEFT JOIN (SELECT * FROM Item WHERE ";
+				if (!queryParams.containsKey("includeExported") || !queryParams.getFirst("includeExported").equals("1")) {
+					query +=  " Exported = 0 AND";
+				}
+				query +=  " TranscriptionStatusId = 4) i ON s.StoryId = i.StoryId\r\n" + 
+				"    LEFT JOIN (SELECT \r\n" + 
+				"        *\r\n" + 
+				"    FROM\r\n" + 
+				"        Transcription\r\n" + 
 				"    WHERE\r\n" + 
-				"        CurrentVersion = 1 AND NoText = 0)) a\r\n" + 
-				"WHERE 1";
-		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
+				"        1) t ON i.ItemId = t.ItemId\r\n" + 
+				"    LEFT JOIN (SELECT \r\n" + 
+				"        t.TranscriptionId,\r\n" + 
+				"            GROUP_CONCAT(l.Code) LanguageCode,\r\n" + 
+				"            GROUP_CONCAT(l.Name) LanguageName\r\n" + 
+				"    FROM\r\n" + 
+				"        Transcription t\r\n" + 
+				"    JOIN TranscriptionLanguage tl ON t.TranscriptionId = tl.TranscriptionId\r\n" + 
+				"    JOIN Language l ON tl.LanguageId = l.LanguageId\r\n" + 
+				"    GROUP BY TranscriptionId) a ON a.TranscriptionId = t.TranscriptionId\r\n" + 
+				"    WHERE\r\n" + 
+				"        CurrentVersion = 1 AND NoText = 0\r\n";
+				if (queryParams.containsKey("storyId")) {
+					query +=  " AND RecordId like '" + queryParams.getFirst("storyId") + "%'";
+				}
+				query +=  " AND t.TranscriptionId is not null)) a\r\n" + 
+				"WHERE\r\n" + 
+				"    1\r\n";
 		
 		for(String key : queryParams.keySet()){
-			String[] values = queryParams.getFirst(key).split(",");
-			query += " AND (";
-		    int valueCount = values.length;
-		    int i = 1;
-		    for(String value : values) {
-		    	query += key + " = '" + value + "'";
-			    if (i < valueCount) {
-			    	query += " OR ";
+	    	if (!key.equals("includeExported") && !key.equals("storyId")) {
+				String[] values = queryParams.getFirst(key).split(",");
+				query += " AND (";
+			    int valueCount = values.length;
+			    int i = 1;
+			    for(String value : values) {
+				    	query += key + " = '" + value + "'";
+					    if (i < valueCount) {
+					    	query += " OR ";
+					    }
+					    i++;
 			    }
-			    i++;
-		    }
-		    query += ")";
+			    query += ")";
+	    	}
 		}
 		String resource = executeQuery(query, "Select");
 		if (resource == "Failed") {
@@ -327,6 +371,11 @@ public class AnnotationExportResponse {
 		}
 		query += " WHERE TranscriptionId = " + id;
 		String resource = executeQuery(query, "Update");
+		
+        // Set Exported to 1 to prevent multiple exports
+        String ExportUpdateQuery = "UPDATE Item SET Exported = 1 WHERE ItemId = (SELECT ItemId FROM Transcription WHERE TranscriptionId = " + id + ")";
+		String ExportUpdateResource = executeQuery(ExportUpdateQuery, "Update");
+		
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
 	}
@@ -357,6 +406,11 @@ public class AnnotationExportResponse {
 		}
 		query += " WHERE AnnotationId = " + id;
 		String resource = executeQuery(query, "Update");
+
+        // Set Exported to 1 to prevent multiple exports
+        String ExportUpdateQuery = "UPDATE Item SET Exported = 1 WHERE ItemId = (SELECT ItemId FROM Annotation WHERE AnnotationId = " + id + ")";
+		String ExportUpdateResource = executeQuery(ExportUpdateQuery, "Update");
+		
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
 	}

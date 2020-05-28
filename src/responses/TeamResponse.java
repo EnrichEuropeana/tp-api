@@ -161,7 +161,12 @@ public class TeamResponse {
 		    int valueCount = values.length;
 		    int i = 1;
 		    for(String value : values) {
-		    	query += key + " LIKE " + "'%" + value + "%'";
+		    	if (key.equals("UserId") || key.equals("WP_UserId")) {
+			    	query += key + " LIKE " + "'%," + value + "%' OR " + key + " LIKE " + "'%" + value + ",%'";
+		    	}
+		    	else {
+			    	query += key + " = " + value;
+		    	}
 			    if (i < valueCount) {
 			    	query += " OR ";
 			    }

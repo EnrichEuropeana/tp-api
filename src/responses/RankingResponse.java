@@ -135,17 +135,28 @@ public class RankingResponse {
 						"		CASE WHEN st.Name = \"Enrichment\" THEN Amount ELSE 0 END Enrichments,\r\n" + 
 						"        s.Timestamp as Timestamp\r\n" + 
 						"	From Score s\r\n" + 
-						"	JOIN ScoreType st On s.ScoreTypeId = st.ScoreTypeId\r\n";
+						"	JOIN ScoreType st On s.ScoreTypeId = st.ScoreTypeId\r\n" +
+						"	AND 1 ";
 		if (queryParams.containsKey("campaign")) {
-			query +=  " WHERE s.Timestamp >= (SELECT Start FROM Campaign WHERE CampaignId = " + queryParams.getFirst("campaign") + ") "
+			query +=  " AND s.Timestamp >= (SELECT Start FROM Campaign WHERE CampaignId = " + queryParams.getFirst("campaign") + ") "
 					+ " AND s.Timestamp <= (SELECT End FROM Campaign WHERE CampaignId = " + queryParams.getFirst("campaign") + ") ";
+		}
+		if (queryParams.containsKey("dateStart")) {
+			query +=  " AND s.Timestamp >= '" + queryParams.getFirst("dateStart") + "' ";
+		}
+		if (queryParams.containsKey("dateEnd")) {
+			query +=  " AND s.Timestamp <= '" + queryParams.getFirst("dateEnd") + "' ";
 		}
 		query +=		") s " + 
 						"JOIN User u ON s.UserId = u.UserId  \r\n";
 		query +=		"WHERE 1 ";
+		if (!queryParams.containsKey("campaign")) {
+			query +=  " AND EventUser = 0 "; 
+		}
+		
 		
 		for(String key : queryParams.keySet()){
-			if (key.equals("limit") || key.equals("offset") || key.equals("campaign")) {
+			if (key.equals("limit") || key.equals("offset") || key.equals("campaign") || key.equals("dateStart") || key.equals("dateEnd")) {
 				continue;
 			}
 			String[] values = queryParams.getFirst(key).split(",");
@@ -248,9 +259,16 @@ public class RankingResponse {
 						"	JOIN TeamUser tu ON tu.UserId = u.UserId  \r\n" + 
 						"	JOIN Team t ON t.TeamId = tu.TeamId \r\n" + 
 						"	JOIN TeamCampaign tc ON tu.TeamId = tc.TeamId " + 
-						"	JOIN Campaign c ON c.CampaignId = tc.CampaignId ";
+						"	JOIN Campaign c ON c.CampaignId = tc.CampaignId " +
+						"	WHERE 1 ";
 		if (queryParams.containsKey("campaign")) {
-			query +=  " WHERE tc.CampaignId = " + queryParams.getFirst("campaign") + " AND s.Timestamp >= c.Start AND s.Timestamp <= c.End ";
+			query +=  " AND tc.CampaignId = " + queryParams.getFirst("campaign") + " AND s.Timestamp >= c.Start AND s.Timestamp <= c.End ";
+		}
+		if (queryParams.containsKey("dateStart")) {
+			query +=  " AND s.Timestamp >= '" + queryParams.getFirst("dateStart") + "' ";
+		}
+		if (queryParams.containsKey("dateEnd")) {
+			query +=  " AND s.Timestamp <= '" + queryParams.getFirst("dateEnd") + "' ";
 		}
 		query +=		" ) s \r\n" + 
 						"GROUP BY TeamId\r\n" + 

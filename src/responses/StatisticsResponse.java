@@ -85,7 +85,18 @@ public class StatisticsResponse {
 	@Produces("application/json;charset=utf-8")
 	@GET
 	public Response characters(@Context UriInfo uriInfo) throws SQLException {
-		String query = "SELECT SUM(Amount) as Amount FROM Score WHERE ScoreTypeId = 2";
+		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
+		String query = "SELECT SUM(Amount) as Amount FROM Score s WHERE ScoreTypeId = 2 ";
+		if (queryParams.containsKey("campaign")) {
+			query +=  " AND s.Timestamp >= (SELECT Start FROM Campaign WHERE CampaignId = " + queryParams.getFirst("campaign") + ") "
+					+ " AND s.Timestamp <= (SELECT End FROM Campaign WHERE CampaignId = " + queryParams.getFirst("campaign") + ") ";
+		}
+		if (queryParams.containsKey("dateStart")) {
+			query +=  " AND s.Timestamp >= '" + queryParams.getFirst("dateStart") + "' ";
+		}
+		if (queryParams.containsKey("dateEnd")) {
+			query +=  " AND s.Timestamp <= '" + queryParams.getFirst("dateEnd") + "' ";
+		}
 		String result = executeNumberQuery(query, "Select");
 
 		ResponseBuilder rBuild = Response.ok(result);

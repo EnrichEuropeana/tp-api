@@ -7,12 +7,14 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
-import objects.User;
+import objects.AutomatedEnrichment;
+import objects.Role;
 
 import java.util.*;
 import java.io.FileInputStream;
@@ -22,13 +24,14 @@ import java.io.InputStream;
 import java.sql.*;
 
 import com.google.gson.*;
+import com.google.gson.stream.MalformedJsonException;
 
-@Path("/users")
-public class UserResponse {
+@Path("/automatedEnrichments")
+public class AutomatedEnrichmentResponse {
 
 
 	public String executeQuery(String query, String type) throws SQLException{
-		   List<User> userList = new ArrayList<User>();
+		   List<AutomatedEnrichment> automatedEnrichments = new ArrayList<AutomatedEnrichment>();
 	       try (InputStream input = new FileInputStream("/home/enrich/tomcat/apache-tomcat-9.0.13/webapps/tp-api/WEB-INF/config.properties")) {
 
 	            Properties prop = new Properties();
@@ -41,13 +44,13 @@ public class UserResponse {
 	            final String USER = prop.getProperty("USER");
 	            final String PASS = prop.getProperty("PASS");
 		   // Register JDBC driver
+				Class.forName("com.mysql.jdbc.Driver");
+				
+				   // Open a connection
+				   Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+				   // Execute SQL query
+				   Statement stmt = conn.createStatement();
 		   try {
-			Class.forName("com.mysql.jdbc.Driver");
-		
-		   // Open a connection
-		   Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
-		   // Execute SQL query
-		   Statement stmt = conn.createStatement();
 		   if (type != "Select") {
 			   int success = stmt.executeUpdate(query);
 			   if (success > 0) {
@@ -66,14 +69,13 @@ public class UserResponse {
 		   // Extract data from result set
 		   while(rs.next()){
 		      //Retrieve by column name
-			  User user = new User();
-			  user.setUserId(rs.getInt("UserId"));
-			  user.setWP_UserId(rs.getInt("WP_UserId"));
-			  user.setWP_Role(rs.getString("Email"));
-			  user.setRole(rs.getString("RoleId"));
-			  user.setTimestamp(rs.getTimestamp("Timestamp"));
-			  user.setToken(rs.getString("Token"));
-			  userList.add(user);
+			  AutomatedEnrichment automatedEnrichment = new AutomatedEnrichment();
+			  automatedEnrichment.setAutomatedEnrichmentId(rs.getInt("AutomatedEnrichmentId"));
+			  automatedEnrichment.setName(rs.getString("Name"));
+			  automatedEnrichment.setType(rs.getString("Type"));
+			  automatedEnrichment.setWikiData(rs.getString("WikiData"));
+			  automatedEnrichment.setItemId(rs.getInt("ItemId"));
+			  automatedEnrichments.add(automatedEnrichment);
 		   }
 		
 		   // Clean-up environment
@@ -83,25 +85,29 @@ public class UserResponse {
 		   } catch(SQLException se) {
 		       //Handle errors for JDBC
 			   se.printStackTrace();
-		   } catch (ClassNotFoundException e) {
-			   e.printStackTrace();
+		   }  finally {
+			    try { stmt.close(); } catch (Exception e) { /* ignored */ }
+			    try { conn.close(); } catch (Exception e) { /* ignored */ }
+		   }
+		} catch (FileNotFoundException e1) {
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		} catch (ClassNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
-			} catch (FileNotFoundException e1) {
-				e1.printStackTrace();
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
 	    Gson gsonBuilder = new GsonBuilder().create();
-	    String result = gsonBuilder.toJson(userList);
+	    String result = gsonBuilder.toJson(automatedEnrichments);
 	    return result;
 	}
 
-	//Search using custom filters
-	@Path("/search")
+	//Get entries
+	@Path("")
 	@Produces("application/json;charset=utf-8")
 	@GET
 	public Response search(@Context UriInfo uriInfo) throws SQLException {
-		String query = "SELECT * FROM Campaign WHERE 1";
+		String query = "SELECT * FROM AutomatedEnrichment WHERE 1";
 		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
 		
 		for(String key : queryParams.keySet()){
@@ -122,7 +128,6 @@ public class UserResponse {
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
 	}
-	
 
 	//Add new entry
 	@Path("")
@@ -130,78 +135,49 @@ public class UserResponse {
 	public Response add(String body) throws SQLException {	
 	    GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
 	    Gson gson = gsonBuilder.create();
-	    User user = gson.fromJson(body, User.class);
+	    AutomatedEnrichment automatedEnrichment = gson.fromJson(body, AutomatedEnrichment.class);
 	    
-		String query = "INSERT INTO User (WP_UserId, RoleId, WP_Role, Token) "
-						+ "VALUES (" + user.WP_UserId
-						+ ", IFNULL((SELECT RoleID FROM Role WHERE Name = '" + user.Role + "'), 1)"
-						+ ", '" + user.WP_Role + "'"
-						+ ", '" + user.Token +"')";
+		String query = "INSERT INTO AutomatedEnrichment (Name, Type, ExternalId, WikiData, ItemId) "
+						+ "VALUES ('" + automatedEnrichment.Name + "'"
+						+ ", '" + automatedEnrichment.Type + "'"
+						+ ", '" + automatedEnrichment.ExternalId + "'";
+		if (!(automatedEnrichment.WikiData.length() > 0)) {
+			query += ", null";
+		}
+		else {
+			query += ", '" + automatedEnrichment.WikiData + "'";
+		}
+		query += ", " + automatedEnrichment.ItemId + ")";
+		
 		String resource = executeQuery(query, "Insert");
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
 	}
 	
-
-	//Edit entry by id
-	@Path("/{id}")
-	@POST
-	public String update(@PathParam("id") int id, String body) throws SQLException {
-	    GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
-	    Gson gson = gsonBuilder.create();
-	    JsonObject  changes = gson.fromJson(body, JsonObject.class);
-	    
-	    //Check if field is allowed to be changed
-	    if (changes.get("UserId") != null || changes.get("Timestamp") != null) {
-	    	return "Prohibited change attempt";
-	    }
-	    
-	    //Check if NOT NULL field is attempted to be changed to NULL
-	    if ((changes.get("Email") == null || !changes.get("Email").isJsonNull())
-	    		&& (changes.get("Username") == null || !changes.get("Username").isJsonNull())
-	    		&& (changes.get("RoleId") == null || !changes.get("RoleId").isJsonNull())
-	    		&& (changes.get("Confirmed") == null || !changes.get("Confirmed").isJsonNull())
-	    		&& (changes.get("Newsletter") == null || !changes.get("Newsletter").isJsonNull())){
-		    String query = "UPDATE User SET ";
-		    
-		    int keyCount = changes.entrySet().size();
-		    int i = 1;
-			for(Map.Entry<String, JsonElement> entry : changes.entrySet()) {
-			    query += entry.getKey() + " = '" + changes.get(entry.getKey()).getAsString() + "'";
-			    if (i < keyCount) {
-			    	query += ", ";
-			    }
-			    i++;
-			}
-			query += " WHERE UserId = " + id;
-			String resource = executeQuery(query, "Update");
-			return resource;
-	    } else {
-	    	return "Prohibited changes to null";
-	    }
-	}
-	
-	
-
-	//Delete entry by id
-	@Path("/{id}")
-	@DELETE
-	public String delete(@PathParam("id") int id) throws SQLException {
-		String resource = executeQuery("DELETE FROM User WHERE UserId = " + id, "Delete");
-		return resource;
-	}
-	
-
 	//Get entry by id
 	@Path("/{id}")
 	@Produces("application/json;charset=utf-8")
 	@GET
 	public Response getEntry(@PathParam("id") int id) throws SQLException {
-		String resource = executeQuery("SELECT * FROM User WHERE UserId = " + id, "Select");
+		String resource = executeQuery("SELECT * FROM AutomatedEnrichment WHERE AutomatedEnrichmentId = " + id, "Select");
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
 	}
 
+	//Delete entry by id
+	@Path("/delete")
+	@POST
+	public Response delete(String body) throws SQLException {
+	    GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
+	    Gson gson = gsonBuilder.create();
+	    AutomatedEnrichment automatedEnrichment = gson.fromJson(body, AutomatedEnrichment.class);
+	    
+	    String query = "DELETE FROM AutomatedEnrichment WHERE ExternalId = '" + automatedEnrichment.ExternalId + "'";
+		String resource = executeQuery(query, "Delete");
+		ResponseBuilder rBuild = Response.ok(resource);
+        return rBuild.build();
+	}
+	
 }
 
 
