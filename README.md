@@ -5,4 +5,4 @@ Api for the [Transcribathon tool](https://europeana.transcribathon.eu)
 
 Licensed under the EUPL V.1.2
 
-For full details, see [LICENSE.md](LICENSE.md)
+For full details, see [License.md](License.md)
