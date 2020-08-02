@@ -1,6 +1,5 @@
 package responses;
 
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -13,26 +12,14 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
-import objects.Annotation;
-import objects.Comment;
 import objects.CompletionStatus;
-import objects.Item;
-import objects.Place;
-import objects.Property;
 import objects.Story;
-import objects.Transcription;
-
 import java.util.*;
-import java.util.Date;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.*;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-
 import com.google.gson.*;
 
 @Path("/storiesMinimal")
@@ -41,6 +28,9 @@ public class StoryMinimalResponse {
 
 	public String executeQuery(String query, String type) throws SQLException{
 		   List<Story> storyList = new ArrayList<Story>();
+		   ResultSet rs = null;
+		   Connection conn = null;
+		   Statement stmt = null;
 	       try (InputStream input = new FileInputStream("/home/enrich/tomcat/apache-tomcat-9.0.13/webapps/tp-api/WEB-INF/config.properties")) {
 
 	            Properties prop = new Properties();
@@ -56,15 +46,18 @@ public class StoryMinimalResponse {
 				Class.forName("com.mysql.jdbc.Driver");
 				
 				   // Open a connection
-				   Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+				   conn = DriverManager.getConnection(DB_URL, USER, PASS);
 				   // Execute SQL query
-				   Statement stmt = conn.createStatement();
+				   stmt = conn.createStatement();
 		   try {
 		   if (type != "Select") {
 			   if (type == "Select count") {
-				   ResultSet rs = stmt.executeQuery(query);
+				   rs = stmt.executeQuery(query);
 				   rs.next();
 				   String count = rs.getString("count");
+				   rs.close();
+				   stmt.close();
+				   conn.close();
 				   return count;
 			   }
 			   int success = stmt.executeUpdate(query);
@@ -80,7 +73,7 @@ public class StoryMinimalResponse {
 			   }
 		   }
 		   stmt.execute("SET group_concat_max_len = 1000000;");
-		   ResultSet rs = stmt.executeQuery(query);
+		   rs = stmt.executeQuery(query);
 
 		   // Extract data from result set
 		   while(rs.next()){
@@ -123,9 +116,10 @@ public class StoryMinimalResponse {
 		       //Handle errors for JDBC
 			   se.printStackTrace();
 		   } finally {
+			    try { rs.close(); } catch (Exception e) { /* ignored */ }
 			    try { stmt.close(); } catch (Exception e) { /* ignored */ }
 			    try { conn.close(); } catch (Exception e) { /* ignored */ }
-		   }
+		    }
 			} catch (FileNotFoundException e1) {
 				e1.printStackTrace();
 			} catch (IOException e1) {
@@ -133,7 +127,11 @@ public class StoryMinimalResponse {
 			} catch (ClassNotFoundException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
-			}
+			} finally {
+			    try { rs.close(); } catch (Exception e) { /* ignored */ }
+			    try { stmt.close(); } catch (Exception e) { /* ignored */ }
+			    try { conn.close(); } catch (Exception e) { /* ignored */ }
+		    }
 	    Gson gsonBuilder = new GsonBuilder().create();
 	    String result = gsonBuilder.toJson(storyList);
 	    return result;
@@ -141,7 +139,6 @@ public class StoryMinimalResponse {
 
 
 	//GET entries
-	@Path("")
 	@Produces("application/json;charset=utf-8")
 	@GET
 	public Response search(@Context UriInfo uriInfo, @QueryParam("pa") int page) throws SQLException {
@@ -298,7 +295,6 @@ public class StoryMinimalResponse {
 	}
 
 	//Add new entry
-	@Path("")
 	@POST
 	public Response add(String body) throws SQLException {	
 	    /*
@@ -322,51 +318,6 @@ public class StoryMinimalResponse {
 		ResponseBuilder rBuild = Response.ok("");
         return rBuild.build();
 	}
-
-
-/*
-	//Edit entry by id
-	@Path("/{id}")
-	@POST
-	public String update(@PathParam("id") int id, String body) throws SQLException {
-	    GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
-	    Gson gson = gsonBuilder.create();
-	    JsonObject  changes = gson.fromJson(body, JsonObject.class);
-	    
-	    //Check if NOT NULL field is attNULLted to be changed to NULL
-	    if ((changes.get("Name") == null || !changes.get("Name").isJsonNull())
-	    		&~&&~& (changes.get("Public") == null || !changes.get("Public").isJsonNull())) {
-		    String query = "UPDATE Item SET ";
-		    
-		    int keyCount = changes.entrySet().size();
-		    int i = 1;
-			for(Map.Entry<String, JsonElement> entry : changes.entrySet()) {
-			    query += entry.getKey() + " = '" + changes.get(entry.getKey()).getAsString() + "'";
-			    if (i < keyCount) {
-			    	query += ", ";
-			    }
-			    i++;
-			}
-			query += " WHERE ItemId = " + id;
-			String resource = executeQuery(query, "Update");
-			return resource;
-	    } else {
-	    	return "Prohibited change to null";
-	    }
-	}
-*/
-
-/*
-	//Delete entry by id
-	@Path("/{id}")
-	@DELETE
-	public String delete(@PathParam("id") int id) throws SQLException {
-		String query =  "DELETE FROM Story " +
-						"WHERE i.StoryId = " + id;
-		String resource = executeQuery(query, "Delete");
-		return resource;
-	}
-	*/
 	
 
 	//Get entry by id
@@ -383,6 +334,7 @@ public class StoryMinimalResponse {
 				"	GROUP_CONCAT(IFNULL(Count, 'NULL')) AS Amount,\r\n" + 
 				"    s.StorydcTitle as StorydcTitle,\r\n" + 
 				"    s.StoryPreviewImage as StoryPreviewImage,\r\n" + 
+				"    s.StorydcLanguage as StorydcLanguage,\r\n" + 
 				"    s.StorydcDescription as StorydcDescription,\r\n" + 
 				"    s.DatasetName as DatasetName\r\n" + 
 				"FROM (\r\n" + 
@@ -439,6 +391,7 @@ public class StoryMinimalResponse {
 				"		`dc:title` as StorydcTitle,\r\n" + 
 				"		PreviewImage as StoryPreviewImage,\r\n" + 
 				"		`dc:description` as StorydcDescription,\r\n" + 
+				"		`dc:language` as StorydcLanguage,\r\n" + 
 				"        d.Name as DatasetName\r\n" + 
 				"	FROM\r\n" + 
 				"		Story s\r\n\r\n" + 

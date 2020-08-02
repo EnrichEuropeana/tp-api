@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -40,14 +39,12 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.commons.io.IOUtils;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
 import com.google.gson.Gson;
@@ -60,7 +57,6 @@ import com.google.gson.JsonParser;
 import objects.ApiKey;
 import objects.Dataset;
 import objects.Project;
-import objects.Story;
 
 @Path("/projects")
 public class ProjectResponse {
@@ -68,6 +64,9 @@ public class ProjectResponse {
 
 	public String executeQuery(String query, String type) throws SQLException{
 		   List<Project> projectList = new ArrayList<Project>();
+		   ResultSet rs = null;
+		   Connection conn = null;
+		   Statement stmt = null;
 	       try (InputStream input = new FileInputStream("/home/enrich/tomcat/apache-tomcat-9.0.13/webapps/tp-api/WEB-INF/config.properties")) {
 
 	            Properties prop = new Properties();
@@ -84,9 +83,9 @@ public class ProjectResponse {
 			Class.forName("com.mysql.jdbc.Driver");
 		
 		   // Open a connection
-		   Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		   conn = DriverManager.getConnection(DB_URL, USER, PASS);
 		   // Execute SQL query
-		   Statement stmt = conn.createStatement();
+		   stmt = conn.createStatement();
 		   if (type != "Select") {
 			   int success = stmt.executeUpdate(query);
 			   if (success > 0) {
@@ -96,7 +95,7 @@ public class ProjectResponse {
 				   return type +" could not be executed";
 			   }
 		   }
-		   ResultSet rs = stmt.executeQuery(query);
+		   rs = stmt.executeQuery(query);
 		   
 		   // Extract data from result set
 		   while(rs.next()){
@@ -116,12 +115,20 @@ public class ProjectResponse {
 			   se.printStackTrace();
 		   } catch (ClassNotFoundException e) {
 			   e.printStackTrace();
-		}
+		}  finally {
+		    try { rs.close(); } catch (Exception e) { /* ignored */ }
+		    try { stmt.close(); } catch (Exception e) { /* ignored */ }
+		    try { conn.close(); } catch (Exception e) { /* ignored */ }
+	   }
 			} catch (FileNotFoundException e1) {
 				e1.printStackTrace();
 			} catch (IOException e1) {
 				e1.printStackTrace();
-			}
+			}  finally {
+			    try { rs.close(); } catch (Exception e) { /* ignored */ }
+			    try { stmt.close(); } catch (Exception e) { /* ignored */ }
+			    try { conn.close(); } catch (Exception e) { /* ignored */ }
+		   }
 	    Gson gsonBuilder = new GsonBuilder().create();
 	    String result = gsonBuilder.toJson(projectList);
 	    return result;
@@ -130,6 +137,9 @@ public class ProjectResponse {
 	public String getApiKeys() throws SQLException{
 			String query = "SELECT * FROM ApiKey";
 		   List<ApiKey> apiKeys = new ArrayList<ApiKey>();
+		   ResultSet rs = null;
+		   Connection conn = null;
+		   Statement stmt = null;
 	       try (InputStream input = new FileInputStream("/home/enrich/tomcat/apache-tomcat-9.0.13/webapps/tp-api/WEB-INF/config.properties")) {
 
 	            Properties prop = new Properties();
@@ -146,10 +156,10 @@ public class ProjectResponse {
 			Class.forName("com.mysql.jdbc.Driver");
 		
 		   // Open a connection
-		   Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		   conn = DriverManager.getConnection(DB_URL, USER, PASS);
 		   // Execute SQL query
-		   Statement stmt = conn.createStatement();
-		   ResultSet rs = stmt.executeQuery(query);
+		   stmt = conn.createStatement();
+		   rs = stmt.executeQuery(query);
 		   
 		   // Extract data from result set
 		   while(rs.next()){
@@ -171,12 +181,20 @@ public class ProjectResponse {
 			   se.printStackTrace();
 		   } catch (ClassNotFoundException e) {
 			   e.printStackTrace();
-		}
+		}  finally {
+		    try { rs.close(); } catch (Exception e) { /* ignored */ }
+		    try { stmt.close(); } catch (Exception e) { /* ignored */ }
+		    try { conn.close(); } catch (Exception e) { /* ignored */ }
+	   }
 			} catch (FileNotFoundException e1) {
 				e1.printStackTrace();
 			} catch (IOException e1) {
 				e1.printStackTrace();
-			}
+			}  finally {
+			    try { rs.close(); } catch (Exception e) { /* ignored */ }
+			    try { stmt.close(); } catch (Exception e) { /* ignored */ }
+			    try { conn.close(); } catch (Exception e) { /* ignored */ }
+		   }
 	    Gson gsonBuilder = new GsonBuilder().create();
 	    String result = gsonBuilder.toJson(apiKeys);
 	    return result;
@@ -184,6 +202,9 @@ public class ProjectResponse {
 	
 	public String executeDatasetQuery(String query, String type) throws SQLException{
 	    List<Dataset> datasetList = new ArrayList<Dataset>();
+	   ResultSet rs = null;
+	   Connection conn = null;
+	   Statement stmt = null;
 		try (InputStream input = new FileInputStream("/home/enrich/tomcat/apache-tomcat-9.0.13/webapps/tp-api/WEB-INF/config.properties")) {
 
             Properties prop = new Properties();
@@ -201,9 +222,9 @@ public class ProjectResponse {
 			Class.forName("com.mysql.jdbc.Driver");
 		
 		   // Open a connection
-		   Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		   conn = DriverManager.getConnection(DB_URL, USER, PASS);
 		   // Execute SQL query
-		   Statement stmt = conn.createStatement();
+		   stmt = conn.createStatement();
 		   if (type != "Select") {
 			   int success = stmt.executeUpdate(query);
 			   if (success > 0) {
@@ -213,7 +234,7 @@ public class ProjectResponse {
 				   return type +" could not be executed";
 			   }
 		   }
-		   ResultSet rs = stmt.executeQuery(query);
+		   rs = stmt.executeQuery(query);
 		   
 		   // Extract data from result set
 		   while(rs.next()){
@@ -234,12 +255,20 @@ public class ProjectResponse {
 			   se.printStackTrace();
 		   } catch (ClassNotFoundException e) {
 			   e.printStackTrace();
-		}
+		}  finally {
+		    try { rs.close(); } catch (Exception e) { /* ignored */ }
+		    try { stmt.close(); } catch (Exception e) { /* ignored */ }
+		    try { conn.close(); } catch (Exception e) { /* ignored */ }
+	   }
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
 		} catch (IOException e1) {
 			e1.printStackTrace();
-		}
+		}  finally {
+		    try { rs.close(); } catch (Exception e) { /* ignored */ }
+		    try { stmt.close(); } catch (Exception e) { /* ignored */ }
+		    try { conn.close(); } catch (Exception e) { /* ignored */ }
+	   }
 	    Gson gsonBuilder = new GsonBuilder().create();
 	    String result = gsonBuilder.toJson(datasetList);
 	    return result;
@@ -247,6 +276,9 @@ public class ProjectResponse {
 	
 
 	public Integer executeStoryQuery(String query, String type) throws SQLException{
+	   ResultSet rs = null;
+	   Connection conn = null;
+	   Statement stmt = null;
 		try (InputStream input = new FileInputStream("/home/enrich/tomcat/apache-tomcat-9.0.13/webapps/tp-api/WEB-INF/config.properties")) {
 
             Properties prop = new Properties();
@@ -264,10 +296,10 @@ public class ProjectResponse {
 			Class.forName("com.mysql.jdbc.Driver");
 		
 		   // Open a connection
-		   Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		   conn = DriverManager.getConnection(DB_URL, USER, PASS);
 		   // Execute SQL query
-		   Statement stmt = conn.createStatement();
-		   ResultSet rs = stmt.executeQuery(query);
+		   stmt = conn.createStatement();
+		   rs = stmt.executeQuery(query);
 		   
 		   // Extract data from result set
 		   while(rs.next()){
@@ -283,17 +315,25 @@ public class ProjectResponse {
 			   se.printStackTrace();
 		   } catch (ClassNotFoundException e) {
 			   e.printStackTrace();
-		}
+		}  finally {
+		    try { rs.close(); } catch (Exception e) { /* ignored */ }
+		    try { stmt.close(); } catch (Exception e) { /* ignored */ }
+		    try { conn.close(); } catch (Exception e) { /* ignored */ }
+	   }
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
 		} catch (IOException e1) {
 			e1.printStackTrace();
-		}
+		}  finally {
+		    try { rs.close(); } catch (Exception e) { /* ignored */ }
+		    try { stmt.close(); } catch (Exception e) { /* ignored */ }
+		    try { conn.close(); } catch (Exception e) { /* ignored */ }
+	   }
 	    return 0;
 	}
 	
 	//Get Entries
-	@Path("")
+	
 	@Produces("application/json;charset=utf-8")
 	@GET
 	public Response search(@Context UriInfo uriInfo, String body) throws SQLException {
@@ -325,7 +365,7 @@ public class ProjectResponse {
 	}
 	
 	//Add new entry
-	@Path("")
+	
 	@POST
 	public String add(String body) throws SQLException {	
 	    GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -447,6 +487,8 @@ public class ProjectResponse {
 	
 
 	public String executeInsertQuery(String query, String type) throws SQLException, ClientProtocolException, IOException{
+		   Connection conn = null;
+		   Statement stmt = null;
 		try (InputStream input = new FileInputStream("/home/enrich/tomcat/apache-tomcat-9.0.13/webapps/tp-api/WEB-INF/config.properties")) {
 
             Properties prop = new Properties();
@@ -488,9 +530,9 @@ public class ProjectResponse {
 			Class.forName("com.mysql.jdbc.Driver");
 		
 		   // Open a connection
-		   Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		   conn = DriverManager.getConnection(DB_URL, USER, PASS);
 		   // Execute SQL query
-		   Statement stmt = conn.createStatement();
+		   stmt = conn.createStatement();
 		   if (type != "Select") {
 			   int success = stmt.executeUpdate(query);
 			   if (success > 0) {
@@ -514,12 +556,18 @@ public class ProjectResponse {
 		   se.printStackTrace();
 	   } catch (ClassNotFoundException e) {
 		   e.printStackTrace();
+	   }  finally {
+		    try { stmt.close(); } catch (Exception e) { /* ignored */ }
+		    try { conn.close(); } catch (Exception e) { /* ignored */ }
 	   }
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
 		} catch (IOException e1) {
 			e1.printStackTrace();
-		}
+		}  finally {
+		    try { stmt.close(); } catch (Exception e) { /* ignored */ }
+		    try { conn.close(); } catch (Exception e) { /* ignored */ }
+	   }
 		return "Failed";
 	}
 	
@@ -783,13 +831,16 @@ public class ProjectResponse {
 										if (placeName.get(j) instanceof JsonObject && placeName.get(j).getAsJsonObject().get("@language").toString() == "en") {
 											keys.add("PlaceName");
 											values.add(placeName.get(j).getAsJsonObject().get("@value").toString());
+											break;
 										}
 									}
 								}
 							}
 							else {
-								keys.add("PlaceName");
-								values.add(dataArray.get(i).getAsJsonObject().get("skos:prefLabel").toString());
+								if (!keys.contains("PlaceName")) {
+									keys.add("PlaceName");
+									values.add(dataArray.get(i).getAsJsonObject().get("skos:prefLabel").toString());
+								}
 							}
 						}
 					}
@@ -942,9 +993,6 @@ public class ProjectResponse {
 		            prop.load(input);
 
 		            // get the property value and print it out
-		            final String DB_URL = prop.getProperty("DB_URL");
-		            final String USER = prop.getProperty("USER");
-		            final String PASS = prop.getProperty("PASS");
 		            
 		    		HttpClient httpclient = HttpClients.createDefault();
 		    		
@@ -957,6 +1005,8 @@ public class ProjectResponse {
 	    	        httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
 	    	        HttpResponse response = httpclient.execute(httppost);
 	    	        HttpEntity entity = response.getEntity();
+	    	        HttpURLConnection con = null;
+	    	        BufferedReader in = null;
 
 	    	        if (entity != null) {
 	    	            try (InputStream instream = entity.getContent()) {
@@ -967,7 +1017,7 @@ public class ProjectResponse {
 	    	    	        String authHeader = authData.get("access_token").toString();
 
 	        	            URL url = new URL(manifestUrl);
-	        				HttpURLConnection con = (HttpURLConnection) url.openConnection();
+	        				con = (HttpURLConnection) url.openConnection();
 							
 							con.setRequestMethod("GET");
 							con.setRequestProperty("Content-Type", "application/json");
@@ -987,7 +1037,7 @@ public class ProjectResponse {
 						    }
 						    
 
-							BufferedReader in = new BufferedReader(
+							in = new BufferedReader(
 							  new InputStreamReader(con.getInputStream(), "UTF-8"));
 							String inputLine;
 							StringBuffer content = new StringBuffer();
@@ -1067,7 +1117,11 @@ public class ProjectResponse {
 	    						ResponseBuilder rBuild = Response.status(Response.Status.BAD_REQUEST);
 	    				        return rBuild.build();
 	    					}
-	    	            }
+	    	            }  catch (Exception e) { 
+	    	            } finally {
+							in.close();
+							con.disconnect();
+	    			   }
 	    	        }
 				}
 			}
@@ -1105,30 +1159,38 @@ public class ProjectResponse {
 		fileWriter.write(body);
 	    fileWriter.close();
 
-	    URL storySolr = new URL("http://fresenia.man.poznan.pl:8983/solr/Stories/dataimport?command=full-import&clean=true");
-	    HttpURLConnection con = (HttpURLConnection) storySolr.openConnection();
-	    con.setRequestMethod("GET");
-	    BufferedReader in = new BufferedReader(
-	    new InputStreamReader(con.getInputStream()));
-	    String inputLine;
-	    StringBuffer content = new StringBuffer();
-	    while ((inputLine = in.readLine()) != null) {
-	        content.append(inputLine);
-	    }
-	    in.close();
-	    con.disconnect();
-	    
-	    URL itemSolr = new URL("http://fresenia.man.poznan.pl:8983/solr/Items/dataimport?command=full-import&clean=true");
-	    con = (HttpURLConnection) itemSolr.openConnection();
-	    con.setRequestMethod("GET");
-	    in = new BufferedReader(
-	    new InputStreamReader(con.getInputStream()));
-	    content = new StringBuffer();
-	    while ((inputLine = in.readLine()) != null) {
-	        content.append(inputLine);
-	    }
-	    in.close();
-	    con.disconnect();
+	    HttpURLConnection con = null;
+	    BufferedReader in = null;
+	    try {
+		    URL storySolr = new URL("http://fresenia.man.poznan.pl:8983/solr/Stories/dataimport?command=full-import&clean=true");
+		    con = (HttpURLConnection) storySolr.openConnection();
+		    con.setRequestMethod("GET");
+		    in = new BufferedReader(
+		    new InputStreamReader(con.getInputStream()));
+		    String inputLine;
+		    StringBuffer content = new StringBuffer();
+		    while ((inputLine = in.readLine()) != null) {
+		        content.append(inputLine);
+		    }
+		    in.close();
+		    con.disconnect();
+		    
+		    URL itemSolr = new URL("http://fresenia.man.poznan.pl:8983/solr/Items/dataimport?command=full-import&clean=true");
+		    con = (HttpURLConnection) itemSolr.openConnection();
+		    con.setRequestMethod("GET");
+		    in = new BufferedReader(
+		    new InputStreamReader(con.getInputStream()));
+		    content = new StringBuffer();
+		    while ((inputLine = in.readLine()) != null) {
+		        content.append(inputLine);
+		    }
+		    in.close();
+		    con.disconnect();
+	    }  catch (Exception e) { 
+        } finally {
+			in.close();
+			con.disconnect();
+	   }
 		
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();

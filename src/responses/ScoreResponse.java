@@ -29,6 +29,9 @@ public class ScoreResponse {
 
 	public String executeQuery(String query, String type) throws SQLException{
 		   List<Score> scoreList = new ArrayList<Score>();
+		   ResultSet rs = null;
+		   Connection conn = null;
+		   Statement stmt = null;
 	       try (InputStream input = new FileInputStream("/home/enrich/tomcat/apache-tomcat-9.0.13/webapps/tp-api/WEB-INF/config.properties")) {
 
 				Properties prop = new Properties();
@@ -45,14 +48,14 @@ public class ScoreResponse {
 				Class.forName("com.mysql.jdbc.Driver");
 				
 				// Open a connection
-			    Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+			    conn = DriverManager.getConnection(DB_URL, USER, PASS);
 			    // Execute SQL query
-			    Statement stmt = conn.createStatement();
+			    stmt = conn.createStatement();
 			    try {
 				    if (type != "Select") {
 					    if (type == "ScoreId") {
 					    	// Return ScoreId as simple String
-						    ResultSet rs = stmt.executeQuery(query);
+						    rs = stmt.executeQuery(query);
 						    if(rs.next() == false){
 							    rs.close();
 				 			    stmt.close();
@@ -83,7 +86,7 @@ public class ScoreResponse {
 					   }
 				    }
 				    // Save query results as Result set
-				    ResultSet rs = stmt.executeQuery(query);
+				    rs = stmt.executeQuery(query);
 				   
 				    // Extract data from result set
 				    while(rs.next()){
@@ -107,18 +110,22 @@ public class ScoreResponse {
 				} catch(SQLException se) {
 				    se.printStackTrace();
 				    return "";
-				} finally {
-					// Close connections in case of errors
+				}  finally {
+				    try { rs.close(); } catch (Exception e) { /* ignored */ }
 				    try { stmt.close(); } catch (Exception e) { /* ignored */ }
 				    try { conn.close(); } catch (Exception e) { /* ignored */ }
-			    }
+			   }
 			} catch (FileNotFoundException e1) {
 				e1.printStackTrace();
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			} catch (ClassNotFoundException e1) {
 				e1.printStackTrace();
-			}
+			}  finally {
+			    try { rs.close(); } catch (Exception e) { /* ignored */ }
+			    try { stmt.close(); } catch (Exception e) { /* ignored */ }
+			    try { conn.close(); } catch (Exception e) { /* ignored */ }
+		   }
 	    // Build Json from query results
 	    Gson gsonBuilder = new GsonBuilder().create();
 	    String result = gsonBuilder.toJson(scoreList);
@@ -126,7 +133,7 @@ public class ScoreResponse {
 	}
 
 	//Search using custom filters
-	@Path("")
+	
 	@Produces("application/json;charset=utf-8")
 	@GET
 	public Response search(@Context UriInfo uriInfo) throws SQLException {
@@ -175,7 +182,7 @@ public class ScoreResponse {
 	
 
 	//Add new entry
-	@Path("")
+	
 	@POST
 	public Response add(String body, @Context UriInfo uriInfo) throws SQLException {	
 		// Build new object

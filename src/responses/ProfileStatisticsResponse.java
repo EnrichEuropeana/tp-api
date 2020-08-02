@@ -1,15 +1,11 @@
 package responses;
 
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
 import objects.ProfileStatistics;
@@ -29,6 +25,9 @@ public class ProfileStatisticsResponse {
 
 	public String executeQuery(String query, String type) throws SQLException{
 		   List<ProfileStatistics> profileStatisticsList = new ArrayList<ProfileStatistics>();
+		   ResultSet rs = null;
+		   Connection conn = null;
+		   Statement stmt = null;
 	       try (InputStream input = new FileInputStream("/home/enrich/tomcat/apache-tomcat-9.0.13/webapps/tp-api/WEB-INF/config.properties")) {
 
 	            Properties prop = new Properties();
@@ -45,9 +44,9 @@ public class ProfileStatisticsResponse {
 			Class.forName("com.mysql.jdbc.Driver");
 		
 		   // Open a connection
-		   Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		   conn = DriverManager.getConnection(DB_URL, USER, PASS);
 		   // Execute SQL query
-		   Statement stmt = conn.createStatement();
+		   stmt = conn.createStatement();
 		   if (type != "Select") {
 			   int success = stmt.executeUpdate(query);
 			   if (success > 0) {
@@ -61,7 +60,7 @@ public class ProfileStatisticsResponse {
 				   return type +" could not be executed";
 			   }
 		   }
-		   ResultSet rs = stmt.executeQuery(query);
+		   rs = stmt.executeQuery(query);
 		   
 		   // Extract data from result set
 		   while(rs.next()){
@@ -85,12 +84,20 @@ public class ProfileStatisticsResponse {
 			   se.printStackTrace();
 		   } catch (ClassNotFoundException e) {
 			   e.printStackTrace();
-		}
+		}  finally {
+		    try { rs.close(); } catch (Exception e) { /* ignored */ }
+		    try { stmt.close(); } catch (Exception e) { /* ignored */ }
+		    try { conn.close(); } catch (Exception e) { /* ignored */ }
+	   }
 			} catch (FileNotFoundException e1) {
 				e1.printStackTrace();
 			} catch (IOException e1) {
 				e1.printStackTrace();
-			}
+			}  finally {
+			    try { rs.close(); } catch (Exception e) { /* ignored */ }
+			    try { stmt.close(); } catch (Exception e) { /* ignored */ }
+			    try { conn.close(); } catch (Exception e) { /* ignored */ }
+		   }
 	    Gson gsonBuilder = new GsonBuilder().create();
 	    String result = gsonBuilder.toJson(profileStatisticsList);
 	    return result;

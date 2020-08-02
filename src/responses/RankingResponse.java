@@ -1,10 +1,7 @@
 package responses;
 
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
@@ -29,6 +26,9 @@ public class RankingResponse {
 
 	public String executeQuery(String query, String type) throws SQLException{
 		   List<Ranking> rankingList = new ArrayList<Ranking>();
+		   ResultSet rs = null;
+		   Connection conn = null;
+		   Statement stmt = null;
 	       try (InputStream input = new FileInputStream("/home/enrich/tomcat/apache-tomcat-9.0.13/webapps/tp-api/WEB-INF/config.properties")) {
 
 	            Properties prop = new Properties();
@@ -44,15 +44,19 @@ public class RankingResponse {
 				Class.forName("com.mysql.jdbc.Driver");
 				
 				   // Open a connection
-				   Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+				   conn = DriverManager.getConnection(DB_URL, USER, PASS);
 				   // Execute SQL query
-				   Statement stmt = conn.createStatement();
+				   stmt = conn.createStatement();
 		   try {
 		   if (type != "Select") {
 			   if (type == "UserCount") {
-				   ResultSet rs = stmt.executeQuery(query);
+				   rs = stmt.executeQuery(query);
 				   rs.next();
-				   return rs.getString("UserCount");
+				   String userCount = rs.getString("UserCount");
+				   rs.close();
+				   stmt.close();
+				   conn.close();
+				   return userCount;
 			   }
 			   int success = stmt.executeUpdate(query);
 			   if (success > 0) {
@@ -66,7 +70,7 @@ public class RankingResponse {
 				   return type + " could not be executed";
 			   }
 		   }
-		   ResultSet rs = stmt.executeQuery(query);
+		   rs = stmt.executeQuery(query);
 		   
 		   // Extract data from result set
 		   while(rs.next()){
@@ -74,6 +78,7 @@ public class RankingResponse {
 			  Ranking ranking = new Ranking();
 			  ranking.setUserId(rs.getInt("UserId"));
 			  ranking.setEventUser(rs.getInt("EventUser"));
+			  ranking.setRole(rs.getString("Role"));
 			  ranking.setTeamId(rs.getInt("TeamId"));
 			  ranking.setTeamName(rs.getString("TeamName"));
 			  ranking.setMiles(rs.getFloat("Miles"));
@@ -91,7 +96,8 @@ public class RankingResponse {
 		   } catch(SQLException se) {
 		       //Handle errors for JDBC
 			   se.printStackTrace();
-		   } finally {
+		   }  finally {
+			    try { rs.close(); } catch (Exception e) { /* ignored */ }
 			    try { stmt.close(); } catch (Exception e) { /* ignored */ }
 			    try { conn.close(); } catch (Exception e) { /* ignored */ }
 		   }
@@ -102,14 +108,18 @@ public class RankingResponse {
 			} catch (ClassNotFoundException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
-			}
+			}  finally {
+			    try { rs.close(); } catch (Exception e) { /* ignored */ }
+			    try { stmt.close(); } catch (Exception e) { /* ignored */ }
+			    try { conn.close(); } catch (Exception e) { /* ignored */ }
+		   }
 	    Gson gsonBuilder = new GsonBuilder().create();
 	    String result = gsonBuilder.toJson(rankingList);
 	    return result;
 	}
 
 	//Search using custom filters
-	@Path("")
+	
 	@Produces("application/json;charset=utf-8")
 	@GET
 	public Response search(@Context UriInfo uriInfo) throws SQLException {
@@ -117,6 +127,7 @@ public class RankingResponse {
 		String query = "SELECT \r\n" + 
 						"	u.WP_UserId as UserId, \r\n" + 
 						"	u.EventUser as EventUser, \r\n" + 
+						"	r.Name as Role, \r\n" + 
 						"	0 as TeamId, \r\n" + 
 					    " 	0 as TeamName, \r\n" +
 						"    SUM(s.Miles) as Miles,\r\n" + 
@@ -148,7 +159,8 @@ public class RankingResponse {
 			query +=  " AND s.Timestamp <= '" + queryParams.getFirst("dateEnd") + "' ";
 		}
 		query +=		") s " + 
-						"JOIN User u ON s.UserId = u.UserId  \r\n";
+						"JOIN User u ON s.UserId = u.UserId  \r\n" +
+						"JOIN Role r ON u.RoleId = r.RoleId  \r\n";
 		query +=		"WHERE 1 ";
 		if (!queryParams.containsKey("campaign")) {
 			query +=  " AND EventUser = 0 "; 
@@ -173,7 +185,7 @@ public class RankingResponse {
 		    query += ")";
 		}
 		
-		query +=		" GROUP BY UserId, EventUser\r\n" + 
+		query +=		" GROUP BY UserId, EventUser, Name\r\n" + 
 						"ORDER BY Miles DESC ";
 				
 		if (queryParams.getFirst("limit") != null) {

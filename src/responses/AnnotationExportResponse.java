@@ -1,6 +1,5 @@
 package responses;
 
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -8,7 +7,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -17,8 +15,6 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import objects.AnnotationExport;
 import objects.ApiKey;
 import objects.Language;
-import objects.Person;
-
 import java.util.*;
 import java.util.Date;
 import java.io.FileInputStream;
@@ -30,13 +26,15 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import com.google.gson.*;
-import com.google.gson.stream.MalformedJsonException;
 
 @Path("/enrichments")
 public class AnnotationExportResponse {
 
 	public String executeQuery(String query, String type) throws SQLException{
 		   List<AnnotationExport> annotationExports = new ArrayList<AnnotationExport>();
+		   ResultSet rs = null;
+		   Connection conn = null;
+		   Statement stmt = null;
 	       try (InputStream input = new FileInputStream("/home/enrich/tomcat/apache-tomcat-9.0.13/webapps/tp-api/WEB-INF/config.properties")) {
 
 	            Properties prop = new Properties();
@@ -53,9 +51,9 @@ public class AnnotationExportResponse {
 			Class.forName("com.mysql.jdbc.Driver");
 		
 		   // Open a connection
-		   Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		   conn = DriverManager.getConnection(DB_URL, USER, PASS);
 		   // Execute SQL query
-		   Statement stmt = conn.createStatement();
+		   stmt = conn.createStatement();
 		   if (type != "Select") {
 			   int success = stmt.executeUpdate(query);
 			   if (success > 0) {
@@ -69,7 +67,7 @@ public class AnnotationExportResponse {
 				   return "Failed";
 			   }
 		   }
-		   ResultSet rs = stmt.executeQuery(query);
+		   rs = stmt.executeQuery(query);
 		   
 		   // Extract data from result set
 		   while(rs.next()){
@@ -128,12 +126,20 @@ public class AnnotationExportResponse {
 			   se.printStackTrace();
 		   } catch (ClassNotFoundException e) {
 			   e.printStackTrace();
-		   }
+		   } finally {
+			    try { rs.close(); } catch (Exception e) { /* ignored */ }
+			    try { stmt.close(); } catch (Exception e) { /* ignored */ }
+			    try { conn.close(); } catch (Exception e) { /* ignored */ }
+		    }
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
 		} catch (IOException e1) {
 			e1.printStackTrace();
-		}
+		} finally {
+		    try { rs.close(); } catch (Exception e) { /* ignored */ }
+		    try { stmt.close(); } catch (Exception e) { /* ignored */ }
+		    try { conn.close(); } catch (Exception e) { /* ignored */ }
+	    }
 	    Gson gsonBuilder = new GsonBuilder().create();
 	    String result = gsonBuilder.toJson(annotationExports);
 	    return result;
@@ -142,6 +148,9 @@ public class AnnotationExportResponse {
 	public String getApiKeys() throws SQLException{
 			String query = "SELECT * FROM ApiKey";
 		   List<ApiKey> apiKeys = new ArrayList<ApiKey>();
+		   ResultSet rs = null;
+		   Connection conn = null;
+		   Statement stmt = null;
 	       try (InputStream input = new FileInputStream("/home/enrich/tomcat/apache-tomcat-9.0.13/webapps/tp-api/WEB-INF/config.properties")) {
 
 	            Properties prop = new Properties();
@@ -158,10 +167,10 @@ public class AnnotationExportResponse {
 			Class.forName("com.mysql.jdbc.Driver");
 		
 		   // Open a connection
-		   Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		   conn = DriverManager.getConnection(DB_URL, USER, PASS);
 		   // Execute SQL query
-		   Statement stmt = conn.createStatement();
-		   ResultSet rs = stmt.executeQuery(query);
+		   stmt = conn.createStatement();
+		   rs = stmt.executeQuery(query);
 		   
 		   // Extract data from result set
 		   while(rs.next()){
@@ -183,19 +192,27 @@ public class AnnotationExportResponse {
 			   se.printStackTrace();
 		   } catch (ClassNotFoundException e) {
 			   e.printStackTrace();
-		}
+		}  finally {
+		    try { rs.close(); } catch (Exception e) { /* ignored */ }
+		    try { stmt.close(); } catch (Exception e) { /* ignored */ }
+		    try { conn.close(); } catch (Exception e) { /* ignored */ }
+	   }
 			} catch (FileNotFoundException e1) {
 				e1.printStackTrace();
 			} catch (IOException e1) {
 				e1.printStackTrace();
-			}
+			}  finally {
+			    try { rs.close(); } catch (Exception e) { /* ignored */ }
+			    try { stmt.close(); } catch (Exception e) { /* ignored */ }
+			    try { conn.close(); } catch (Exception e) { /* ignored */ }
+		   }
 	    Gson gsonBuilder = new GsonBuilder().create();
 	    String result = gsonBuilder.toJson(apiKeys);
 	    return result;
 	}
 
 	//Get all Entries
-	@Path("")
+	
 	@Produces("application/json;charset=utf-8")
 	@GET
 	public Response getAll(@Context UriInfo uriInfo, @Context HttpHeaders headers) throws SQLException {
@@ -374,7 +391,7 @@ public class AnnotationExportResponse {
 		
         // Set Exported to 1 to prevent multiple exports
         String ExportUpdateQuery = "UPDATE Item SET Exported = 1 WHERE ItemId = (SELECT ItemId FROM Transcription WHERE TranscriptionId = " + id + ")";
-		String ExportUpdateResource = executeQuery(ExportUpdateQuery, "Update");
+		executeQuery(ExportUpdateQuery, "Update");
 		
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
@@ -409,7 +426,7 @@ public class AnnotationExportResponse {
 
         // Set Exported to 1 to prevent multiple exports
         String ExportUpdateQuery = "UPDATE Item SET Exported = 1 WHERE ItemId = (SELECT ItemId FROM Annotation WHERE AnnotationId = " + id + ")";
-		String ExportUpdateResource = executeQuery(ExportUpdateQuery, "Update");
+		executeQuery(ExportUpdateQuery, "Update");
 		
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
