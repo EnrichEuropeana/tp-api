@@ -147,10 +147,17 @@ public class RankingResponse {
 						"        s.Timestamp as Timestamp\r\n" + 
 						"	From Score s\r\n" + 
 						"	JOIN ScoreType st On s.ScoreTypeId = st.ScoreTypeId\r\n" +
-						"	AND 1 ";
+						"	AND 1 " +
+						"	JOIN User On s.UserId = User.UserId\r\n" +
+						"	JOIN Item i ON s.ItemId = i.ItemId\r\n" +
+						"	JOIN Story sto ON i.StoryId = sto.StoryId\r\n";
 		if (queryParams.containsKey("campaign")) {
 			query +=  " AND s.Timestamp >= (SELECT Start FROM Campaign WHERE CampaignId = " + queryParams.getFirst("campaign") + ") "
-					+ " AND s.Timestamp <= (SELECT End FROM Campaign WHERE CampaignId = " + queryParams.getFirst("campaign") + ") ";
+					+ " AND s.Timestamp <= (SELECT End FROM Campaign WHERE CampaignId = " + queryParams.getFirst("campaign") + ") "
+					+  " AND (sto.DatasetId = (SELECT DatasetId FROM Campaign WHERE CampaignId = " + queryParams.getFirst("campaign") + ")"
+					+ " OR (SELECT DatasetId FROM Campaign WHERE CampaignId = " + queryParams.getFirst("campaign") + ") is null)";
+		} else if (queryParams.containsKey("dataset")) {
+			query +=  " AND (sto.DatasetId = " + queryParams.getFirst("dataset") + ")";
 		}
 		if (queryParams.containsKey("dateStart")) {
 			query +=  " AND s.Timestamp >= '" + queryParams.getFirst("dateStart") + "' ";
