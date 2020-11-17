@@ -117,7 +117,9 @@ public class ItemMinimalResponse {
 	@Produces("application/json;charset=utf-8")
 	@GET
 	public Response search(@Context UriInfo uriInfo, String body, @Context HttpHeaders headers) throws SQLException {	
-		String query = "SELECT \r\n"
+		String query = "SELECT * FROM "
+				+ "("
+				+ "SELECT "
 				+ " i.ItemId as ItemId,\r\n"
 				+ " i.StoryId as StoryId,\r\n"
 				+ " i.ImageLink as ImageLink,\r\n"
@@ -131,6 +133,7 @@ public class ItemMinimalResponse {
 				+ " i.AutomaticEnrichmentStatusId as AutomaticEnrichmentStatusId\r\n"
 				+ " FROM Item i\r\n"
 				+ " JOIN Story sto ON i.StoryId = sto.StoryId\r\n"
+				+ " ) a "
 				+ " WHERE 1";
 		
 		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
