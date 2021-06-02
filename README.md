@@ -7,6 +7,12 @@ Licensed under the EUPL V.1.2
 
 For full details, see [License.md](License.md)
 
+## Technical background
+
+The Transcribathon Project uses a MySQL 5.7 database instance. The API is connected to the *transcribathon* database. It runs with a Tomcat v9 server.
+
+Java Version 8
+
 ## Set up
 
 Create a config.properties file in the resource package containing following properties:
@@ -16,7 +22,5 @@ Create a config.properties file in the resource package containing following pro
  - USER=[your database user]
  - SECRET_KEY=[needs to be requested, it's needed for the DEI-API]
  - DRIVER=[your jdbc driver e.g. *com.mysql.jdbc.Driver*]
-
-The Transcribathon Project is using a MySQL 5.7 database instance. 
 
 

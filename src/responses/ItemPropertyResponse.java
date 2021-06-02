@@ -156,7 +156,7 @@ public class ItemPropertyResponse {
 			executeQuery(updateTimestampQuery, "Update");
 			String updateStoryTimestampQuery = "UPDATE Story SET LastUpdated = NOW() WHERE StoryId = (SELECT StoryId FROM Item WHERE ItemId = " + itemProperty.ItemId + ")";
 			executeQuery(updateStoryTimestampQuery, "Update");
-			//StoryResponse.solrUpdate();
+			StoryResponse.solrUpdate();
 			
 			ResponseBuilder rBuild = Response.ok(resource);
 			return rBuild.build();

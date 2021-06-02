@@ -1204,7 +1204,7 @@ public class ItemResponse {
 			executeQuery(updateTimestampQuery, "Update");
 			String updateStoryTimestampQuery = "UPDATE Story SET LastUpdated = NOW() WHERE StoryId = (SELECT StoryId FROM Item WHERE ItemId = " + id + ")";
 			executeQuery(updateStoryTimestampQuery, "Update");
-			//StoryResponse.solrUpdate();
+			StoryResponse.solrUpdate();
 
 			ResponseBuilder rBuild = Response.ok(resource);
 			//ResponseBuilder rBuild = Response.ok(query);
