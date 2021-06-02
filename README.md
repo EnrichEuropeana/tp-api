@@ -20,7 +20,7 @@ Create a config.properties file in the resource package containing following pro
  - PASS=[your database password]
  - DB_URL=[your jdbc url in format: *jdbc:driver://host:port/databaseName;URLAttributes*]
  - USER=[your database user]
- - SECRET_KEY=[needs to be requested, it's needed for the DEI-API]
+ - SECRET_KEY=[needs to be requested, it's needed for the DEI-API; if you don't use DEI you can leave it blank]
  - DRIVER=[your jdbc driver e.g. *com.mysql.jdbc.Driver*]
 
 
