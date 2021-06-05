@@ -17,15 +17,13 @@ import objects.ApiKey;
 import objects.Language;
 import java.util.*;
 import java.util.Date;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import com.google.gson.*;
 
-import Utilities.TpGetPropertyValues;
+import eu.transcribathon.properties.PropertiesCache;
 
 @Path("/enrichments")
 public class AnnotationExportResponse {
@@ -34,23 +32,19 @@ public class AnnotationExportResponse {
 		   List<AnnotationExport> annotationExports = new ArrayList<AnnotationExport>();
 		   ResultSet rs = null;
 		   Connection conn = null;
-		   Statement stmt = null;
-		   TpGetPropertyValues prop = new TpGetPropertyValues();		   	       
+		   Statement stmt = null;		   	       
 		   try {
-	            
-			String[] propArray = prop.getPropValues();			   
 			   
-			final String DB_URL = propArray[0];
-	        final String USER = propArray[1];
-	        final String PASS = propArray[2];
-	        final String DRIVER = propArray[4];
-	        
 		   // Register JDBC driver
 		   try {
-			Class.forName(DRIVER);
+			Class.forName(PropertiesCache.getInstance().getProperty("DRIVER"));
 		
 		   // Open a connection
-		   conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		   conn = DriverManager.getConnection(
+				   PropertiesCache.getInstance().getProperty("DB_URL"), 
+				   PropertiesCache.getInstance().getProperty("USER"), 
+				   PropertiesCache.getInstance().getProperty("PASS")
+				   );
 		   // Execute SQL query
 		   stmt = conn.createStatement();
 		   if (type != "Select") {
@@ -130,10 +124,6 @@ public class AnnotationExportResponse {
 			    try { stmt.close(); } catch (Exception e) { /* ignored */ }
 			    try { conn.close(); } catch (Exception e) { /* ignored */ }
 		    }
-		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
-		} catch (IOException e1) {
-			e1.printStackTrace();
 		} finally {
 		    try { rs.close(); } catch (Exception e) { /* ignored */ }
 		    try { stmt.close(); } catch (Exception e) { /* ignored */ }
@@ -149,23 +139,19 @@ public class AnnotationExportResponse {
 		   List<ApiKey> apiKeys = new ArrayList<ApiKey>();
 		   ResultSet rs = null;
 		   Connection conn = null;
-		   Statement stmt = null;
-		   TpGetPropertyValues prop = new TpGetPropertyValues();		   	       
+		   Statement stmt = null;		   	       
 		   try {
-	            
-				String[] propArray = prop.getPropValues();			   
-				   
-				final String DB_URL = propArray[0];
-		        final String USER = propArray[1];
-		        final String PASS = propArray[2];
-		        final String DRIVER = propArray[4];
 	        
 		   // Register JDBC driver
 		   try {
-			Class.forName(DRIVER);
+			Class.forName(PropertiesCache.getInstance().getProperty("DRIVER"));
 		
 		   // Open a connection
-		   conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		   conn = DriverManager.getConnection(
+				   PropertiesCache.getInstance().getProperty("DB_URL"), 
+				   PropertiesCache.getInstance().getProperty("USER"), 
+				   PropertiesCache.getInstance().getProperty("PASS")
+				   );
 		   // Execute SQL query
 		   stmt = conn.createStatement();
 		   rs = stmt.executeQuery(query);
@@ -195,10 +181,6 @@ public class AnnotationExportResponse {
 		    try { stmt.close(); } catch (Exception e) { /* ignored */ }
 		    try { conn.close(); } catch (Exception e) { /* ignored */ }
 	   }
-			} catch (FileNotFoundException e1) {
-				e1.printStackTrace();
-			} catch (IOException e1) {
-				e1.printStackTrace();
 			}  finally {
 			    try { rs.close(); } catch (Exception e) { /* ignored */ }
 			    try { stmt.close(); } catch (Exception e) { /* ignored */ }

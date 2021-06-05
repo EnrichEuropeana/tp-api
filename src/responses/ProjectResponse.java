@@ -52,7 +52,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import Utilities.TpGetPropertyValues;
+import eu.transcribathon.properties.PropertiesCache;
 import objects.ApiKey;
 import objects.Dataset;
 import objects.Project;
@@ -65,22 +65,18 @@ public class ProjectResponse {
 		   List<Project> projectList = new ArrayList<Project>();
 		   ResultSet rs = null;
 		   Connection conn = null;
-		   Statement stmt = null;
-		   TpGetPropertyValues prop = new TpGetPropertyValues();		   	       
-		   try {
-	            
-				String[] propArray = prop.getPropValues();			   
-				   
-				final String DB_URL = propArray[0];
-		        final String USER = propArray[1];
-		        final String PASS = propArray[2];
-		        final String DRIVER = propArray[4];
+		   Statement stmt = null;		   	       
+		   
 		   // Register JDBC driver
 		   try {
-			Class.forName(DRIVER);
+			Class.forName(PropertiesCache.getInstance().getProperty("DRIVER"));
 		
 		   // Open a connection
-		   conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		   conn = DriverManager.getConnection(
+				   PropertiesCache.getInstance().getProperty("DB_URL"), 
+				   PropertiesCache.getInstance().getProperty("USER"), 
+				   PropertiesCache.getInstance().getProperty("PASS")
+				   );
 		   // Execute SQL query
 		   stmt = conn.createStatement();
 		   if (type != "Select") {
@@ -115,17 +111,9 @@ public class ProjectResponse {
 		}  finally {
 		    try { rs.close(); } catch (Exception e) { /* ignored */ }
 		    try { stmt.close(); } catch (Exception e) { /* ignored */ }
-		    try { conn.close(); } catch (Exception e) { /* ignored */ }
-	   }
-			} catch (FileNotFoundException e1) {
-				e1.printStackTrace();
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}  finally {
-			    try { rs.close(); } catch (Exception e) { /* ignored */ }
-			    try { stmt.close(); } catch (Exception e) { /* ignored */ }
-			    try { conn.close(); } catch (Exception e) { /* ignored */ }
-		   }
+		    try { conn.close(); } catch (Exception e) { /* ignored */ }  
+		}  
+		   
 	    Gson gsonBuilder = new GsonBuilder().create();
 	    String result = gsonBuilder.toJson(projectList);
 	    return result;
@@ -136,23 +124,18 @@ public class ProjectResponse {
 		   List<ApiKey> apiKeys = new ArrayList<ApiKey>();
 		   ResultSet rs = null;
 		   Connection conn = null;
-		   Statement stmt = null;
-		   TpGetPropertyValues prop = new TpGetPropertyValues();		   	       
-		   try {
-	            
-				String[] propArray = prop.getPropValues();			   
-				   
-				final String DB_URL = propArray[0];
-		        final String USER = propArray[1];
-		        final String PASS = propArray[2];
-		        final String DRIVER = propArray[4];
-	        
+		   Statement stmt = null;		   	       
+		   	        
 		   // Register JDBC driver
 		   try {
-			Class.forName(DRIVER);
+			Class.forName(PropertiesCache.getInstance().getProperty("DRIVER"));
 		
 		   // Open a connection
-		   conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		   conn = DriverManager.getConnection(
+				   PropertiesCache.getInstance().getProperty("DB_URL"), 
+				   PropertiesCache.getInstance().getProperty("USER"), 
+				   PropertiesCache.getInstance().getProperty("PASS")
+				   );
 		   // Execute SQL query
 		   stmt = conn.createStatement();
 		   rs = stmt.executeQuery(query);
@@ -182,15 +165,7 @@ public class ProjectResponse {
 		    try { stmt.close(); } catch (Exception e) { /* ignored */ }
 		    try { conn.close(); } catch (Exception e) { /* ignored */ }
 	   }
-			} catch (FileNotFoundException e1) {
-				e1.printStackTrace();
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}  finally {
-			    try { rs.close(); } catch (Exception e) { /* ignored */ }
-			    try { stmt.close(); } catch (Exception e) { /* ignored */ }
-			    try { conn.close(); } catch (Exception e) { /* ignored */ }
-		   }
+		   
 	    Gson gsonBuilder = new GsonBuilder().create();
 	    String result = gsonBuilder.toJson(apiKeys);
 	    return result;
@@ -200,23 +175,18 @@ public class ProjectResponse {
 	    List<Dataset> datasetList = new ArrayList<Dataset>();
 	   ResultSet rs = null;
 	   Connection conn = null;
-	   Statement stmt = null;
-	   TpGetPropertyValues prop = new TpGetPropertyValues();		   	       
-	   try {
-            
-			String[] propArray = prop.getPropValues();			   
-			   
-			final String DB_URL = propArray[0];
-	        final String USER = propArray[1];
-	        final String PASS = propArray[2];
-	        final String DRIVER = propArray[4];
-            
+	   Statement stmt = null;		   	       
+	                     
 		   // Register JDBC driver
 		   try {
-			Class.forName(DRIVER);
+			Class.forName(PropertiesCache.getInstance().getProperty("DRIVER"));
 		
 		   // Open a connection
-		   conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		   conn = DriverManager.getConnection(
+				   PropertiesCache.getInstance().getProperty("DB_URL"), 
+				   PropertiesCache.getInstance().getProperty("USER"), 
+				   PropertiesCache.getInstance().getProperty("PASS")
+				   );
 		   // Execute SQL query
 		   stmt = conn.createStatement();
 		   if (type != "Select") {
@@ -254,15 +224,7 @@ public class ProjectResponse {
 		    try { stmt.close(); } catch (Exception e) { /* ignored */ }
 		    try { conn.close(); } catch (Exception e) { /* ignored */ }
 	   }
-		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}  finally {
-		    try { rs.close(); } catch (Exception e) { /* ignored */ }
-		    try { stmt.close(); } catch (Exception e) { /* ignored */ }
-		    try { conn.close(); } catch (Exception e) { /* ignored */ }
-	   }
+		   
 	    Gson gsonBuilder = new GsonBuilder().create();
 	    String result = gsonBuilder.toJson(datasetList);
 	    return result;
@@ -272,23 +234,18 @@ public class ProjectResponse {
 	public Integer executeStoryQuery(String query, String type) throws SQLException{
 	   ResultSet rs = null;
 	   Connection conn = null;
-	   Statement stmt = null;
-	   TpGetPropertyValues prop = new TpGetPropertyValues();		   	       
-	   try {
-            
-			String[] propArray = prop.getPropValues();			   
-			   
-			final String DB_URL = propArray[0];
-	        final String USER = propArray[1];
-	        final String PASS = propArray[2];
-	        final String DRIVER = propArray[4];
-            
+	   Statement stmt = null;		   	       
+	               
 		   // Register JDBC driver
 		   try {
-			Class.forName(DRIVER);
+			Class.forName(PropertiesCache.getInstance().getProperty("DRIVER"));
 		
 		   // Open a connection
-		   conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		   conn = DriverManager.getConnection(
+				   PropertiesCache.getInstance().getProperty("DB_URL"), 
+				   PropertiesCache.getInstance().getProperty("USER"), 
+				   PropertiesCache.getInstance().getProperty("PASS")
+				   );
 		   // Execute SQL query
 		   stmt = conn.createStatement();
 		   rs = stmt.executeQuery(query);
@@ -312,15 +269,7 @@ public class ProjectResponse {
 		    try { stmt.close(); } catch (Exception e) { /* ignored */ }
 		    try { conn.close(); } catch (Exception e) { /* ignored */ }
 	   }
-		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}  finally {
-		    try { rs.close(); } catch (Exception e) { /* ignored */ }
-		    try { stmt.close(); } catch (Exception e) { /* ignored */ }
-		    try { conn.close(); } catch (Exception e) { /* ignored */ }
-	   }
+		   
 	    return 0;
 	}
 	
@@ -480,16 +429,8 @@ public class ProjectResponse {
 
 	public String executeInsertQuery(String query, String type) throws SQLException, ClientProtocolException, IOException{
 		   Connection conn = null;
-		   Statement stmt = null;
-		   TpGetPropertyValues prop = new TpGetPropertyValues();		   	       
+		   Statement stmt = null;		   	       
 		   try {
-	            
-			String[] propArray = prop.getPropValues();			   
-			   
-			final String DB_URL = propArray[0];
-	        final String USER = propArray[1];
-	        final String PASS = propArray[2];
-	        final String DRIVER = propArray[4];
             
     		HttpClient httpclient = HttpClients.createDefault();
     		
@@ -497,7 +438,7 @@ public class ProjectResponse {
     	
     	        List<NameValuePair> params = new ArrayList<NameValuePair>(2);
     	        params.add(new BasicNameValuePair("grant_type", "client_credentials"));
-    	        params.add(new BasicNameValuePair("client_secret", propArray[4]));
+    	        params.add(new BasicNameValuePair("client_secret", PropertiesCache.getInstance().getProperty("SECRET")));
     	        params.add(new BasicNameValuePair("client_id", "tp-api-client"));
     	        httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
     	        HttpResponse response = httpclient.execute(httppost);
@@ -517,10 +458,14 @@ public class ProjectResponse {
 		
 	   // Register JDBC driver
 	   try {
-			Class.forName(DRIVER);
+			Class.forName(PropertiesCache.getInstance().getProperty("DRIVER"));
 		
 		   // Open a connection
-		   conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		   conn = DriverManager.getConnection(
+				   PropertiesCache.getInstance().getProperty("DB_URL"), 
+				   PropertiesCache.getInstance().getProperty("USER"), 
+				   PropertiesCache.getInstance().getProperty("PASS")
+				   );
 		   // Execute SQL query
 		   stmt = conn.createStatement();
 		   if (type != "Select") {
@@ -974,11 +919,7 @@ public class ProjectResponse {
 			        return rBuild.build();
 				}
 			}
-			else {
-				TpGetPropertyValues prop = new TpGetPropertyValues();		   	       
-				   
-			            
-					String[] propArray = prop.getPropValues();	
+			else {	
 
 		            // get the property value and print it out
 		            
@@ -988,7 +929,7 @@ public class ProjectResponse {
 	    	
 	    	        List<NameValuePair> params = new ArrayList<NameValuePair>(2);
 	    	        params.add(new BasicNameValuePair("grant_type", "client_credentials"));
-	    	        params.add(new BasicNameValuePair("client_secret", propArray[4]));
+	    	        params.add(new BasicNameValuePair("client_secret", PropertiesCache.getInstance().getProperty("SECRET")));
 	    	        params.add(new BasicNameValuePair("client_id", "tp-api-client"));
 	    	        httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
 	    	        HttpResponse response = httpclient.execute(httppost);

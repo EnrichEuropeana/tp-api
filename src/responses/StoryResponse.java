@@ -24,7 +24,6 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -38,7 +37,7 @@ import java.text.SimpleDateFormat;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 
-import Utilities.TpGetPropertyValues;
+import eu.transcribathon.properties.PropertiesCache;
 import javafx.util.Pair;
 
 
@@ -50,22 +49,18 @@ public class StoryResponse {
 		   List<Story> storyList = new ArrayList<Story>();
 		   ResultSet rs = null;
 		   Connection conn = null;
-		   Statement stmt = null;
-		   TpGetPropertyValues prop = new TpGetPropertyValues();		   	       
+		   Statement stmt = null;		   	       
 		   try {
-	            
-			String[] propArray = prop.getPropValues();			   
-			   
-			final String DB_URL = propArray[0];
-	        final String USER = propArray[1];
-	        final String PASS = propArray[2];
-	        final String DRIVER = propArray[4];
 	        
 		   // Register JDBC driver
-				Class.forName(DRIVER);
+				Class.forName(PropertiesCache.getInstance().getProperty("DRIVER"));
 				
 				   // Open a connection
-				   conn = DriverManager.getConnection(DB_URL, USER, PASS);
+				   conn = DriverManager.getConnection(
+						   PropertiesCache.getInstance().getProperty("DB_URL"), 
+						   PropertiesCache.getInstance().getProperty("USER"), 
+						   PropertiesCache.getInstance().getProperty("PASS")
+						   );
 				   // Execute SQL query
 				   stmt = conn.createStatement();
 		   try {
@@ -303,10 +298,6 @@ public class StoryResponse {
 			    try { stmt.close(); } catch (Exception e) { /* ignored */ }
 			    try { conn.close(); } catch (Exception e) { /* ignored */ }
 		   }
-			} catch (FileNotFoundException e1) {
-				e1.printStackTrace();
-			} catch (IOException e1) {
-				e1.printStackTrace();
 			} catch (ClassNotFoundException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -323,22 +314,18 @@ public class StoryResponse {
 
 
 	public List<Story> getStoryData(String query) throws SQLException{
-		   List<Story> storyList = new ArrayList<Story>();
-		   TpGetPropertyValues prop = new TpGetPropertyValues();		   	       
+		   List<Story> storyList = new ArrayList<Story>();		   	       
 		   try {
-	            
-			String[] propArray = prop.getPropValues();			   
-			   
-			final String DB_URL = propArray[0];
-	        final String USER = propArray[1];
-	        final String PASS = propArray[2];
-	        final String DRIVER = propArray[4];
 	        
 		   // Register JDBC driver
-				Class.forName(DRIVER);
+				Class.forName(PropertiesCache.getInstance().getProperty("DRIVER"));
 				
 				   // Open a connection
-				   Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+				   Connection conn = DriverManager.getConnection(
+						   PropertiesCache.getInstance().getProperty("DB_URL"), 
+						   PropertiesCache.getInstance().getProperty("USER"), 
+						   PropertiesCache.getInstance().getProperty("PASS")
+						   );
 				   // Execute SQL query
 				   Statement stmt = conn.createStatement();
 		   try {
@@ -409,10 +396,6 @@ public class StoryResponse {
 		    try { stmt.close(); } catch (Exception e) { /* ignored */ }
 		    try { conn.close(); } catch (Exception e) { /* ignored */ }
 	   }
-		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
-		} catch (IOException e1) {
-			e1.printStackTrace();
 		} catch (ClassNotFoundException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -427,22 +410,18 @@ public class StoryResponse {
 		   List<ApiKey> apiKeys = new ArrayList<ApiKey>();
 		   ResultSet rs = null;
 		   Connection conn = null;
-		   Statement stmt = null;
-		   TpGetPropertyValues prop = new TpGetPropertyValues();		   	       
-		   try {
-	            
-			String[] propArray = prop.getPropValues();			   
-			   
-			final String DB_URL = propArray[0];
-	        final String USER = propArray[1];
-	        final String PASS = propArray[2];
-	        final String DRIVER = propArray[4];
+		   Statement stmt = null;		   	       
+		   
 		   // Register JDBC driver
 		   try {
-			Class.forName(DRIVER);
+			Class.forName(PropertiesCache.getInstance().getProperty("DRIVER"));
 		
 		   // Open a connection
-		   conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		   conn = DriverManager.getConnection(
+				   PropertiesCache.getInstance().getProperty("DB_URL"), 
+				   PropertiesCache.getInstance().getProperty("USER"), 
+				   PropertiesCache.getInstance().getProperty("PASS")
+				   );
 		   // Execute SQL query
 		   stmt = conn.createStatement();
 		   rs = stmt.executeQuery(query);
@@ -472,15 +451,7 @@ public class StoryResponse {
 		    try { stmt.close(); } catch (Exception e) { /* ignored */ }
 		    try { conn.close(); } catch (Exception e) { /* ignored */ }
 	   }
-			} catch (FileNotFoundException e1) {
-				e1.printStackTrace();
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}  finally {
-			    try { rs.close(); } catch (Exception e) { /* ignored */ }
-			    try { stmt.close(); } catch (Exception e) { /* ignored */ }
-			    try { conn.close(); } catch (Exception e) { /* ignored */ }
-		   }
+		   
 	    Gson gsonBuilder = new GsonBuilder().create();
 	    String result = gsonBuilder.toJson(apiKeys);
 	    return result;
@@ -1017,7 +988,7 @@ public class StoryResponse {
 	    HttpURLConnection con = null;
 	    BufferedReader in = null;
 		try {
-		    URL storySolr = new URL("http://192.168.7.125:8983/solr/Stories/dataimport?command=delta-import&commit=true");
+			URL storySolr = new URL(PropertiesCache.getInstance().getProperty("SOLR") + "/solr/Stories/dataimport?command=delta-import&commit=true");
 		    con = (HttpURLConnection) storySolr.openConnection();
 		    con.setRequestMethod("GET");
 		    in = new BufferedReader(
@@ -1030,7 +1001,7 @@ public class StoryResponse {
 		    in.close();
 		    con.disconnect();
 		    
-		    URL itemSolr = new URL("http://192.168.7.125:8983/solr/Items/dataimport?command=delta-import&commit=true");
+		    URL itemSolr = new URL(PropertiesCache.getInstance().getProperty("SOLR") + "/solr/Items/dataimport?command=delta-import&commit=true");
 		    con = (HttpURLConnection) itemSolr.openConnection();
 		    con.setRequestMethod("GET");
 		    in = new BufferedReader(
@@ -1046,7 +1017,7 @@ public class StoryResponse {
 			in.close();
 			con.disconnect();
 	   }
-		
+		 
 		ResponseBuilder rBuild = Response.ok("Solr update successful");
         return rBuild.build();
 	}
@@ -1057,22 +1028,18 @@ public class StoryResponse {
 		   List<String> itemIds = new ArrayList<String>();
 		   ResultSet rs = null;
 		   Connection conn = null;
-		   Statement stmt = null;
-		   TpGetPropertyValues prop = new TpGetPropertyValues();		   	       
-		   try {
-	            
-			String[] propArray = prop.getPropValues();			   
-			   
-			final String DB_URL = propArray[0];
-	        final String USER = propArray[1];
-	        final String PASS = propArray[2];
-	        final String DRIVER = propArray[4];
+		   Statement stmt = null;		   	       
+		   
 		   // Register JDBC driver
 		   try {
-			Class.forName(DRIVER);
+			Class.forName(PropertiesCache.getInstance().getProperty("DRIVER"));
 		
 		   // Open a connection
-		   conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		   conn = DriverManager.getConnection(
+				   PropertiesCache.getInstance().getProperty("DB_URL"), 
+				   PropertiesCache.getInstance().getProperty("USER"), 
+				   PropertiesCache.getInstance().getProperty("PASS")
+				   );
 		   // Execute SQL query
 		   stmt = conn.createStatement();
 		   rs = stmt.executeQuery(query);
@@ -1098,15 +1065,7 @@ public class StoryResponse {
 		    try { stmt.close(); } catch (Exception e) { /* ignored */ }
 		    try { conn.close(); } catch (Exception e) { /* ignored */ }
 	   }
-			} catch (FileNotFoundException e1) {
-				e1.printStackTrace();
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}  finally {
-			    try { rs.close(); } catch (Exception e) { /* ignored */ }
-			    try { stmt.close(); } catch (Exception e) { /* ignored */ }
-			    try { conn.close(); } catch (Exception e) { /* ignored */ }
-		   }
+		   
 	    return itemIds;
 	}
 
@@ -1115,22 +1074,18 @@ public class StoryResponse {
 		   List<Pair<String, String>> storyIds = new ArrayList<Pair<String, String>>();
 		   ResultSet rs = null;
 		   Connection conn = null;
-		   Statement stmt = null;
-		   TpGetPropertyValues prop = new TpGetPropertyValues();		   	       
-		   try {
-	            
-			String[] propArray = prop.getPropValues();			   
-			   
-			final String DB_URL = propArray[0];
-	        final String USER = propArray[1];
-	        final String PASS = propArray[2];
-	        final String DRIVER = propArray[4];
+		   Statement stmt = null;		   	       
+		   
 		   // Register JDBC driver
 		   try {
-			Class.forName(DRIVER);
+			Class.forName(PropertiesCache.getInstance().getProperty("DRIVER"));
 		
 		   // Open a connection
-		   conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		   conn = DriverManager.getConnection(
+				   PropertiesCache.getInstance().getProperty("DB_URL"), 
+				   PropertiesCache.getInstance().getProperty("USER"), 
+				   PropertiesCache.getInstance().getProperty("PASS")
+				   );
 		   // Execute SQL query
 		   stmt = conn.createStatement();
 		   rs = stmt.executeQuery(query);
@@ -1158,37 +1113,25 @@ public class StoryResponse {
 		    try { stmt.close(); } catch (Exception e) { /* ignored */ }
 		    try { conn.close(); } catch (Exception e) { /* ignored */ }
 	   }
-			} catch (FileNotFoundException e1) {
-				e1.printStackTrace();
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}  finally {
-			    try { rs.close(); } catch (Exception e) { /* ignored */ }
-			    try { stmt.close(); } catch (Exception e) { /* ignored */ }
-			    try { conn.close(); } catch (Exception e) { /* ignored */ }
-		   }
+		   
 	    return storyIds;
 	}
 	
 	public String getItemId(String query) throws SQLException{
 	   ResultSet rs = null;
 	   Connection conn = null;
-	   Statement stmt = null;
-	   TpGetPropertyValues prop = new TpGetPropertyValues();		   	       
-	   try {
-            
-		String[] propArray = prop.getPropValues();			   
-		   
-		final String DB_URL = propArray[0];
-        final String USER = propArray[1];
-        final String PASS = propArray[2];
-        final String DRIVER = propArray[4];
+	   Statement stmt = null;		   	       
+	               
 	   // Register JDBC driver
 	   try {
-		Class.forName(DRIVER);
+		Class.forName(PropertiesCache.getInstance().getProperty("DRIVER"));
 	
 	   // Open a connection
-	   conn = DriverManager.getConnection(DB_URL, USER, PASS);
+	   conn = DriverManager.getConnection(
+			   PropertiesCache.getInstance().getProperty("DB_URL"), 
+			   PropertiesCache.getInstance().getProperty("USER"), 
+			   PropertiesCache.getInstance().getProperty("PASS")
+			   );
 	   // Execute SQL query
 	   stmt = conn.createStatement();
 	   rs = stmt.executeQuery(query);
@@ -1213,15 +1156,7 @@ public class StoryResponse {
 	    try { stmt.close(); } catch (Exception e) { /* ignored */ }
 	    try { conn.close(); } catch (Exception e) { /* ignored */ }
    }
-		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}  finally {
-		    try { rs.close(); } catch (Exception e) { /* ignored */ }
-		    try { stmt.close(); } catch (Exception e) { /* ignored */ }
-		    try { conn.close(); } catch (Exception e) { /* ignored */ }
-	   }
+	   
     return null;
 }
 
