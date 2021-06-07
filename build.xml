@@ -1,28 +1,36 @@
- <project name="tp-api" default="compile" basedir=".">
+<?xml version="1.0" ?> 
+<project name="tp-api" default="war">
+ 
+    <path id="compile.classpath">
+        <fileset dir="WebContent/WEB-INF/lib">
+            <include name="*.jar"/>
+        </fileset>
+    </path>
 
-        <property name="war-file" value="${ant.project.name}.war"/>
-        <property name="src-dir" value="src" />
-        <property name="build-dir" value="classes" />
-        <property name="resources-dir" value="resources" />
-        <property name="webxml-file" value="web.xml" />
-        <property name="lib-dir" value="lib" />
-
-        <target name="compile" depends="">
-            <mkdir dir="${build-dir}"/>
-            <javac srcdir="${src-dir}" destdir="${build-dir}"/>
-        </target>
-
-        <target name="war" depends="compile">
-            <war warfile="${war-file}" webxml="${webxml-file}">
-                <classes dir="${build-dir}"/>
-                <fileset dir="${resources-dir}"/>
-                <lib dir="${lib-dir}"/>
-            </war>
-        </target>
-
-        <target name="clean">
-            <delete dir="${build-dir}"/>
-            <delete file="${war-file}"/>
-        </target>
-
-    </project>
+    <copy file="resources/config.properties" todir="build/classes"/>
+     
+    <target name="init">
+        <mkdir dir="build/classes"/>
+        <mkdir dir="dist" />
+    </target>
+     
+    <target name="compile" depends="init" >
+        <javac destdir="build/classes" debug="true" srcdir="src">
+            <classpath refid="compile.classpath"/>
+        </javac>
+    </target>
+     
+    <target name="war" depends="compile">
+        <war destfile="dist/tp-api.war" webxml="WebContent/WEB-INF/web.xml">
+            <fileset dir="WebContent"/>
+            <lib dir="WebContent/WEB-INF/lib"/>
+            <classes dir="build/classes"/>
+        </war>
+    </target>
+     
+    <target name="clean">
+        <delete dir="dist" />
+        <delete dir="build" />
+    </target>
+     
+</project>
