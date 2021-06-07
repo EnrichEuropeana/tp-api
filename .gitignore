@@ -1,3 +1,8 @@
 # Project specific
 build/classes/config.properties
 WebContent/WEB-INF/config.properties
+
+# Eclipse
+.settings/
+.classpath
+.project
