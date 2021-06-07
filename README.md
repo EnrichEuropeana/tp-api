@@ -22,6 +22,7 @@ Create a `config.properties` file in the resource package containing following p
  - USER=[your database user]
  - SECRET_KEY=[needs to be requested, it's needed for the DEI-API; if you don't use DEI you can leave it blank]
  - DRIVER=[your jdbc driver e.g. *com.mysql.jdbc.Driver*]
+ - SOLR=[your solr server]
  
 Make sure to configure your e.g. Apache webserver as a reverse proxy between for Tomcat server. Should look like this:
  
