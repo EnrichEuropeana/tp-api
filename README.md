@@ -28,6 +28,10 @@ Make sure to configure your e.g. Apache webserver as a reverse proxy between for
 `ProxyPass         /tp-api  http://localhost:8080/tp-api`  
 `ProxyPassReverse  /tp-api  http://localhost:8080/tp-api`
 
-For deploying use either an IDE like Eclipse and export a war-file or use a build tool like ant. You use the existing build.xml. Run `ant -f build.xml`. The war-file is copied to dist-dir inside the project. Copy your war-file to e.g. Tomcat webapps-dir. Restart the server. 
+For deploying use either an IDE like Eclipse and export a war-file or use a build tool like *ant*. 
+
+If you choose *ant* you can use the existing build.xml in the project. Run `ant -f build.xml`. The war-file is copied to dist-dir inside the project. 
+
+Copy your war-file to e.g. Tomcat webapps-dir and restart the server.
 
 
