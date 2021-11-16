@@ -125,7 +125,7 @@ public class ProgressResponse {
 		String query = "SELECT \r\n" + 
 				"YEAR(Timestamp) as Year,\r\n" + 
 				"MONTH(Timestamp) as Month,\r\n" + 
-				"count(*) as Amount\r\n" + 
+				"count(distinct i.ItemId) as Amount\r\n" + 
 				"FROM Score s\r\n" +
 				"JOIN (SELECT ItemId FROM Item i WHERE CompletionStatusId != 1) i ON s.ItemId = i.ItemId " +
 				"GROUP BY YEAR(Timestamp), MONTH(Timestamp)";
