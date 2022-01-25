@@ -65,16 +65,16 @@ public class ProjectResponse {
 		   List<Project> projectList = new ArrayList<Project>();
 		   ResultSet rs = null;
 		   Connection conn = null;
-		   Statement stmt = null;		   	       
-		   
+		   Statement stmt = null;
+
 		   // Register JDBC driver
 		   try {
 			Class.forName(PropertiesCache.getInstance().getProperty("DRIVER"));
-		
+
 		   // Open a connection
 		   conn = DriverManager.getConnection(
-				   PropertiesCache.getInstance().getProperty("DB_URL"), 
-				   PropertiesCache.getInstance().getProperty("USER"), 
+				   PropertiesCache.getInstance().getProperty("DB_URL"),
+				   PropertiesCache.getInstance().getProperty("USER"),
 				   PropertiesCache.getInstance().getProperty("PASS")
 				   );
 		   // Execute SQL query
@@ -89,7 +89,7 @@ public class ProjectResponse {
 			   }
 		   }
 		   rs = stmt.executeQuery(query);
-		   
+
 		   // Extract data from result set
 		   while(rs.next()){
 		      //Retrieve by column name
@@ -98,7 +98,7 @@ public class ProjectResponse {
 			  Project.setName(rs.getString("Name"));
 			  projectList.add(Project);
 		   }
-		
+
 		   // Clean-up environment
 		   rs.close();
 		   stmt.close();
@@ -111,9 +111,9 @@ public class ProjectResponse {
 		}  finally {
 		    try { rs.close(); } catch (Exception e) { /* ignored */ }
 		    try { stmt.close(); } catch (Exception e) { /* ignored */ }
-		    try { conn.close(); } catch (Exception e) { /* ignored */ }  
-		}  
-		   
+		    try { conn.close(); } catch (Exception e) { /* ignored */ }
+		}
+
 	    Gson gsonBuilder = new GsonBuilder().create();
 	    String result = gsonBuilder.toJson(projectList);
 	    return result;
@@ -124,22 +124,22 @@ public class ProjectResponse {
 		   List<ApiKey> apiKeys = new ArrayList<ApiKey>();
 		   ResultSet rs = null;
 		   Connection conn = null;
-		   Statement stmt = null;		   	       
-		   	        
+		   Statement stmt = null;
+
 		   // Register JDBC driver
 		   try {
 			Class.forName(PropertiesCache.getInstance().getProperty("DRIVER"));
-		
+
 		   // Open a connection
 		   conn = DriverManager.getConnection(
-				   PropertiesCache.getInstance().getProperty("DB_URL"), 
-				   PropertiesCache.getInstance().getProperty("USER"), 
+				   PropertiesCache.getInstance().getProperty("DB_URL"),
+				   PropertiesCache.getInstance().getProperty("USER"),
 				   PropertiesCache.getInstance().getProperty("PASS")
 				   );
 		   // Execute SQL query
 		   stmt = conn.createStatement();
 		   rs = stmt.executeQuery(query);
-		   
+
 		   // Extract data from result set
 		   while(rs.next()){
 		      //Retrieve by column name
@@ -150,7 +150,7 @@ public class ProjectResponse {
 			  apiKey.setRoleId(rs.getInt("RoleId"));
 			  apiKeys.add(apiKey);
 		   }
-		
+
 		   // Clean-up environment
 		   rs.close();
 		   stmt.close();
@@ -165,26 +165,26 @@ public class ProjectResponse {
 		    try { stmt.close(); } catch (Exception e) { /* ignored */ }
 		    try { conn.close(); } catch (Exception e) { /* ignored */ }
 	   }
-		   
+
 	    Gson gsonBuilder = new GsonBuilder().create();
 	    String result = gsonBuilder.toJson(apiKeys);
 	    return result;
 	}
-	
+
 	public String executeDatasetQuery(String query, String type) throws SQLException{
 	    List<Dataset> datasetList = new ArrayList<Dataset>();
 	   ResultSet rs = null;
 	   Connection conn = null;
-	   Statement stmt = null;		   	       
-	                     
+	   Statement stmt = null;
+
 		   // Register JDBC driver
 		   try {
 			Class.forName(PropertiesCache.getInstance().getProperty("DRIVER"));
-		
+
 		   // Open a connection
 		   conn = DriverManager.getConnection(
-				   PropertiesCache.getInstance().getProperty("DB_URL"), 
-				   PropertiesCache.getInstance().getProperty("USER"), 
+				   PropertiesCache.getInstance().getProperty("DB_URL"),
+				   PropertiesCache.getInstance().getProperty("USER"),
 				   PropertiesCache.getInstance().getProperty("PASS")
 				   );
 		   // Execute SQL query
@@ -199,7 +199,7 @@ public class ProjectResponse {
 			   }
 		   }
 		   rs = stmt.executeQuery(query);
-		   
+
 		   // Extract data from result set
 		   while(rs.next()){
 		      //Retrieve by column name
@@ -209,7 +209,7 @@ public class ProjectResponse {
 			  Dataset.setProjectId(rs.getInt("ProjectId"));
 			  datasetList.add(Dataset);
 		   }
-		
+
 		   // Clean-up environment
 		   rs.close();
 		   stmt.close();
@@ -224,37 +224,37 @@ public class ProjectResponse {
 		    try { stmt.close(); } catch (Exception e) { /* ignored */ }
 		    try { conn.close(); } catch (Exception e) { /* ignored */ }
 	   }
-		   
+
 	    Gson gsonBuilder = new GsonBuilder().create();
 	    String result = gsonBuilder.toJson(datasetList);
 	    return result;
 	}
-	
+
 
 	public Integer executeStoryQuery(String query, String type) throws SQLException{
 	   ResultSet rs = null;
 	   Connection conn = null;
-	   Statement stmt = null;		   	       
-	               
+	   Statement stmt = null;
+
 		   // Register JDBC driver
 		   try {
 			Class.forName(PropertiesCache.getInstance().getProperty("DRIVER"));
-		
+
 		   // Open a connection
 		   conn = DriverManager.getConnection(
-				   PropertiesCache.getInstance().getProperty("DB_URL"), 
-				   PropertiesCache.getInstance().getProperty("USER"), 
+				   PropertiesCache.getInstance().getProperty("DB_URL"),
+				   PropertiesCache.getInstance().getProperty("USER"),
 				   PropertiesCache.getInstance().getProperty("PASS")
 				   );
 		   // Execute SQL query
 		   stmt = conn.createStatement();
 		   rs = stmt.executeQuery(query);
-		   
+
 		   // Extract data from result set
 		   while(rs.next()){
 			    return rs.getInt("StoryId");
 		   }
-		
+
 		   // Clean-up environment
 		   rs.close();
 		   stmt.close();
@@ -269,19 +269,19 @@ public class ProjectResponse {
 		    try { stmt.close(); } catch (Exception e) { /* ignored */ }
 		    try { conn.close(); } catch (Exception e) { /* ignored */ }
 	   }
-		   
+
 	    return 0;
 	}
-	
+
 	//Get Entries
-	
+
 	@Produces("application/json;charset=utf-8")
 	@GET
 	public Response search(@Context UriInfo uriInfo, String body) throws SQLException {
 		String query = "SELECT * FROM Project WHERE 1";
 
 		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
-		
+
 		for(String key : queryParams.keySet()){
 			String[] values = queryParams.getFirst(key).split(",");
 			query += " AND (";
@@ -304,15 +304,15 @@ public class ProjectResponse {
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
 	}
-	
+
 	//Add new entry
-	
+
 	@POST
-	public String add(String body) throws SQLException {	
+	public String add(String body) throws SQLException {
 	    GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
 	    Gson gson = gsonBuilder.create();
 	    Project project = gson.fromJson(body, Project.class);
-	    
+
 	    //Check if all mandatory fields are included
 	    if (project.ProjectId != null && project.Name != null) {
 			String query = "INSERT INTO Project (ProjectId, Name) "
@@ -325,12 +325,12 @@ public class ProjectResponse {
 	    }
 	}
 
-	
+
 	//Add new entry
 	@Path("/test")
 	@POST
 	public String test(String body) throws SQLException, IOException {
-	    URL storySolr = new URL("http://192.168.7.125:8983/solr/Stories/dataimport?command=full-import&clean=true");
+	    URL storySolr = new URL(PropertiesCache.getInstance().getProperty("DB_URL") + "/solr/Stories/dataimport?command=full-import&clean=true");
 	    HttpURLConnection con = (HttpURLConnection) storySolr.openConnection();
 	    con.setRequestMethod("GET");
 	    BufferedReader in = new BufferedReader(
@@ -342,8 +342,8 @@ public class ProjectResponse {
 	    }
 	    in.close();
 	    con.disconnect();
-	    
-	    URL itemSolr = new URL("http://192.168.7.125:8983/solr/Items/dataimport?command=full-import&clean=true");
+
+	    URL itemSolr = new URL(PropertiesCache.getInstance().getProperty("DB_URL") + "/solr/Items/dataimport?command=full-import&clean=true");
 	    con = (HttpURLConnection) itemSolr.openConnection();
 	    con.setRequestMethod("GET");
 	    in = new BufferedReader(
@@ -355,7 +355,7 @@ public class ProjectResponse {
 	    in.close();
 		return content.toString();
 	}
-	
+
 
 	//Edit entry by id
 	@Path("/{id}")
@@ -364,16 +364,16 @@ public class ProjectResponse {
 	    GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
 	    Gson gson = gsonBuilder.create();
 	    JsonObject  changes = gson.fromJson(body, JsonObject.class);
-	    
+
 	    //Check if field is allowed to be changed
 	    if (changes.get("ProjectId") != null) {
 	    	return "Prohibited change attempt";
 	    }
-	    
+
 	    //Check if NOT NULL field is attempted to be changed to NULL
 	    if (changes.get("Name") == null || !changes.get("Name").isJsonNull()){
 		    String query = "UPDATE Project SET ";
-		    
+
 		    int keyCount = changes.entrySet().size();
 		    int i = 1;
 			for(Map.Entry<String, JsonElement> entry : changes.entrySet()) {
@@ -390,7 +390,7 @@ public class ProjectResponse {
 	    	return "Prohibited changes to null";
 	    }
 	}
-	
+
 
 	//Delete entry by id
 	@Path("/{id}")
@@ -425,17 +425,17 @@ public class ProjectResponse {
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
 	}
-	
+
 
 	public String executeInsertQuery(String query, String type) throws SQLException, ClientProtocolException, IOException{
 		   Connection conn = null;
-		   Statement stmt = null;		   	       
+		   Statement stmt = null;
 		   try {
-            
+
     		HttpClient httpclient = HttpClients.createDefault();
-    		
+
             HttpPost httppost = new HttpPost("https://sso.apps.paas-dev.psnc.pl/auth/realms/EnrichEuropeana/protocol/openid-connect/token");
-    	
+
     	        List<NameValuePair> params = new ArrayList<NameValuePair>(2);
     	        params.add(new BasicNameValuePair("grant_type", "client_credentials"));
     	        params.add(new BasicNameValuePair("client_secret", PropertiesCache.getInstance().getProperty("SECRET")));
@@ -443,7 +443,7 @@ public class ProjectResponse {
     	        httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
     	        HttpResponse response = httpclient.execute(httppost);
     	        HttpEntity entity = response.getEntity();
-    	
+
     	        if (entity != null) {
     	            try (InputStream instream = entity.getContent()) {
     	                StringWriter writer = new StringWriter();
@@ -454,16 +454,16 @@ public class ProjectResponse {
     	    	        //httppost2.setHeader(HttpHeaders.AUTHORIZATION, authHeader);
     	            }
     	        }
-        
-		
+
+
 	   // Register JDBC driver
 	   try {
 			Class.forName(PropertiesCache.getInstance().getProperty("DRIVER"));
-		
+
 		   // Open a connection
 		   conn = DriverManager.getConnection(
-				   PropertiesCache.getInstance().getProperty("DB_URL"), 
-				   PropertiesCache.getInstance().getProperty("USER"), 
+				   PropertiesCache.getInstance().getProperty("DB_URL"),
+				   PropertiesCache.getInstance().getProperty("USER"),
 				   PropertiesCache.getInstance().getProperty("PASS")
 				   );
 		   // Execute SQL query
@@ -505,13 +505,13 @@ public class ProjectResponse {
 	   }
 		return "Failed";
 	}
-	
+
 	//Get entry by id
 	@Path("/{project_id}/stories")
 	@POST
 	public Response insertStory(@PathParam("project_id") int projectId, @Context UriInfo uriInfo, String body, @Context HttpHeaders headers) throws Exception {
 		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
-	    
+
 		boolean auth = false;
 		String authorizationToken = "";
 		if (headers.getRequestHeader(HttpHeaders.AUTHORIZATION) != null) {
@@ -519,7 +519,7 @@ public class ProjectResponse {
 			authorizationToken = authHeaders.get(0);
 			String tokens = getApiKeys();
 			JsonArray data = new JsonParser().parse(tokens).getAsJsonArray();
-			
+
 			for (int i = 0; i < data.size(); i++) {
 				if (data.get(i).getAsJsonObject().get("KeyString").toString().replace("\"", "").equals(authorizationToken)) {
 					auth = true;
@@ -567,7 +567,7 @@ public class ProjectResponse {
 
 		List<String> keys = new ArrayList<String>();
 		List<String> values = new ArrayList<String>();
-		
+
 		String manifestUrl = "";
 		Boolean converted = false;
 		String storyTitle = "";
@@ -576,7 +576,7 @@ public class ProjectResponse {
 		String imageLink = "";
 		String pdfImage = "";
 		List<String> imageLinks = new ArrayList<String>();
-		
+
 		if (data.getAsJsonObject().has("iiif_url")) {
 			manifestUrl = data.getAsJsonObject().get("iiif_url").getAsString();
 			converted = true;
@@ -662,7 +662,7 @@ public class ProjectResponse {
 								}
 							}
 							if (key != "" && value != "") {
-								keys.add(key);	
+								keys.add(key);
 								if (entry.getKey().equals("dc:description")) {
 									values.add("\"" + value.toString().replace("\\\"", "").replaceAll("[\"{}\\[\\]]", "") + "\"");
 								}
@@ -670,8 +670,8 @@ public class ProjectResponse {
 									values.add(value);
 									if (entry.getKey().equals("dc:title")) {
 										storyTitle = "\"" + value.replace(",", " | ").replace("\\\"", "").replaceAll("[\"{}\\[\\]]", "") + "\"";
-									}		
-								}				
+									}
+								}
 							}
 						}
 						else {
@@ -783,21 +783,21 @@ public class ProjectResponse {
 						if (!keys.contains("edm:agent")) {
 							if (dataArray.get(i).getAsJsonObject().keySet().contains("skos:prefLabel")) {
 								keys.add("edm:agent");
-								values.add("\"" + dataArray.get(i).getAsJsonObject().get("skos:prefLabel").getAsString().replace(",", " | ").replace("\\\"", "").replaceAll("[\"{}\\[\\]]", "") 
-										+ " | " + dataArray.get(i).getAsJsonObject().get("@id").getAsString().replace(",", " | ").replace("\\\"", "").replaceAll("[\"{}\\[\\]]", "") + "\"");	
+								values.add("\"" + dataArray.get(i).getAsJsonObject().get("skos:prefLabel").getAsString().replace(",", " | ").replace("\\\"", "").replaceAll("[\"{}\\[\\]]", "")
+										+ " | " + dataArray.get(i).getAsJsonObject().get("@id").getAsString().replace(",", " | ").replace("\\\"", "").replaceAll("[\"{}\\[\\]]", "") + "\"");
 							}
 						}
 						else {
 							if (dataArray.get(i).getAsJsonObject().keySet().contains("skos:prefLabel")) {
 								int index = keys.indexOf("edm:agent");
-								values.set(index, "\"" + values.get(index).replace("\"", "") + " || " + dataArray.get(i).getAsJsonObject().get("skos:prefLabel").getAsString().replace(",", " | ").replace("\\\"", "").replaceAll("[\"{}\\[\\]]", "") 
-										+ " | " + dataArray.get(i).getAsJsonObject().get("@id").getAsString().replace(",", " | ").replace("\\\"", "").replaceAll("[\"{}\\[\\]]", "") + "\"");	
+								values.set(index, "\"" + values.get(index).replace("\"", "") + " || " + dataArray.get(i).getAsJsonObject().get("skos:prefLabel").getAsString().replace(",", " | ").replace("\\\"", "").replaceAll("[\"{}\\[\\]]", "")
+										+ " | " + dataArray.get(i).getAsJsonObject().get("@id").getAsString().replace(",", " | ").replace("\\\"", "").replaceAll("[\"{}\\[\\]]", "") + "\"");
 							}
 						}
 					}
 					else {
-						if (entry.getKey().equals("@type") && 
-								(!entry.getValue().isJsonArray() && entry.getValue().getAsString().equals("edm:WebResource")) 
+						if (entry.getKey().equals("@type") &&
+								(!entry.getValue().isJsonArray() && entry.getValue().getAsString().equals("edm:WebResource"))
 								|| (entry.getValue().isJsonArray() && entry.getValue().getAsJsonArray().toString().contains("edm:WebResource"))) {
 							if (dataArray.get(i).getAsJsonObject().keySet().contains("dcterms:isReferencedBy")){
 								if (dataArray.get(i).getAsJsonObject().get("dcterms:isReferencedBy").isJsonObject()
@@ -830,18 +830,18 @@ public class ProjectResponse {
 				}
 			}
 		}
-		
+
 		keys.add("PlaceUserGenerated");
 		values.add("1");
 		keys.add("ProjectId");
 		values.add("" + projectId);
-		
+
 		String checkQuery = "SELECT * FROM Story WHERE RecordId = '" + recordId + "'";
 		Integer checkQueryResult = executeStoryQuery(checkQuery, "Select");
-		
+
 		String query = "";
 		String resource = "";
-		
+
 		// Check if record doesn't exist yet
 		if (checkQueryResult == 0) {
 			query += "INSERT INTO Story (";
@@ -895,38 +895,38 @@ public class ProjectResponse {
 						+ "1" + ", "
 						+ "\"" + manifestUrl + "\"" + ")";
 				String itemResponse = executeInsertQuery(itemQuery, "Import");
-				
-				String storyImageQuery = "UPDATE Story SET PreviewImage = " + "\"" + imageLink.replace("\"", "\\\"") + "\"" + 
-						"WHERE\r\n" + 
-						"    StoryId = \r\n" + 
-						"	(\r\n" + 
-						"		SELECT \r\n" + 
-						"            StoryId\r\n" + 
-						"        FROM\r\n" + 
-						"        (\r\n" + 
-						"			SELECT StoryId \r\n" + 
-						"            FROM\r\n" + 
-						"				Story\r\n" + 
+
+				String storyImageQuery = "UPDATE Story SET PreviewImage = " + "\"" + imageLink.replace("\"", "\\\"") + "\"" +
+						"WHERE\r\n" +
+						"    StoryId = \r\n" +
+						"	(\r\n" +
+						"		SELECT \r\n" +
+						"            StoryId\r\n" +
+						"        FROM\r\n" +
+						"        (\r\n" +
+						"			SELECT StoryId \r\n" +
+						"            FROM\r\n" +
+						"				Story\r\n" +
 						"			WHERE `dc:title` = " + "\"" + storyTitle.replace("\"", "") + "\"" +
-						"			ORDER BY StoryId DESC\r\n" + 
-						"			LIMIT 1\r\n" + 
-						"		) a\r\n" + 
+						"			ORDER BY StoryId DESC\r\n" +
+						"			LIMIT 1\r\n" +
+						"		) a\r\n" +
 						"	)";
 				String storyImageResponse = executeInsertQuery(storyImageQuery, "Import");
-				
+
 				if (itemResponse == "Failed") {
 					ResponseBuilder rBuild = Response.status(Response.Status.BAD_REQUEST);
 			        return rBuild.build();
 				}
 			}
-			else {	
+			else {
 
 		            // get the property value and print it out
-		            
+
 		    		HttpClient httpclient = HttpClients.createDefault();
-		    		
+
 		            HttpPost httppost = new HttpPost("https://sso.apps.paas-dev.psnc.pl/auth/realms/EnrichEuropeana/protocol/openid-connect/token");
-	    	
+
 	    	        List<NameValuePair> params = new ArrayList<NameValuePair>(2);
 	    	        params.add(new BasicNameValuePair("grant_type", "client_credentials"));
 	    	        params.add(new BasicNameValuePair("client_secret", PropertiesCache.getInstance().getProperty("SECRET")));
@@ -947,14 +947,14 @@ public class ProjectResponse {
 
 	        	            URL url = new URL(manifestUrl);
 	        				con = (HttpURLConnection) url.openConnection();
-							
+
 							con.setRequestMethod("GET");
 							con.setRequestProperty("Content-Type", "application/json");
 						    con.setRequestProperty("Authorization", "Bearer " + authHeader.replace("\"", "") );
-						    
+
 						    if (converted == false) {
 		    	    	        String redirect = con.getHeaderField("Location");
-		    					
+
 			    				if (redirect != null){
 			    					con.disconnect();
 			    					con = (HttpURLConnection) new URL(redirect).openConnection();
@@ -964,7 +964,7 @@ public class ProjectResponse {
 			    					con = (HttpURLConnection) new URL(con.getURL().toString()).openConnection();
 			    				}
 						    }
-						    
+
 
 							in = new BufferedReader(
 							  new InputStreamReader(con.getInputStream(), "UTF-8"));
@@ -975,19 +975,19 @@ public class ProjectResponse {
 							}
 							in.close();
 							con.disconnect();
-							
+
 	    					JsonObject manifest = new JsonParser().parse(content.toString()).getAsJsonObject();
-	    					
+
 	    					JsonArray imageArray = manifest.get("sequences").getAsJsonArray().get(0).getAsJsonObject().get("canvases").getAsJsonArray();
 	    					int imageCount = imageArray.size();
-	    					
+
 	    					if (pdfImage != "") {
 	    						imageLinks.clear();
 		    					for (int i = 0; i < imageCount; i++) {
 		    						imageLinks.add("\"" + pdfImage.replace("\"", "") + "?page=" + i + "\"");
 		    					}
 	    					}
-	    	
+
 	    					itemQuery = "INSERT INTO Item ("
 	    							+ "Title, "
 	    							+ "StoryId, "
@@ -1001,25 +1001,25 @@ public class ProjectResponse {
 
 	    						// if first item, add imageLink to story
 	    						if (i == 0) {
-	    							String storyImageQuery = "UPDATE Story SET PreviewImage = " + "\"" + imageLink.replace("\"", "\\\"") + "\"" + 
-	    														"WHERE\r\n" + 
-	    														"    StoryId = \r\n" + 
-	    														"	(\r\n" + 
-	    														"		SELECT \r\n" + 
-	    														"            StoryId\r\n" + 
-	    														"        FROM\r\n" + 
-	    														"        (\r\n" + 
-	    														"			SELECT StoryId \r\n" + 
-	    														"            FROM\r\n" + 
-	    														"				Story\r\n" + 
+	    							String storyImageQuery = "UPDATE Story SET PreviewImage = " + "\"" + imageLink.replace("\"", "\\\"") + "\"" +
+	    														"WHERE\r\n" +
+	    														"    StoryId = \r\n" +
+	    														"	(\r\n" +
+	    														"		SELECT \r\n" +
+	    														"            StoryId\r\n" +
+	    														"        FROM\r\n" +
+	    														"        (\r\n" +
+	    														"			SELECT StoryId \r\n" +
+	    														"            FROM\r\n" +
+	    														"				Story\r\n" +
 	    														"			WHERE `dc:title` = " + "\"" + storyTitle.replace("\"", "") + "\"" +
-	    														"			ORDER BY StoryId DESC\r\n" + 
-	    														"			LIMIT 1\r\n" + 
-	    														"		) a\r\n" + 
+	    														"			ORDER BY StoryId DESC\r\n" +
+	    														"			LIMIT 1\r\n" +
+	    														"		) a\r\n" +
 	    														"	)";
 	    							String storyImageResponse = executeInsertQuery(storyImageQuery, "Import");
 	    						}
-	    						
+
 	    						if (i == 0) {
 	    							itemQuery += "("
 	    							+ "\"" + storyTitle.replace("\"", "") + " Item "  + (i + 1) + "\"" +  ", "
@@ -1041,18 +1041,18 @@ public class ProjectResponse {
 	    					}
 	    					String itemResponse = executeInsertQuery(itemQuery, "Import");
 
-	    					
+
 	    					if (itemResponse == "Failed") {
 	    						ResponseBuilder rBuild = Response.status(Response.Status.BAD_REQUEST);
 	    				        return rBuild.build();
 	    					}
-	    	            }  catch (Exception e) { 
+	    	            }  catch (Exception e) {
 	    	            } finally {
 							in.close();
 							con.disconnect();
 	    			   }
 	    	        }
-				} 
+				}
 		}
 		else {
 			query += "Update Story SET ";
@@ -1076,12 +1076,12 @@ public class ProjectResponse {
 		        return rBuild.build();
 			}
 		}
-		
+
 		if (recordId.contains("/")) {
 			String[] recordIdSplit = recordId.split("/");
-			recordId = recordIdSplit[recordIdSplit.length - 2]	+ "_" +recordIdSplit[recordIdSplit.length - 1];	
+			recordId = recordIdSplit[recordIdSplit.length - 2]	+ "_" +recordIdSplit[recordIdSplit.length - 1];
 		}
-		File file = new File("/home/enrich/imports/" + queryParams.getFirst("importName") + "/" + recordId + ".txt");
+		File file = new File(PropertiesCache.getInstance().getProperty("IMPORTS") + "/" + queryParams.getFirst("importName") + "/" + recordId + ".txt");
 		file.getParentFile().mkdirs();
 		FileWriter fileWriter = new FileWriter(file);
 		fileWriter.write(body);
@@ -1090,7 +1090,7 @@ public class ProjectResponse {
 	    HttpURLConnection con = null;
 	    BufferedReader in = null;
 	    try {
-		    URL storySolr = new URL("http://192.168.7.125:8983/solr/Stories/dataimport?command=full-import&clean=true");
+		    URL storySolr = new URL(PropertiesCache.getInstance().getProperty("SOLR") + "/solr/Stories/dataimport?command=full-import&clean=true");
 		    con = (HttpURLConnection) storySolr.openConnection();
 		    con.setRequestMethod("GET");
 		    in = new BufferedReader(
@@ -1102,8 +1102,8 @@ public class ProjectResponse {
 		    }
 		    in.close();
 		    con.disconnect();
-		    
-		    URL itemSolr = new URL("http://192.168.7.125:8983/solr/Items/dataimport?command=full-import&clean=true");
+
+		    URL itemSolr = new URL(PropertiesCache.getInstance().getProperty("SOLR") + "/solr/Items/dataimport?command=full-import&clean=true");
 		    con = (HttpURLConnection) itemSolr.openConnection();
 		    con.setRequestMethod("GET");
 		    in = new BufferedReader(
@@ -1114,12 +1114,12 @@ public class ProjectResponse {
 		    }
 		    in.close();
 		    con.disconnect();
-	    }  catch (Exception e) { 
+	    }  catch (Exception e) {
         } finally {
 			in.close();
 			con.disconnect();
 	   }
-		
+
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
 	}
