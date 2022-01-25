@@ -49,16 +49,16 @@ public class StoryResponse {
 		   List<Story> storyList = new ArrayList<Story>();
 		   ResultSet rs = null;
 		   Connection conn = null;
-		   Statement stmt = null;		   	       
+		   Statement stmt = null;
 		   try {
-	        
+
 		   // Register JDBC driver
 				Class.forName(PropertiesCache.getInstance().getProperty("DRIVER"));
-				
+
 				   // Open a connection
 				   conn = DriverManager.getConnection(
-						   PropertiesCache.getInstance().getProperty("DB_URL"), 
-						   PropertiesCache.getInstance().getProperty("USER"), 
+						   PropertiesCache.getInstance().getProperty("DB_URL"),
+						   PropertiesCache.getInstance().getProperty("USER"),
 						   PropertiesCache.getInstance().getProperty("PASS")
 						   );
 				   // Execute SQL query
@@ -83,7 +83,7 @@ public class StoryResponse {
 		   // Extract data from result set
 		   while(rs.next()){
 			  Story story = new Story();
-			  story.setStoryId(rs.getInt("StoryId")); 
+			  story.setStoryId(rs.getInt("StoryId"));
 			  story.setdcTitle(rs.getString("StorydcTitle"));
 			  story.setdcDescription(rs.getString("StorydcDescription"));
 			  story.setedmLandingPage(rs.getString("StoryedmLandingPage"));
@@ -129,8 +129,8 @@ public class StoryResponse {
 			  story.setDateEnd(rs.getTimestamp("StoryDateEnd"));
 			  story.setOrderIndex(rs.getInt("StoryOrderIndex"));
 			  story.setPreviewImage(rs.getString("StoryPreviewImage"));
-			   
-			  
+
+
 				  // Iterate through Items of the Story
 				  List<Item> ItemList = new ArrayList<Item>();
 				  if (rs.getString("ItemId") != null) {
@@ -162,7 +162,7 @@ public class StoryResponse {
 					  String[] ItemImageLinks = rs.getString("ImageLink").split("�~�");
 					  String[] ItemOrderIndexs = rs.getString("OrderIndex").split("�~�");
 					  String[] ItemTimestamps = rs.getString("Timestamp").split("�~�");
-	
+
 					  // Initialize lists split by Stories
 					  String[] PlaceIdList = new String[ItemIds.length];
 					  String[] PlaceNameList = new String[ItemIds.length];
@@ -200,8 +200,8 @@ public class StoryResponse {
 					  if (rs.getString("PlaceUserGenerated") != null && rs.getString("PlaceUserGenerated") != "NULL") {
 						  PlaceUserGeneratedList = rs.getString("PlaceUserGenerated").split("�~�", -1);
 					  }
-					  
-	
+
+
 					  for (int j = 0; j < ItemIds.length; j++) {
 						  Item item = new Item();
 						  item.setItemId(Integer.parseInt(ItemIds[j]));
@@ -243,7 +243,7 @@ public class StoryResponse {
 						  item.setImageLink(ItemImageLinks[j]);
 						  item.setOrderIndex(Integer.parseInt(ItemOrderIndexs[j]));
 					      item.setTimestamp(ItemTimestamps[j]);
-					            
+
 						  //Add Places
 						  List<Place> PlaceList = new ArrayList<Place>();
 						  if (rs.getString("PlaceId") != null) {
@@ -277,7 +277,7 @@ public class StoryResponse {
 								  PlaceList.add(place);
 							  }
 						  }
-						
+
 						  item.setPlaces(PlaceList);
 						  ItemList.add(item);
 					  }
@@ -285,7 +285,7 @@ public class StoryResponse {
 			  }
 			  storyList.add(story);
 		   }
-		
+
 		   // Clean-up environment
 		   rs.close();
 		   stmt.close();
@@ -310,20 +310,20 @@ public class StoryResponse {
 	    String result = gsonBuilder.toJson(storyList);
 	    return result;
 	}
-	
+
 
 
 	public List<Story> getStoryData(String query) throws SQLException{
-		   List<Story> storyList = new ArrayList<Story>();		   	       
+		   List<Story> storyList = new ArrayList<Story>();
 		   try {
-	        
+
 		   // Register JDBC driver
 				Class.forName(PropertiesCache.getInstance().getProperty("DRIVER"));
-				
+
 				   // Open a connection
 				   Connection conn = DriverManager.getConnection(
-						   PropertiesCache.getInstance().getProperty("DB_URL"), 
-						   PropertiesCache.getInstance().getProperty("USER"), 
+						   PropertiesCache.getInstance().getProperty("DB_URL"),
+						   PropertiesCache.getInstance().getProperty("USER"),
 						   PropertiesCache.getInstance().getProperty("PASS")
 						   );
 				   // Execute SQL query
@@ -335,7 +335,7 @@ public class StoryResponse {
 		   // Extract data from result set
 		   while(rs.next()){
 			  Story story = new Story();
-			  story.setStoryId(rs.getInt("StoryId")); 
+			  story.setStoryId(rs.getInt("StoryId"));
 			  story.setdcTitle(rs.getString("StorydcTitle"));
 			  story.setdcDescription(rs.getString("StorydcDescription"));
 			  story.setedmLandingPage(rs.getString("StoryedmLandingPage"));
@@ -381,10 +381,10 @@ public class StoryResponse {
 			  story.setDateEnd(rs.getTimestamp("StoryDateEnd"));
 			  story.setOrderIndex(rs.getInt("StoryOrderIndex"));
 			  story.setPreviewImage(rs.getString("StoryPreviewImage"));
-			  
+
 			  storyList.add(story);
 		   }
-	
+
 	   // Clean-up environment
 	   rs.close();
 	   stmt.close();
@@ -402,30 +402,30 @@ public class StoryResponse {
 		}
     return storyList;
 }
-			   
-			  
+
+
 
 	public String getApiKeys() throws SQLException{
 			String query = "SELECT * FROM ApiKey";
 		   List<ApiKey> apiKeys = new ArrayList<ApiKey>();
 		   ResultSet rs = null;
 		   Connection conn = null;
-		   Statement stmt = null;		   	       
-		   
+		   Statement stmt = null;
+
 		   // Register JDBC driver
 		   try {
 			Class.forName(PropertiesCache.getInstance().getProperty("DRIVER"));
-		
+
 		   // Open a connection
 		   conn = DriverManager.getConnection(
-				   PropertiesCache.getInstance().getProperty("DB_URL"), 
-				   PropertiesCache.getInstance().getProperty("USER"), 
+				   PropertiesCache.getInstance().getProperty("DB_URL"),
+				   PropertiesCache.getInstance().getProperty("USER"),
 				   PropertiesCache.getInstance().getProperty("PASS")
 				   );
 		   // Execute SQL query
 		   stmt = conn.createStatement();
 		   rs = stmt.executeQuery(query);
-		   
+
 		   // Extract data from result set
 		   while(rs.next()){
 		      //Retrieve by column name
@@ -436,7 +436,7 @@ public class StoryResponse {
 			  apiKey.setRoleId(rs.getInt("RoleId"));
 			  apiKeys.add(apiKey);
 		   }
-		
+
 		   // Clean-up environment
 		   rs.close();
 		   stmt.close();
@@ -451,7 +451,7 @@ public class StoryResponse {
 		    try { stmt.close(); } catch (Exception e) { /* ignored */ }
 		    try { conn.close(); } catch (Exception e) { /* ignored */ }
 	   }
-		   
+
 	    Gson gsonBuilder = new GsonBuilder().create();
 	    String result = gsonBuilder.toJson(apiKeys);
 	    return result;
@@ -459,14 +459,14 @@ public class StoryResponse {
 
 
 	//GET entries
-	
+
 	@Produces("application/json;charset=utf-8")
 	@GET
 	public Response search(@DefaultValue("true") @QueryParam("items") String showItems, @Context UriInfo uriInfo, String body) throws SQLException {
 
 		String query = "";
 		if (showItems.contentEquals("false")) {
-			query = "SELECT s.StoryId as StoryId" + 
+			query = "SELECT s.StoryId as StoryId" +
 					", s.`dc:Title` as StorydcTitle" +
 					", s.`dc:description` as StorydcDescription" +
 					", s.`edm:landingPage` as StoryedmLandingPage" +
@@ -474,10 +474,10 @@ public class StoryResponse {
 					", s.PlaceName as StoryPlaceName" +
 					", s.PlaceLatitude as StoryPlaceLatitude" +
 					", s.PlaceLongitude as StoryPlaceLongitude" +
-					"	, s.PlaceZoom as StoryPlaceZoom \r\n" + 
-					"	, s.PlaceLink as StoryPlaceLink \r\n" + 
-					"	, s.PlaceComment as StoryPlaceComment \r\n" + 
-					"	, s.PlaceUserId as StoryPlaceUserId \r\n" + 
+					"	, s.PlaceZoom as StoryPlaceZoom \r\n" +
+					"	, s.PlaceLink as StoryPlaceLink \r\n" +
+					"	, s.PlaceComment as StoryPlaceComment \r\n" +
+					"	, s.PlaceUserId as StoryPlaceUserId \r\n" +
 					", s.PlaceUserGenerated as StoryPlaceUserGenerated" +
 					", s.`dc:creator` as StorydcCreator" +
 					", s.`dc:source` as StorydcSource" +
@@ -514,7 +514,7 @@ public class StoryResponse {
 					"FROM Story s " +
 					"WHERE 1";
 			MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
-			
+
 			for(String key : queryParams.keySet()){
 				if (key == "items") {
 					String[] values = queryParams.getFirst(key).split(",");
@@ -540,7 +540,7 @@ public class StoryResponse {
 		}
 		else {
 			query = "SELECT * FROM " +
-					"(SELECT s.StoryId as StoryId" + 
+					"(SELECT s.StoryId as StoryId" +
 					", s.`dc:Title` as StorydcTitle" +
 					", s.`dc:description` as StorydcDescription" +
 					", s.`edm:landingPage` as StoryedmLandingPage" +
@@ -548,10 +548,10 @@ public class StoryResponse {
 					", s.PlaceName as StoryPlaceName" +
 					", s.PlaceLatitude as StoryPlaceLatitude" +
 					", s.PlaceLongitude as StoryPlaceLongitude" +
-					"	, s.PlaceZoom as StoryPlaceZoom \r\n" + 
-					"	, s.PlaceLink as StoryPlaceLink \r\n" + 
-					"	, s.PlaceComment as StoryPlaceComment \r\n" + 
-					"	, s.PlaceUserId as StoryPlaceUserId \r\n" + 
+					"	, s.PlaceZoom as StoryPlaceZoom \r\n" +
+					"	, s.PlaceLink as StoryPlaceLink \r\n" +
+					"	, s.PlaceComment as StoryPlaceComment \r\n" +
+					"	, s.PlaceUserId as StoryPlaceUserId \r\n" +
 					", s.PlaceUserGenerated as StoryPlaceUserGenerated" +
 					", s.`dc:creator` as StorydcCreator" +
 					", s.`dc:source` as StorydcSource" +
@@ -613,16 +613,16 @@ public class StoryResponse {
 					    "FROM Item i " +
 					    "LEFT JOIN ( " +
 							"SELECT i.ItemId as CompletionStatusItemId" +
-							", c.Name as CompletionStatusName " + 
-							", c.ColorCode as CompletionStatusColorCode " + 
+							", c.Name as CompletionStatusName " +
+							", c.ColorCode as CompletionStatusColorCode " +
 					        "FROM CompletionStatus c " +
 					        "JOIN Item i " +
 					        "ON i.CompletionStatusId = c.CompletionStatusId " +
 					        ") c  " +
 					        "ON i.ItemId = c.CompletionStatusItemId " +
 						") i " +
-					"LEFT JOIN " + 
-					"(" + 
+					"LEFT JOIN " +
+					"(" +
 						"SELECT i.ItemId as ItemId" +
 						", group_concat(IFNULL(pl.PlaceId, 'NULL') SEPARATOR '&~&') as PlaceId " +
 						", group_concat(IFNULL(pl.Name, 'NULL') SEPARATOR '&~&') as PlaceName " +
@@ -633,20 +633,20 @@ public class StoryResponse {
 						", group_concat(IFNULL(pl.Comment, 'NULL') SEPARATOR '&~&') as PlaceComment " +
 						", group_concat(IFNULL(pl.UserId, 'NULL') SEPARATOR '&~&') as PlaceUserId " +
 						", group_concat(IFNULL(pl.UserGenerated + 0, 'NULL') SEPARATOR '&~&') as PlaceUserGenerated " +
-						"FROM Item i " + 
-						"LEFT JOIN Place pl on i.ItemId = pl.ItemId " +  
+						"FROM Item i " +
+						"LEFT JOIN Place pl on i.ItemId = pl.ItemId " +
 						"GROUP BY i.ItemId " +
-					") c " + 
+					") c " +
 					"ON i.ItemId = c.ItemId " +
-					"LEFT JOIN " + 
+					"LEFT JOIN " +
 					"(" +
 						"SELECT * " +
-						"FROM Story " + 
+						"FROM Story " +
 					") s " +
 					"ON i.StoryId = s.StoryId " +
 					"WHERE 1";
 			MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
-			
+
 			for(String key : queryParams.keySet()){
 				if (key == "items") {
 					String[] values = queryParams.getFirst(key).split(",");
@@ -673,9 +673,9 @@ public class StoryResponse {
 	}
 
 	//Add new entry
-	
+
 	@POST
-	public Response add(@Context UriInfo uriInfo, String body, @Context HttpHeaders headers) throws SQLException {	
+	public Response add(@Context UriInfo uriInfo, String body, @Context HttpHeaders headers) throws SQLException {
 		boolean auth = false;
 		String authorizationToken = "";
 		if (headers.getRequestHeader(HttpHeaders.AUTHORIZATION) != null) {
@@ -683,7 +683,7 @@ public class StoryResponse {
 			authorizationToken = authHeaders.get(0);
 			String tokens = getApiKeys();
 			JsonArray data = new JsonParser().parse(tokens).getAsJsonArray();
-			
+
 			for (int i = 0; i < data.size(); i++) {
 				if (data.get(i).getAsJsonObject().get("KeyString").toString().replace("\"", "").equals(authorizationToken)) {
 					auth = true;
@@ -691,12 +691,12 @@ public class StoryResponse {
 				}
 			}
 		}
-		
+
 		if (auth != true) {
 			ResponseBuilder authResponse = Response.status(Response.Status.UNAUTHORIZED);
 			return authResponse.build();
 		}
-		
+
 		JsonObject data = new JsonParser().parse(body).getAsJsonObject();
 		JsonArray dataArray = data.getAsJsonObject().get("@graph").getAsJsonArray();
 		List<String> fields = new ArrayList<String>();
@@ -786,7 +786,7 @@ public class StoryResponse {
 
 		keys.add("PlaceUserGenerated");
 		values.add("0");
-		
+
 		String query = "";
 		query += "INSERT INTO Story (";
 
@@ -819,9 +819,9 @@ public class StoryResponse {
 	    GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
 	    Gson gson = gsonBuilder.create();
 	    JsonObject  changes = gson.fromJson(body, JsonObject.class);
-	    
+
 	    String query = "UPDATE Story SET ";
-	    
+
 	    int keyCount = changes.entrySet().size();
 	    int i = 1;
 		for(Map.Entry<String, JsonElement> entry : changes.entrySet()) {
@@ -847,7 +847,7 @@ public class StoryResponse {
 		return resource;
 	}
 	*/
-	
+
 
 	//Get entry by id
 	@Path("/{id}")
@@ -856,54 +856,54 @@ public class StoryResponse {
 	public Response getEntry(@DefaultValue("true") @QueryParam("items") String showItems, @PathParam("id") int id, String body) throws SQLException {
         Gson gson = new Gson();
         JsonParser jsonParser = new JsonParser();
-        
-		String storyQuery = "SELECT " + 
-				"        s.StoryId AS StoryId,\r\n" + 
-				"            s.`dc:Title` AS StorydcTitle,\r\n" + 
-				"            s.`dc:description` AS StorydcDescription,\r\n" + 
-				"            s.`edm:landingPage` AS StoryedmLandingPage,\r\n" + 
-				"            s.ExternalRecordId AS StoryExternalRecordId,\r\n" + 
-				"            s.PlaceName AS StoryPlaceName,\r\n" + 
-				"            s.PlaceLatitude AS StoryPlaceLatitude,\r\n" + 
-				"            s.PlaceLongitude AS StoryPlaceLongitude,\r\n" + 
-				"			 s.PlaceZoom as StoryPlaceZoom, \r\n" + 
-				"			 s.PlaceLink as StoryPlaceLink, \r\n" + 
-				"			 s.PlaceComment as StoryPlaceComment, \r\n" + 
-				"			 s.PlaceUserId as StoryPlaceUserId, \r\n" + 
-				"            s.PlaceUserGenerated AS StoryPlaceUserGenerated,\r\n" + 
-				"            s.`dc:creator` AS StorydcCreator,\r\n" + 
-				"            s.`dc:source` AS StorydcSource,\r\n" + 
-				"            s.`edm:country` AS StoryedmCountry,\r\n" + 
-				"            s.`edm:dataProvider` AS StoryedmDataProvider,\r\n" + 
-				"            s.`edm:agent` AS StoryedmAgent,\r\n" + 
-				"            s.`edm:provider` AS StoryedmProvider,\r\n" + 
-				"            s.`edm:year` AS StoryedmYear,\r\n" + 
-				"            s.`dc:publisher` AS StorydcPublisher,\r\n" + 
-				"            s.`dc:coverage` AS StorydcCoverage,\r\n" + 
-				"            s.`dc:date` AS StorydcDate,\r\n" + 
-				"            s.`dc:type` AS StorydcType,\r\n" + 
-				"            s.`dc:relation` AS StorydcRelation,\r\n" + 
-				"            s.`dcterms:medium` AS StorydctermsMedium,\r\n" + 
-				"            s.`dcterms:provenance` AS StorydctermsProvenance,\r\n" + 
-				"            s.`edm:datasetName` AS StoryedmDatasetName,\r\n" + 
-				"            s.`dc:contributor` AS StorydcContributor,\r\n" + 
-				"            s.`dc:identifier` AS StorydcIdentifier,\r\n" + 
-				"            s.`edm:rights` AS StoryedmRights,\r\n" + 
-				"            s.`edm:begin` AS StoryedmBegin,\r\n" + 
-				"            s.`edm:end` AS StoryedmEnd,\r\n" + 
+
+		String storyQuery = "SELECT " +
+				"        s.StoryId AS StoryId,\r\n" +
+				"            s.`dc:Title` AS StorydcTitle,\r\n" +
+				"            s.`dc:description` AS StorydcDescription,\r\n" +
+				"            s.`edm:landingPage` AS StoryedmLandingPage,\r\n" +
+				"            s.ExternalRecordId AS StoryExternalRecordId,\r\n" +
+				"            s.PlaceName AS StoryPlaceName,\r\n" +
+				"            s.PlaceLatitude AS StoryPlaceLatitude,\r\n" +
+				"            s.PlaceLongitude AS StoryPlaceLongitude,\r\n" +
+				"			 s.PlaceZoom as StoryPlaceZoom, \r\n" +
+				"			 s.PlaceLink as StoryPlaceLink, \r\n" +
+				"			 s.PlaceComment as StoryPlaceComment, \r\n" +
+				"			 s.PlaceUserId as StoryPlaceUserId, \r\n" +
+				"            s.PlaceUserGenerated AS StoryPlaceUserGenerated,\r\n" +
+				"            s.`dc:creator` AS StorydcCreator,\r\n" +
+				"            s.`dc:source` AS StorydcSource,\r\n" +
+				"            s.`edm:country` AS StoryedmCountry,\r\n" +
+				"            s.`edm:dataProvider` AS StoryedmDataProvider,\r\n" +
+				"            s.`edm:agent` AS StoryedmAgent,\r\n" +
+				"            s.`edm:provider` AS StoryedmProvider,\r\n" +
+				"            s.`edm:year` AS StoryedmYear,\r\n" +
+				"            s.`dc:publisher` AS StorydcPublisher,\r\n" +
+				"            s.`dc:coverage` AS StorydcCoverage,\r\n" +
+				"            s.`dc:date` AS StorydcDate,\r\n" +
+				"            s.`dc:type` AS StorydcType,\r\n" +
+				"            s.`dc:relation` AS StorydcRelation,\r\n" +
+				"            s.`dcterms:medium` AS StorydctermsMedium,\r\n" +
+				"            s.`dcterms:provenance` AS StorydctermsProvenance,\r\n" +
+				"            s.`edm:datasetName` AS StoryedmDatasetName,\r\n" +
+				"            s.`dc:contributor` AS StorydcContributor,\r\n" +
+				"            s.`dc:identifier` AS StorydcIdentifier,\r\n" +
+				"            s.`edm:rights` AS StoryedmRights,\r\n" +
+				"            s.`edm:begin` AS StoryedmBegin,\r\n" +
+				"            s.`edm:end` AS StoryedmEnd,\r\n" +
 				"			 s.`edm:isShownAt` as StoryedmIsShownAt,\r\n" +
 				"			 s.`dc:rights` as StorydcRights,\r\n" +
 				"			 s.`dc:language` as StorydcLanguage,\r\n" +
 				"			 s.`edm:language` as StoryedmLanguage,\r\n" +
-				"            s.ProjectId AS StoryProjectId,\r\n" + 
-				"            s.Summary AS StorySummary,\r\n" + 
-				"            s.ParentStory AS StoryParentStory,\r\n" + 
-				"            s.SearchText AS StorySearchText,\r\n" + 
-				"            s.DateStart AS StoryDateStart,\r\n" + 
-				"            s.DateEnd AS StoryDateEnd,\r\n" + 
-				"            s.OrderIndex AS StoryOrderIndex, " + 
-				"            s.PreviewImage AS StoryPreviewImage" + 
-				"	FROM\r\n" + 
+				"            s.ProjectId AS StoryProjectId,\r\n" +
+				"            s.Summary AS StorySummary,\r\n" +
+				"            s.ParentStory AS StoryParentStory,\r\n" +
+				"            s.SearchText AS StorySearchText,\r\n" +
+				"            s.DateStart AS StoryDateStart,\r\n" +
+				"            s.DateEnd AS StoryDateEnd,\r\n" +
+				"            s.OrderIndex AS StoryOrderIndex, " +
+				"            s.PreviewImage AS StoryPreviewImage" +
+				"	FROM\r\n" +
 				"		Story s " +
 				"	WHERE StoryId = " + id;
 		List<Story> storyList = getStoryData(storyQuery);
@@ -915,72 +915,72 @@ public class StoryResponse {
 	        return rBuild.build();
 		}
 		else {
-			String itemQuery = "SELECT \r\n" + 
-							"			i.ItemId,  \r\n" + 
-							"			i.Title,  \r\n" + 
-							"			i.CompletionStatusId,\r\n" + 
-							"			c.Name as CompletionStatusName,\r\n" + 
-							"			c.ColorCode as CompletionStatusColorCode, \r\n" + 
-							"			i.OldItemId, \r\n" + 
-							"			i.Description,  \r\n" + 
-							"			i.DescriptionLanguage,  \r\n" + 
-							"			i.DateStart, \r\n" + 
-							"			i.DateEnd,  \r\n" + 
-							"			i.DateStartDisplay, \r\n" + 
-							"			i.DateEndDisplay,  \r\n" + 
-							"			i.DatasetId,  \r\n" + 
-							"			i.ImageLink, \r\n" + 
-							"			i.OrderIndex,  \r\n" + 
-							"			i.Timestamp, \r\n" + 
-							"			i.LockedTime,  \r\n" + 
-							"			i.LockedUser, \r\n" + 
-							"			i.Manifest, \r\n" + 
-							"			GROUP_CONCAT(IFNULL(pl.PlaceId, 'NULL')\r\n" + 
-							"				SEPARATOR '&~&') AS PlaceId,\r\n" + 
-							"			GROUP_CONCAT(IFNULL(pl.Name, 'NULL')\r\n" + 
-							"				SEPARATOR '&~&') AS PlaceName,\r\n" + 
-							"			GROUP_CONCAT(IFNULL(pl.Latitude, 'NULL')\r\n" + 
-							"				SEPARATOR '&~&') AS PlaceLatitude,\r\n" + 
-							"			GROUP_CONCAT(IFNULL(pl.Longitude, 'NULL')\r\n" + 
-							"				SEPARATOR '&~&') AS PlaceLongitude,\r\n" + 
-							"			GROUP_CONCAT(IFNULL(pl.Link, 'NULL')\r\n" + 
-							"				SEPARATOR '&~&') AS PlaceLink,\r\n" + 
-							"			GROUP_CONCAT(IFNULL(pl.Zoom, 'NULL')\r\n" + 
-							"				SEPARATOR '&~&') AS PlaceZoom,\r\n" + 
-							"			GROUP_CONCAT(IFNULL(pl.Comment, 'NULL')\r\n" + 
-							"				SEPARATOR '&~&') AS PlaceComment,\r\n" + 
-							"			GROUP_CONCAT(IFNULL(pl.WikidataName, 'NULL')\r\n" + 
-							"				SEPARATOR '&~&') AS PlaceWikidataName,\r\n" + 
-							"			GROUP_CONCAT(IFNULL(pl.WikidataId, 'NULL')\r\n" + 
-							"				SEPARATOR '&~&') AS PlaceWikidataId,\r\n" + 
-							"			GROUP_CONCAT(IFNULL(pl.Comment, 'NULL')\r\n" + 
-							"				SEPARATOR '&~&') AS PlaceComment,\r\n" + 
-							"			GROUP_CONCAT(IFNULL(pl.UserId, 'NULL')\r\n" + 
-							"				SEPARATOR '&~&') AS PlaceUserId,\r\n" + 
-							"			GROUP_CONCAT(IFNULL(pl.UserGenerated + 0, 'NULL')\r\n" + 
-							"				SEPARATOR '&~&') AS PlaceUserGenerated\r\n" + 
-							"	FROM\r\n" + 
-							"		(SELECT * FROM Item WHERE StoryId = " + id + ") i \r\n" + 
-							"	JOIN \r\n" + 
-							"	CompletionStatus c\r\n" + 
-							"	ON i.CompletionStatusId = c.CompletionStatusId\r\n" + 
-							"	LEFT JOIN Place pl \r\n" + 
-							"	ON i.ItemId = pl.ItemId\r\n" + 
+			String itemQuery = "SELECT \r\n" +
+							"			i.ItemId,  \r\n" +
+							"			i.Title,  \r\n" +
+							"			i.CompletionStatusId,\r\n" +
+							"			c.Name as CompletionStatusName,\r\n" +
+							"			c.ColorCode as CompletionStatusColorCode, \r\n" +
+							"			i.OldItemId, \r\n" +
+							"			i.Description,  \r\n" +
+							"			i.DescriptionLanguage,  \r\n" +
+							"			i.DateStart, \r\n" +
+							"			i.DateEnd,  \r\n" +
+							"			i.DateStartDisplay, \r\n" +
+							"			i.DateEndDisplay,  \r\n" +
+							"			i.DatasetId,  \r\n" +
+							"			i.ImageLink, \r\n" +
+							"			i.OrderIndex,  \r\n" +
+							"			i.Timestamp, \r\n" +
+							"			i.LockedTime,  \r\n" +
+							"			i.LockedUser, \r\n" +
+							"			i.Manifest, \r\n" +
+							"			GROUP_CONCAT(IFNULL(pl.PlaceId, 'NULL')\r\n" +
+							"				SEPARATOR '&~&') AS PlaceId,\r\n" +
+							"			GROUP_CONCAT(IFNULL(pl.Name, 'NULL')\r\n" +
+							"				SEPARATOR '&~&') AS PlaceName,\r\n" +
+							"			GROUP_CONCAT(IFNULL(pl.Latitude, 'NULL')\r\n" +
+							"				SEPARATOR '&~&') AS PlaceLatitude,\r\n" +
+							"			GROUP_CONCAT(IFNULL(pl.Longitude, 'NULL')\r\n" +
+							"				SEPARATOR '&~&') AS PlaceLongitude,\r\n" +
+							"			GROUP_CONCAT(IFNULL(pl.Link, 'NULL')\r\n" +
+							"				SEPARATOR '&~&') AS PlaceLink,\r\n" +
+							"			GROUP_CONCAT(IFNULL(pl.Zoom, 'NULL')\r\n" +
+							"				SEPARATOR '&~&') AS PlaceZoom,\r\n" +
+							"			GROUP_CONCAT(IFNULL(pl.Comment, 'NULL')\r\n" +
+							"				SEPARATOR '&~&') AS PlaceComment,\r\n" +
+							"			GROUP_CONCAT(IFNULL(pl.WikidataName, 'NULL')\r\n" +
+							"				SEPARATOR '&~&') AS PlaceWikidataName,\r\n" +
+							"			GROUP_CONCAT(IFNULL(pl.WikidataId, 'NULL')\r\n" +
+							"				SEPARATOR '&~&') AS PlaceWikidataId,\r\n" +
+							"			GROUP_CONCAT(IFNULL(pl.Comment, 'NULL')\r\n" +
+							"				SEPARATOR '&~&') AS PlaceComment,\r\n" +
+							"			GROUP_CONCAT(IFNULL(pl.UserId, 'NULL')\r\n" +
+							"				SEPARATOR '&~&') AS PlaceUserId,\r\n" +
+							"			GROUP_CONCAT(IFNULL(pl.UserGenerated + 0, 'NULL')\r\n" +
+							"				SEPARATOR '&~&') AS PlaceUserGenerated\r\n" +
+							"	FROM\r\n" +
+							"		(SELECT * FROM Item WHERE StoryId = " + id + ") i \r\n" +
+							"	JOIN \r\n" +
+							"	CompletionStatus c\r\n" +
+							"	ON i.CompletionStatusId = c.CompletionStatusId\r\n" +
+							"	LEFT JOIN Place pl \r\n" +
+							"	ON i.ItemId = pl.ItemId\r\n" +
 							"	GROUP BY i.ItemId " +
 							"	ORDER BY OrderIndex";
-			String itemData = ItemResponse.executeQuery(itemQuery, "Select");				
+			String itemData = ItemResponse.executeQuery(itemQuery, "Select");
 			Type itemType = new TypeToken<List<Item>>(){}.getType();
 			List<Item> items = gson.fromJson(itemData, itemType);
-			
+
 			storyList.get(0).setItems(items);
-			
+
 			ResponseBuilder rBuild = Response.ok(storyList);
 			//ResponseBuilder rBuild = Response.ok(showItems);
 	        return rBuild.build();
 		}
 	}
-	
-	
+
+
 	//Add new entry
 	@Path("/update")
 	@POST
@@ -1000,7 +1000,7 @@ public class StoryResponse {
 		    }
 		    in.close();
 		    con.disconnect();
-		    
+
 		    URL itemSolr = new URL(PropertiesCache.getInstance().getProperty("SOLR") + "/solr/Items/dataimport?command=delta-import&commit=true");
 		    con = (HttpURLConnection) itemSolr.openConnection();
 		    con.setRequestMethod("GET");
@@ -1012,12 +1012,12 @@ public class StoryResponse {
 		    }
 		    in.close();
 		    con.disconnect();
-		}  catch (Exception e) { 
+		}  catch (Exception e) {
         } finally {
 			in.close();
 			con.disconnect();
 	   }
-		 
+
 		ResponseBuilder rBuild = Response.ok("Solr update successful");
         return rBuild.build();
 	}
@@ -1028,29 +1028,29 @@ public class StoryResponse {
 		   List<String> itemIds = new ArrayList<String>();
 		   ResultSet rs = null;
 		   Connection conn = null;
-		   Statement stmt = null;		   	       
-		   
+		   Statement stmt = null;
+
 		   // Register JDBC driver
 		   try {
 			Class.forName(PropertiesCache.getInstance().getProperty("DRIVER"));
-		
+
 		   // Open a connection
 		   conn = DriverManager.getConnection(
-				   PropertiesCache.getInstance().getProperty("DB_URL"), 
-				   PropertiesCache.getInstance().getProperty("USER"), 
+				   PropertiesCache.getInstance().getProperty("DB_URL"),
+				   PropertiesCache.getInstance().getProperty("USER"),
 				   PropertiesCache.getInstance().getProperty("PASS")
 				   );
 		   // Execute SQL query
 		   stmt = conn.createStatement();
 		   rs = stmt.executeQuery(query);
-		   
+
 		   // Extract data from result set
 		   while(rs.next()){
 		      //Retrieve by column name
 			  String itemId = rs.getString("ItemId");
 			  itemIds.add(itemId);
 		   }
-		
+
 		   // Clean-up environment
 		   rs.close();
 		   stmt.close();
@@ -1065,7 +1065,7 @@ public class StoryResponse {
 		    try { stmt.close(); } catch (Exception e) { /* ignored */ }
 		    try { conn.close(); } catch (Exception e) { /* ignored */ }
 	   }
-		   
+
 	    return itemIds;
 	}
 
@@ -1074,22 +1074,22 @@ public class StoryResponse {
 		   List<Pair<String, String>> storyIds = new ArrayList<Pair<String, String>>();
 		   ResultSet rs = null;
 		   Connection conn = null;
-		   Statement stmt = null;		   	       
-		   
+		   Statement stmt = null;
+
 		   // Register JDBC driver
 		   try {
 			Class.forName(PropertiesCache.getInstance().getProperty("DRIVER"));
-		
+
 		   // Open a connection
 		   conn = DriverManager.getConnection(
-				   PropertiesCache.getInstance().getProperty("DB_URL"), 
-				   PropertiesCache.getInstance().getProperty("USER"), 
+				   PropertiesCache.getInstance().getProperty("DB_URL"),
+				   PropertiesCache.getInstance().getProperty("USER"),
 				   PropertiesCache.getInstance().getProperty("PASS")
 				   );
 		   // Execute SQL query
 		   stmt = conn.createStatement();
 		   rs = stmt.executeQuery(query);
-		   
+
 		   // Extract data from result set
 		   while(rs.next()){
 		      //Retrieve by column name
@@ -1098,7 +1098,7 @@ public class StoryResponse {
 			  Pair<String, String> story = new Pair<String, String>(storyId, recordId);
 			  storyIds.add(story);
 		   }
-		
+
 		   // Clean-up environment
 		   rs.close();
 		   stmt.close();
@@ -1113,35 +1113,35 @@ public class StoryResponse {
 		    try { stmt.close(); } catch (Exception e) { /* ignored */ }
 		    try { conn.close(); } catch (Exception e) { /* ignored */ }
 	   }
-		   
+
 	    return storyIds;
 	}
-	
+
 	public String getItemId(String query) throws SQLException{
 	   ResultSet rs = null;
 	   Connection conn = null;
-	   Statement stmt = null;		   	       
-	               
+	   Statement stmt = null;
+
 	   // Register JDBC driver
 	   try {
 		Class.forName(PropertiesCache.getInstance().getProperty("DRIVER"));
-	
+
 	   // Open a connection
 	   conn = DriverManager.getConnection(
-			   PropertiesCache.getInstance().getProperty("DB_URL"), 
-			   PropertiesCache.getInstance().getProperty("USER"), 
+			   PropertiesCache.getInstance().getProperty("DB_URL"),
+			   PropertiesCache.getInstance().getProperty("USER"),
 			   PropertiesCache.getInstance().getProperty("PASS")
 			   );
 	   // Execute SQL query
 	   stmt = conn.createStatement();
 	   rs = stmt.executeQuery(query);
-	   
+
 	   // Extract data from result set
 	   while(rs.next()){
 	      //Retrieve by column name
 		   return rs.getString("ItemId");
 	   }
-	
+
 	   // Clean-up environment
 	   rs.close();
 	   stmt.close();
@@ -1156,7 +1156,7 @@ public class StoryResponse {
 	    try { stmt.close(); } catch (Exception e) { /* ignored */ }
 	    try { conn.close(); } catch (Exception e) { /* ignored */ }
    }
-	   
+
     return null;
 }
 
@@ -1164,12 +1164,12 @@ public class StoryResponse {
 	@Path("/imageLinks")
 	@POST
 	public Response getImageLinks(String body) throws SQLException, IOException, InterruptedException {
-		List<Pair<String, String>> stories = getStoryIds("SELECT StoryId, RecordId FROM Story WHERE StoryId in\r\n" + 
-				"(\r\n" + 
-				"SELECT s.StoryId FROM Story s\r\n" + 
-				"JOIN Item i ON s.StoryId = i.StoryId\r\n" + 
-				"WHERE `edm:WebResource` is null\r\n" + 
-				"ORDER BY StoryId ASC\r\n" + 
+		List<Pair<String, String>> stories = getStoryIds("SELECT StoryId, RecordId FROM Story WHERE StoryId in\r\n" +
+				"(\r\n" +
+				"SELECT s.StoryId FROM Story s\r\n" +
+				"JOIN Item i ON s.StoryId = i.StoryId\r\n" +
+				"WHERE `edm:WebResource` is null\r\n" +
+				"ORDER BY StoryId ASC\r\n" +
 				")");
 
 		int total = 0;
@@ -1178,7 +1178,7 @@ public class StoryResponse {
 			String storyId = stories.get(j).getKey();
 			String recordId = stories.get(j).getValue();
 
-			File file = new File("/home/enrich/log/imageLinks/" + storyId + ".txt");
+			File file = new File(PropertiesCache.getInstance().getProperty("HOME") + "/log/imageLinks/" + storyId + ".txt");
 			file.getParentFile().mkdirs();
 			FileWriter fileWriter = new FileWriter(file);
 			fileWriter.write("https://www.europeana.eu/api/v2/record" + recordId + ".jsonld?wskey=api2demo");
@@ -1189,7 +1189,7 @@ public class StoryResponse {
 		    if (con.getResponseCode() != 200){
 		    	continue;
 		    }
-		    
+
 		    BufferedReader in = new BufferedReader(
 		    		new InputStreamReader(con.getInputStream())
 		    );
@@ -1198,7 +1198,7 @@ public class StoryResponse {
 		    while ((inputLine = in.readLine()) != null) {
 		        content.append(inputLine);
 		    }
-			
+
 		    in.close();
 		    con.disconnect();
 
@@ -1208,14 +1208,14 @@ public class StoryResponse {
 			countAdded = 0;
 			for (int i = 0; i < dataArray.size(); i++) {
 				for(Map.Entry<String, JsonElement> entry : dataArray.get(i).getAsJsonObject().entrySet()) {
-					if ((entry.getKey().equals("@type") && 
-							(!entry.getValue().isJsonArray() && entry.getValue().getAsString().equals("edm:WebResource")) 
+					if ((entry.getKey().equals("@type") &&
+							(!entry.getValue().isJsonArray() && entry.getValue().getAsString().equals("edm:WebResource"))
 							|| (entry.getValue().isJsonArray() && entry.getValue().getAsJsonArray().toString().contains("edm:WebResource")))) {
 						if (!dataArray.get(i).getAsJsonObject().keySet().contains("dcterms:isReferencedBy")){
 							String imageLink = dataArray.get(i).getAsJsonObject().get("@id").toString();
 							String pdfImageLink = "";
 							String ImageId = "";
-							if ((dataArray.get(i).getAsJsonObject().has("ebucore:hasMimeType") && dataArray.get(i).getAsJsonObject().get("ebucore:hasMimeType").toString().contains("application/pdf")) 
+							if ((dataArray.get(i).getAsJsonObject().has("ebucore:hasMimeType") && dataArray.get(i).getAsJsonObject().get("ebucore:hasMimeType").toString().contains("application/pdf"))
 									|| dataArray.get(i).getAsJsonObject().get("@id").toString().contains(".pdf")) {
 
 								for (int n = 0; n < itemIds.size(); n++) {
@@ -1254,7 +1254,7 @@ public class StoryResponse {
 						    manifestCon.setRequestMethod("GET");
 
 	    	    	        String redirect = manifestCon.getHeaderField("Location");
-	    					
+
 		    				if (redirect != null){
 								manifestCon.disconnect();
 		    					manifestCon = (HttpURLConnection) new URL(redirect).openConnection();
@@ -1263,7 +1263,7 @@ public class StoryResponse {
 								manifestCon.disconnect();
 		    					manifestCon = (HttpURLConnection) new URL(manifestCon.getURL().toString()).openConnection();
 		    				}
-						    
+
 						    BufferedReader manifestIn = new BufferedReader(
 						    		new InputStreamReader(manifestCon.getInputStream())
 						    );
@@ -1284,7 +1284,7 @@ public class StoryResponse {
 	    						//String imageLink = imageLinkObject.get("@id").getAsJsonObject().get("service").getAsJsonObject().get("@id").toString();
 								String updateQuery = "SET SQL_SAFE_UPDATES = 0; UPDATE Item SET `edm:WebResource` = " + "\"" + webResource.replace("\"", "") + "\"" + " WHERE ItemId = " + itemIds.get(l);
 								executeQuery(updateQuery, "Update");
-								
+
 	    					}
 							manifestIn.close();
 							manifestCon.disconnect();
@@ -1294,21 +1294,21 @@ public class StoryResponse {
 			}
 		    TimeUnit.MILLISECONDS.sleep(10000);
 		}
-		
-	    
+
+
 		ResponseBuilder rBuild = Response.ok(total + " items updated");
         return rBuild.build();
 	}
-	
+
 	//Add new entry
 	@Path("/storyLanguages")
 	@POST
 	public Response getStoryLanguages(String body) throws SQLException, IOException, InterruptedException {
-		String query = "SELECT StoryId, RecordId FROM Story where StoryId in\r\n" + 
-				"(\r\n" + 
-				"select distinct(i.StoryId)  as RecordId FROM Transcription t\r\n" + 
-				"JOIN Item i ON i.ItemId = t.ItemId\r\n" + 
-				"WHERE TranscriptionId not in (SELECT TranscriptionId FROM TranscriptionLanguage) and NoText = 0\r\n" + 
+		String query = "SELECT StoryId, RecordId FROM Story where StoryId in\r\n" +
+				"(\r\n" +
+				"select distinct(i.StoryId)  as RecordId FROM Transcription t\r\n" +
+				"JOIN Item i ON i.ItemId = t.ItemId\r\n" +
+				"WHERE TranscriptionId not in (SELECT TranscriptionId FROM TranscriptionLanguage) and NoText = 0\r\n" +
 				")";
 		List<Pair<String, String>> stories = getStoryIds(query);
 
@@ -1316,7 +1316,7 @@ public class StoryResponse {
 			String storyId = stories.get(j).getKey();
 			String recordId = stories.get(j).getValue();
 
-			File file = new File("/home/enrich/log/storyLanguages/" + storyId + ".txt");
+			File file = new File(PropertiesCache.getInstance().getProperty("HOME") + "/log/storyLanguages/" + storyId + ".txt");
 			file.getParentFile().mkdirs();
 			FileWriter fileWriter = new FileWriter(file);
 			fileWriter.write("https://www.europeana.eu/api/v2/record" + recordId + ".jsonld?wskey=api2demo");
@@ -1346,13 +1346,13 @@ public class StoryResponse {
 					}
 				}
 			}
-			
+
 		    in.close();
 		    con.disconnect();
 		    TimeUnit.MILLISECONDS.sleep(1000);
 		}
-		
-	    
+
+
 		ResponseBuilder rBuild = Response.ok(query + " " + stories);
         return rBuild.build();
 	}
