@@ -1081,7 +1081,7 @@ public class ProjectResponse {
 			String[] recordIdSplit = recordId.split("/");
 			recordId = recordIdSplit[recordIdSplit.length - 2]	+ "_" +recordIdSplit[recordIdSplit.length - 1];
 		}
-		File file = new File(PropertiesCache.getInstance().getProperty("IMPORTS") + "/" + queryParams.getFirst("importName") + "/" + recordId + ".txt");
+		File file = new File(PropertiesCache.getInstance().getProperty("HOME") + "/imports" + queryParams.getFirst("importName") + "/" + recordId + ".txt");
 		file.getParentFile().mkdirs();
 		FileWriter fileWriter = new FileWriter(file);
 		fileWriter.write(body);
