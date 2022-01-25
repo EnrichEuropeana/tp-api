@@ -17,12 +17,13 @@ Java Version 8
 
 Create a `config.properties` file in the resource package containing following properties:
 
- - PASS=[your database password]
- - DB_URL=[your jdbc url in format: *jdbc:driver://host:port/databaseName;URLAttributes*]
- - USER=[your database user]
- - SECRET_KEY=[needs to be requested, it's needed for the DEI-API; if you don't use DEI you can leave it blank]
- - DRIVER=[your jdbc driver e.g. *com.mysql.jdbc.Driver*]
- - SOLR=[your solr server]
+ - PASS = [your database password]
+ - DB_URL = [your jdbc url in format: *jdbc:driver://host:port/databaseName;URLAttributes*]
+ - USER = [your database user]
+ - SECRET_KEY = [needs to be requested, it's needed for the DEI-API; if you don't use DEI you can leave it blank]
+ - DRIVER = [your jdbc driver e.g. *com.mysql.jdbc.Driver*]
+ - SOLR = [your solr server]
+ - HOME = [home path e.g. /home/username]
  
 Make sure to configure your e.g. Apache webserver as a reverse proxy between for Tomcat server. Should look like this:
  
