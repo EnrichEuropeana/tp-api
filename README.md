@@ -15,7 +15,7 @@ Java Version 8
 
 ## Set up
 
-Create a `config.properties` file in the resource package containing following properties:
+Create a `config.properties` file in the resource/local resource/dev or resource/prod package containing following properties:
 
  - PASS = [your database password]
  - DB_URL = [your jdbc url in format: *jdbc:driver://host:port/databaseName;URLAttributes*]
@@ -32,7 +32,7 @@ Make sure to configure your e.g. Apache webserver as a reverse proxy between for
 
 For deploying use either an IDE like Eclipse and export a war-file or use a build tool like *ant*. 
 
-If you choose *ant* you can use the existing build.xml in the project. Run `ant -f build.xml`. The war-file is copied to dist-dir inside the project. 
+If you choose *ant* you can use the existing build.xml in the project. Run `ant -f build.(local|dev|prod).xml`. The war-file is copied to dist-dir inside the project. 
 
 Copy your war-file to e.g. Tomcat webapps-dir and restart the server.
 
