@@ -25,16 +25,16 @@ public class ProgressResponse {
 		   List<Progress> progresss = new ArrayList<Progress>();
 		   ResultSet rs = null;
 		   Connection conn = null;
-		   Statement stmt = null;		   	       
+		   Statement stmt = null;
 		   try {
-	        
+
 		   // Register JDBC driver
 				Class.forName(PropertiesCache.getInstance().getProperty("DRIVER"));
-				
+
 				   // Open a connection
 				   conn = DriverManager.getConnection(
-						   PropertiesCache.getInstance().getProperty("DB_URL"), 
-						   PropertiesCache.getInstance().getProperty("USER"), 
+						   PropertiesCache.getInstance().getProperty("DB_URL"),
+						   PropertiesCache.getInstance().getProperty("USER"),
 						   PropertiesCache.getInstance().getProperty("PASS")
 						   );
 				   // Execute SQL query
@@ -54,7 +54,7 @@ public class ProgressResponse {
 			   }
 		   }
 		   rs = stmt.executeQuery(query);
-		   
+
 		   // Extract data from result set
 		   while(rs.next()){
 		      //Retrieve by column name
@@ -64,7 +64,7 @@ public class ProgressResponse {
 			  progress.setAmount(rs.getInt("Amount"));
 			  progresss.add(progress);
 		   }
-		
+
 		   // Clean-up environment
 		   rs.close();
 		   stmt.close();
@@ -95,11 +95,11 @@ public class ProgressResponse {
 	@Produces("application/json;charset=utf-8")
 	@GET
 	public Response getTranscribedCharacters(@Context UriInfo uriInfo) throws SQLException {
-		String query = "SELECT \r\n" + 
-				"YEAR(Timestamp) as Year,\r\n" + 
-				"MONTH(Timestamp) as Month,\r\n" + 
-				"SUM(Amount) as Amount\r\n" + 
-				"FROM Score\r\n" + 
+		String query = "SELECT \r\n" +
+				"YEAR(Timestamp) as Year,\r\n" +
+				"MONTH(Timestamp) as Month,\r\n" +
+				"SUM(Amount) as Amount\r\n" +
+				"FROM Score\r\n" +
 				"GROUP BY YEAR(Timestamp), MONTH(Timestamp)";
 		String resource = executeQuery(query, "Select");
 		ResponseBuilder rBuild = Response.ok(resource);
@@ -111,10 +111,10 @@ public class ProgressResponse {
 	@Produces("application/json;charset=utf-8")
 	@GET
 	public Response getDocumentsStarted(@Context UriInfo uriInfo) throws SQLException {
-		String query = "SELECT \r\n" + 
-				"YEAR(Timestamp) as Year,\r\n" + 
-				"MONTH(Timestamp) as Month,\r\n" + 
-				"count(*) as Amount\r\n" + 
+		String query = "SELECT \r\n" +
+				"YEAR(Timestamp) as Year,\r\n" +
+				"MONTH(Timestamp) as Month,\r\n" +
+				"count(distinct i.ItemId) as Amount\r\n" +
 				"FROM Score s\r\n" +
 				"JOIN (SELECT ItemId FROM Item i WHERE CompletionStatusId != 1) i ON s.ItemId = i.ItemId " +
 				"GROUP BY YEAR(Timestamp), MONTH(Timestamp)";
@@ -128,10 +128,10 @@ public class ProgressResponse {
 	@Produces("application/json;charset=utf-8")
 	@GET
 	public Response getDocumentsCompleted(@Context UriInfo uriInfo) throws SQLException {
-		String query = "SELECT \r\n" + 
-				"YEAR(Timestamp) as Year,\r\n" + 
-				"MONTH(Timestamp) as Month,\r\n" + 
-				"count(*) as Amount\r\n" + 
+		String query = "SELECT \r\n" +
+				"YEAR(Timestamp) as Year,\r\n" +
+				"MONTH(Timestamp) as Month,\r\n" +
+				"count(*) as Amount\r\n" +
 				"FROM Score s\r\n" +
 				"JOIN (SELECT ItemId FROM Item i WHERE CompletionStatusId = 4) i ON s.ItemId = i.ItemId " +
 				"GROUP BY YEAR(Timestamp), MONTH(Timestamp)";
@@ -139,17 +139,17 @@ public class ProgressResponse {
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
 	}
-	
+
 
 	//Get entries
 	@Path("documentsstartedcampaign")
 	@Produces("application/json;charset=utf-8")
 	@GET
 	public Response getDocumentsStartedCampaign(@Context UriInfo uriInfo) throws SQLException {
-		String query = "SELECT \r\n" + 
-				"YEAR(Timestamp) as Year,\r\n" + 
-				"MONTH(Timestamp) as Month,\r\n" + 
-				"count(*) as Amount\r\n" + 
+		String query = "SELECT \r\n" +
+				"YEAR(Timestamp) as Year,\r\n" +
+				"MONTH(Timestamp) as Month,\r\n" +
+				"count(*) as Amount\r\n" +
 				"FROM Score s\r\n" +
 				"JOIN (SELECT ItemId FROM Item i WHERE CompletionStatusId != 1) i ON s.ItemId = i.ItemId " +
 				"GROUP BY YEAR(Timestamp), MONTH(Timestamp)";
