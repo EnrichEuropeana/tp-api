@@ -20,7 +20,7 @@ Create a `config.properties` file in the resource/local resource/dev or resource
  - PASS = [your database password]
  - DB_URL = [your jdbc url in format: *jdbc:driver://host:port/databaseName;URLAttributes*]
  - USER = [your database user]
- - SECRET_KEY = [needs to be requested, it's needed for the DEI-API; if you don't use DEI you can leave it blank]
+ - SECRET = [needs to be requested, it's needed for the DEI-API; if you don't use DEI you can leave it blank]
  - DRIVER = [your jdbc driver e.g. *com.mysql.jdbc.Driver*]
  - SOLR = [your solr server]
  - HOME = [home path e.g. /home/username]
