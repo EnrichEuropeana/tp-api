@@ -141,34 +141,34 @@ public class StoryResponse {
 				  // Iterate through Items of the Story
 				  List<Item> ItemList = new ArrayList<Item>();
 				  if (rs.getString("ItemId") != null) {
-					  String[] ItemIds = rs.getString("ItemId").split("§~§");
-					  String[] ItemTitles = rs.getString("Title").split("§~§");
-					  String[] ItemCompletionStatusColorCodes = rs.getString("CompletionStatusColorcode").split("§~§");
-					  String[] ItemCompletionStatusNames = rs.getString("CompletionStatusName").split("§~§");
-					  String[] ItemCompletionStatusIds = rs.getString("CompletionStatusId").split("§~§");
+					  String[] ItemIds = rs.getString("ItemId").split("ï¿½~ï¿½");
+					  String[] ItemTitles = rs.getString("Title").split("ï¿½~ï¿½");
+					  String[] ItemCompletionStatusColorCodes = rs.getString("CompletionStatusColorcode").split("ï¿½~ï¿½");
+					  String[] ItemCompletionStatusNames = rs.getString("CompletionStatusName").split("ï¿½~ï¿½");
+					  String[] ItemCompletionStatusIds = rs.getString("CompletionStatusId").split("ï¿½~ï¿½");
 					  String[] ItemOldItemIds = null;
 					  if (rs.getString("OldItemId") != null) {
-						  ItemOldItemIds = rs.getString("OldItemId").split("§~§");
+						  ItemOldItemIds = rs.getString("OldItemId").split("ï¿½~ï¿½");
 					  }
 					  String[] ItemDescriptions = null;
 					  if (rs.getString("Description") != null) {
-						  ItemDescriptions = rs.getString("Description").split("§~§");
+						  ItemDescriptions = rs.getString("Description").split("ï¿½~ï¿½");
 					  }
 					  String[] ItemDateStarts = null;
 					  if (rs.getString("DateStart") != null) {
-						  ItemDateStarts = rs.getString("DateStart").split("§~§");
+						  ItemDateStarts = rs.getString("DateStart").split("ï¿½~ï¿½");
 					  }
 					  String[] ItemDateEnds = null;
 					  if (rs.getString("DateEnd") != null) {
-						  ItemDateEnds = rs.getString("DateEnd").split("§~§");
+						  ItemDateEnds = rs.getString("DateEnd").split("ï¿½~ï¿½");
 					  }
 					  String[] ItemDatasetIds = null;
 					  if (rs.getString("DatasetId") != null) {
-						  ItemDatasetIds = rs.getString("DatasetId").split("§~§");
+						  ItemDatasetIds = rs.getString("DatasetId").split("ï¿½~ï¿½");
 					  }
-					  String[] ItemImageLinks = rs.getString("ImageLink").split("§~§");
-					  String[] ItemOrderIndexs = rs.getString("OrderIndex").split("§~§");
-					  String[] ItemTimestamps = rs.getString("Timestamp").split("§~§");
+					  String[] ItemImageLinks = rs.getString("ImageLink").split("ï¿½~ï¿½");
+					  String[] ItemOrderIndexs = rs.getString("OrderIndex").split("ï¿½~ï¿½");
+					  String[] ItemTimestamps = rs.getString("Timestamp").split("ï¿½~ï¿½");
 	
 					  // Initialize lists split by Stories
 					  String[] PlaceIdList = new String[ItemIds.length];
@@ -181,31 +181,31 @@ public class StoryResponse {
 					  String[] PlaceUserIdList = new String[ItemIds.length];
 					  String[] PlaceUserGeneratedList = new String[ItemIds.length];
 					  if (rs.getString("PlaceId") != null) {
-						  PlaceIdList = rs.getString("PlaceId").split("§~§", -1);
+						  PlaceIdList = rs.getString("PlaceId").split("ï¿½~ï¿½", -1);
 					  }
 					  if (rs.getString("PlaceName") != null && rs.getString("PlaceName") != "NULL") {
-						  PlaceNameList = rs.getString("PlaceName").split("§~§", -1);
+						  PlaceNameList = rs.getString("PlaceName").split("ï¿½~ï¿½", -1);
 					  }
 					  if (rs.getString("PlaceLatitude") != null && rs.getString("PlaceLatitude") != "NULL") {
-						  PlaceLatitudeList = rs.getString("PlaceLatitude").split("§~§", -1);
+						  PlaceLatitudeList = rs.getString("PlaceLatitude").split("ï¿½~ï¿½", -1);
 					  }
 					  if (rs.getString("PlaceLongitude") != null && rs.getString("PlaceLongitude") != "NULL") {
-						  PlaceLongitudeList = rs.getString("PlaceLongitude").split("§~§", -1);
+						  PlaceLongitudeList = rs.getString("PlaceLongitude").split("ï¿½~ï¿½", -1);
 					  }
 					  if (rs.getString("PlaceLink") != null && rs.getString("PlaceLink") != "NULL") {
-						  PlaceLinkList = rs.getString("PlaceLink").split("§~§", -1);
+						  PlaceLinkList = rs.getString("PlaceLink").split("ï¿½~ï¿½", -1);
 					  }
 					  if (rs.getString("PlaceZoom") != null && rs.getString("PlaceZoom") != "NULL") {
-						  PlaceZoomList = rs.getString("PlaceZoom").split("§~§", -1);
+						  PlaceZoomList = rs.getString("PlaceZoom").split("ï¿½~ï¿½", -1);
 					  }
 					  if (rs.getString("PlaceComment") != null && rs.getString("PlaceComment") != "NULL") {
-						  PlaceCommentList = rs.getString("PlaceComment").split("§~§", -1);
+						  PlaceCommentList = rs.getString("PlaceComment").split("ï¿½~ï¿½", -1);
 					  }
 					  if (rs.getString("PlaceUserId") != null && rs.getString("PlaceUserId") != "NULL") {
-						  PlaceUserIdList = rs.getString("PlaceUserId").split("§~§", -1);
+						  PlaceUserIdList = rs.getString("PlaceUserId").split("ï¿½~ï¿½", -1);
 					  }
 					  if (rs.getString("PlaceUserGenerated") != null && rs.getString("PlaceUserGenerated") != "NULL") {
-						  PlaceUserGeneratedList = rs.getString("PlaceUserGenerated").split("§~§", -1);
+						  PlaceUserGeneratedList = rs.getString("PlaceUserGenerated").split("ï¿½~ï¿½", -1);
 					  }
 					  
 	
@@ -227,7 +227,7 @@ public class StoryResponse {
 						            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 						            Date date = formatter.parse(ItemDateStarts[j]);
 						            Timestamp timeStampDate = new Timestamp(date.getTime());
-						            item.setDateStart(timeStampDate);
+						            item.setDateStart(timeStampDate.toString());
 								} catch (ParseException e) {
 								    System.out.println("Exception :" + e);
 								    return "Exception :" + e;
@@ -238,7 +238,7 @@ public class StoryResponse {
 						            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 						            Date date = formatter.parse(ItemDateEnds[j]);
 						            Timestamp timeStampDate = new Timestamp(date.getTime());
-						            item.setDateEnd(timeStampDate);
+						            item.setDateEnd(timeStampDate.toString());
 						        } catch (ParseException e) {
 						            System.out.println("Exception :" + e);
 						            return "Exception :" + e;
@@ -619,28 +619,28 @@ public class StoryResponse {
 					", s.DateEnd as StoryDateEnd" +
 					", s.OrderIndex as StoryOrderIndex" +
 					", s.PreviewImage as StoryPreviewImage" +
-					", group_concat(i.ItemId SEPARATOR '§~§') as ItemId" +
-					", group_concat(IFNULL(i.Title, 'NULL') SEPARATOR '§~§') as Title" +
-					", group_concat(i.CompletionStatusColorCode SEPARATOR '§~§') as CompletionStatusColorCode" +
-					", group_concat(i.CompletionStatusName SEPARATOR '§~§') as CompletionStatusName" +
-					", group_concat(i.CompletionStatusId SEPARATOR '§~§') as CompletionStatusId" +
-					", group_concat(IFNULL(i.OldItemId, 'NULL') SEPARATOR '§~§') as OldItemId" +
-					", group_concat(IFNULL(i.Description, 'NULL') SEPARATOR '§~§') as Description" +
-					", group_concat(IFNULL(i.DateStart, 'NULL') SEPARATOR '§~§') as DateStart" +
-					", group_concat(IFNULL(i.DateEnd, 'NULL') SEPARATOR '§~§') as DateEnd" +
-					", group_concat(IFNULL(i.DatasetId, 'NULL') SEPARATOR '§~§') as DatasetId" +
-					", group_concat(IFNULL(i.ImageLink, 'NULL') SEPARATOR '§~§') as ImageLink" +
-					", group_concat(IFNULL(i.OrderIndex, 'NULL') SEPARATOR '§~§') as OrderIndex" +
-					", group_concat(IFNULL(i.Timestamp, 'NULL') SEPARATOR '§~§') as Timestamp" +
-					", group_concat(IFNULL(c.PlaceId, 'NULL') SEPARATOR '§~§') as PlaceId " +
-					", group_concat(IFNULL(c.PlaceName, 'NULL') SEPARATOR '§~§') as PlaceName " +
-					", group_concat(IFNULL(c.PlaceLatitude, 'NULL') SEPARATOR '§~§') as PlaceLatitude " +
-					", group_concat(IFNULL(c.PlaceLongitude, 'NULL') SEPARATOR '§~§') as PlaceLongitude " +
-					", group_concat(IFNULL(c.PlaceLink, 'NULL') SEPARATOR '§~§') as PlaceLink " +
-					", group_concat(IFNULL(c.PlaceZoom, 'NULL') SEPARATOR '§~§') as PlaceZoom " +
-					", group_concat(IFNULL(c.PlaceComment, 'NULL') SEPARATOR '§~§') as PlaceComment " +
-					", group_concat(IFNULL(c.PlaceUserId, 'NULL') SEPARATOR '§~§') as PlaceUserId " +
-					", group_concat(IFNULL(c.PlaceUserGenerated, 'NULL') SEPARATOR '§~§') as PlaceUserGenerated " +
+					", group_concat(i.ItemId SEPARATOR 'ï¿½~ï¿½') as ItemId" +
+					", group_concat(IFNULL(i.Title, 'NULL') SEPARATOR 'ï¿½~ï¿½') as Title" +
+					", group_concat(i.CompletionStatusColorCode SEPARATOR 'ï¿½~ï¿½') as CompletionStatusColorCode" +
+					", group_concat(i.CompletionStatusName SEPARATOR 'ï¿½~ï¿½') as CompletionStatusName" +
+					", group_concat(i.CompletionStatusId SEPARATOR 'ï¿½~ï¿½') as CompletionStatusId" +
+					", group_concat(IFNULL(i.OldItemId, 'NULL') SEPARATOR 'ï¿½~ï¿½') as OldItemId" +
+					", group_concat(IFNULL(i.Description, 'NULL') SEPARATOR 'ï¿½~ï¿½') as Description" +
+					", group_concat(IFNULL(i.DateStart, 'NULL') SEPARATOR 'ï¿½~ï¿½') as DateStart" +
+					", group_concat(IFNULL(i.DateEnd, 'NULL') SEPARATOR 'ï¿½~ï¿½') as DateEnd" +
+					", group_concat(IFNULL(i.DatasetId, 'NULL') SEPARATOR 'ï¿½~ï¿½') as DatasetId" +
+					", group_concat(IFNULL(i.ImageLink, 'NULL') SEPARATOR 'ï¿½~ï¿½') as ImageLink" +
+					", group_concat(IFNULL(i.OrderIndex, 'NULL') SEPARATOR 'ï¿½~ï¿½') as OrderIndex" +
+					", group_concat(IFNULL(i.Timestamp, 'NULL') SEPARATOR 'ï¿½~ï¿½') as Timestamp" +
+					", group_concat(IFNULL(c.PlaceId, 'NULL') SEPARATOR 'ï¿½~ï¿½') as PlaceId " +
+					", group_concat(IFNULL(c.PlaceName, 'NULL') SEPARATOR 'ï¿½~ï¿½') as PlaceName " +
+					", group_concat(IFNULL(c.PlaceLatitude, 'NULL') SEPARATOR 'ï¿½~ï¿½') as PlaceLatitude " +
+					", group_concat(IFNULL(c.PlaceLongitude, 'NULL') SEPARATOR 'ï¿½~ï¿½') as PlaceLongitude " +
+					", group_concat(IFNULL(c.PlaceLink, 'NULL') SEPARATOR 'ï¿½~ï¿½') as PlaceLink " +
+					", group_concat(IFNULL(c.PlaceZoom, 'NULL') SEPARATOR 'ï¿½~ï¿½') as PlaceZoom " +
+					", group_concat(IFNULL(c.PlaceComment, 'NULL') SEPARATOR 'ï¿½~ï¿½') as PlaceComment " +
+					", group_concat(IFNULL(c.PlaceUserId, 'NULL') SEPARATOR 'ï¿½~ï¿½') as PlaceUserId " +
+					", group_concat(IFNULL(c.PlaceUserGenerated, 'NULL') SEPARATOR 'ï¿½~ï¿½') as PlaceUserGenerated " +
 					"FROM " +
 						"(" +
 						"SELECT * " +

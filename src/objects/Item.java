@@ -3,6 +3,8 @@ package objects;
 import java.sql.Timestamp;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public class Item {
 	public Integer ItemId;
 	public String Title;
@@ -27,8 +29,8 @@ public class Item {
 	public Integer OldItemId;
 	public String Description;
 	public Integer DescriptionLanguage;
-	public Timestamp DateStart;
-	public Timestamp DateEnd;
+	public String DateStart;
+	public String DateEnd;
 	public String DateStartDisplay;
 	public String DateEndDisplay;
 	public Integer DatasetId;
@@ -78,8 +80,13 @@ public class Item {
 	public String StorySummary;
 	public Integer StoryParentStory;
 	public String StorySearchText;
+	
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone="UTC")
 	public Timestamp StoryDateStart;
+
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone="UTC")
 	public Timestamp StoryDateEnd;
+
 	public Integer StoryOrderIndex;
 	public String[] PropertyIds;
 	public List<Property> Properties;
@@ -288,10 +295,10 @@ public class Item {
 	public void setDescriptionLanguage(Integer descriptionLanguage) {
 		DescriptionLanguage = descriptionLanguage;
 	}
-	public void setDateStart(Timestamp dateStart) {
+	public void setDateStart(String dateStart) {
 		DateStart = dateStart;
 	}
-	public void setDateEnd(Timestamp dateEnd) {
+	public void setDateEnd(String dateEnd) {
 		DateEnd = dateEnd;
 	}
 	public void setDateStartDisplay(String dateStartDisplay) {

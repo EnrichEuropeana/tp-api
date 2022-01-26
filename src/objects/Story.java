@@ -3,6 +3,8 @@ package objects;
 import java.sql.Timestamp;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public class Story {
 	public Integer StoryId;
 	public String dcTitle;
@@ -199,9 +201,11 @@ public class Story {
 	public void setDatasetName(String datasetName) {
 		DatasetName = datasetName;
 	}
+	
 	public void setDateStart(Timestamp dateStart) {
 		DateStart = dateStart;
 	}
+	
 	public void setDateEnd(Timestamp dateEnd) {
 		DateEnd = dateEnd;
 	}

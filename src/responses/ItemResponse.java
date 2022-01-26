@@ -439,8 +439,8 @@ public class ItemResponse {
 			  item.setOldItemId(rs.getInt("OldItemId"));
 			  item.setDescription(rs.getString("Description"));
 			  item.setDescriptionLanguage(rs.getInt("DescriptionLanguage"));
-			  item.setDateStart(rs.getTimestamp("DateStart"));
-			  item.setDateEnd(rs.getTimestamp("DateEnd"));
+			  item.setDateStart(rs.getString("DateStart"));
+			  item.setDateEnd(rs.getString("DateEnd"));
 			  item.setDateStartDisplay(rs.getString("DateStartDisplay"));
 			  item.setDateEndDisplay(rs.getString("DateEndDisplay"));
 			  item.setDatasetId(rs.getInt("DatasetId"));
@@ -580,8 +580,8 @@ public class ItemResponse {
 			  item.setOldItemId(rs.getInt("OldItemId"));
 			  item.setDescription(rs.getString("Description"));
 			  item.setDescriptionLanguage(rs.getInt("DescriptionLanguage"));
-			  item.setDateStart(rs.getTimestamp("DateStart"));
-			  item.setDateEnd(rs.getTimestamp("DateEnd"));
+			  item.setDateStart(rs.getString("DateStart"));
+			  item.setDateEnd(rs.getString("DateEnd"));
 			  item.setDateStartDisplay(rs.getString("DateStartDisplay"));
 			  item.setDateEndDisplay(rs.getString("DateEndDisplay"));
 			  item.setDatasetId(rs.getInt("DatasetId"));
