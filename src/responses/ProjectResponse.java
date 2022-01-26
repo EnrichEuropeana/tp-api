@@ -330,7 +330,7 @@ public class ProjectResponse {
 	@Path("/test")
 	@POST
 	public String test(String body) throws SQLException, IOException {
-	    URL storySolr = new URL(PropertiesCache.getInstance().getProperty("DB_URL") + "/solr/Stories/dataimport?command=full-import&clean=true");
+	    URL storySolr = new URL(PropertiesCache.getInstance().getProperty("SOLR") + "/solr/Stories/dataimport?command=full-import&clean=true");
 	    HttpURLConnection con = (HttpURLConnection) storySolr.openConnection();
 	    con.setRequestMethod("GET");
 	    BufferedReader in = new BufferedReader(
@@ -343,7 +343,7 @@ public class ProjectResponse {
 	    in.close();
 	    con.disconnect();
 
-	    URL itemSolr = new URL(PropertiesCache.getInstance().getProperty("DB_URL") + "/solr/Items/dataimport?command=full-import&clean=true");
+	    URL itemSolr = new URL(PropertiesCache.getInstance().getProperty("SOLR") + "/solr/Items/dataimport?command=full-import&clean=true");
 	    con = (HttpURLConnection) itemSolr.openConnection();
 	    con.setRequestMethod("GET");
 	    in = new BufferedReader(
@@ -1116,8 +1116,18 @@ public class ProjectResponse {
 		    con.disconnect();
 	    }  catch (Exception e) {
         } finally {
-			in.close();
-			con.disconnect();
+        	try {
+        		if (in != null) {
+							in.close();
+        		}
+        		if (con != null) {
+							con.disconnect();
+        		}
+        	} catch (Exception e) {
+        	} finally {
+        		in = null;
+        		con = null;
+        	}
 	   }
 
 		ResponseBuilder rBuild = Response.ok(resource);
