@@ -2,6 +2,7 @@
 build
 dist
 WebContent
+.env*
 
 # Eclipse
 .settings/
