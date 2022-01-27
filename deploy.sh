@@ -7,6 +7,7 @@ export $(grep -v '^#' .env."$STAGE" | xargs)
 echo
 echo "Deploying to $STAGE..."
 date
+echo
 
 scp ./dist/tp-api.war $SSH_USER@$SSH_HOST:$SSH_DEST
 
@@ -20,5 +21,5 @@ else
   echo 'Deploy failed'
 fi
 
-echo
 date
+echo
