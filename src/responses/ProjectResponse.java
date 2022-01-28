@@ -333,6 +333,7 @@ public class ProjectResponse {
 	    URL storySolr = new URL(PropertiesCache.getInstance().getProperty("SOLR") + "/solr/Stories/dataimport?command=full-import&clean=true");
 	    HttpURLConnection con = (HttpURLConnection) storySolr.openConnection();
 	    con.setRequestMethod("GET");
+		  con.setConnectTimeout(PropertiesCache.getInstance().getProperty("TIMEOUT"));
 	    BufferedReader in = new BufferedReader(
 	    new InputStreamReader(con.getInputStream()));
 	    String inputLine;
@@ -346,6 +347,7 @@ public class ProjectResponse {
 	    URL itemSolr = new URL(PropertiesCache.getInstance().getProperty("SOLR") + "/solr/Items/dataimport?command=full-import&clean=true");
 	    con = (HttpURLConnection) itemSolr.openConnection();
 	    con.setRequestMethod("GET");
+		  con.setConnectTimeout(PropertiesCache.getInstance().getProperty("TIMEOUT"));
 	    in = new BufferedReader(
 	    new InputStreamReader(con.getInputStream()));
 	    content = new StringBuffer();
@@ -1093,6 +1095,7 @@ public class ProjectResponse {
 		    URL storySolr = new URL(PropertiesCache.getInstance().getProperty("SOLR") + "/solr/Stories/dataimport?command=full-import&clean=true");
 		    con = (HttpURLConnection) storySolr.openConnection();
 		    con.setRequestMethod("GET");
+		    con.setConnectTimeout(PropertiesCache.getInstance().getProperty("TIMEOUT"));
 		    in = new BufferedReader(
 		    new InputStreamReader(con.getInputStream()));
 		    String inputLine;
@@ -1106,6 +1109,7 @@ public class ProjectResponse {
 		    URL itemSolr = new URL(PropertiesCache.getInstance().getProperty("SOLR") + "/solr/Items/dataimport?command=full-import&clean=true");
 		    con = (HttpURLConnection) itemSolr.openConnection();
 		    con.setRequestMethod("GET");
+		    con.setConnectTimeout(PropertiesCache.getInstance().getProperty("TIMEOUT"));
 		    in = new BufferedReader(
 		    new InputStreamReader(con.getInputStream()));
 		    content = new StringBuffer();
