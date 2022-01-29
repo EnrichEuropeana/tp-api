@@ -1,6 +1,9 @@
 pwd := $(shell pwd)
 dbPath := ../../transcribathon-platform/tp-mysql
 
+docker_logs:
+	sudo docker-compose logs
+
 docker_start:
 	@echo "Starting the database container..."
 	cd $(dbPath) && sudo docker-compose up -d
