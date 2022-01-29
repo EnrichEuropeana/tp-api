@@ -2,15 +2,15 @@ pwd := $(shell pwd)
 dbPath := ../../transcribathon-platform/tp-mysql
 
 docker_start:
-	@echo: "Starting the database container..."
-	cd $(dbPath) && sudo docker-container up -d
-	@echo: "Starting the tomcat container..."
-	cd $(pwd) && sudo docker-container up -d
+	@echo "Starting the database container..."
+	cd $(dbPath) && sudo docker-compose up -d
+	@echo "Starting the tomcat container..."
+	cd $(pwd) && sudo docker-compose up -d
 
 docker_stop:
-	@echo: "Stopping all container..."
-	cd $(dbPath) && sudo docker-container down
-	cd $(pwd) && sudo docker-container down
+	@echo "Stopping all container..."
+	cd $(dbPath) && sudo docker-compose down
+	cd $(pwd) && sudo docker-compose down
 
 build_local:
 	@echo "compiling for local"
