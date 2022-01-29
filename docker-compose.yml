@@ -7,3 +7,9 @@ services:
       - ./tomcat/:/usr/local/tomcat
     ports:
       - 8080:8080
+    networks:
+      - tp_backend
+
+networks:
+  tp_backend:
+    external: true
