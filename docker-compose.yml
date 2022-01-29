@@ -5,7 +5,8 @@ services:
     image: tomcat:jre8-openjdk-bullseye
     volumes:
       - ./dist/sid_tp-api.war:/usr/local/tomcat/webapps/api.war
-      - ./import-data:/usr/local/tomcat/import-data
+      - ./tomcat/import-data:/usr/local/tomcat/import-data
+      - ./tomcat/logs:/usr/local/tomcat/logs
     ports:
       - 8080:8080
     networks:
