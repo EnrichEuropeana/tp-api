@@ -2,11 +2,13 @@ version: '3.7'
 
 services:
   tomcat:
-    image: tomcat:jre8-openjdk-bullseye
+    image: tomcat:9-jre8-openjdk-bullseye
+    container_name: tomcat9
     volumes:
       - ./dist/sid_tp-api.war:/usr/local/tomcat/webapps/api.war
       - ./tomcat/import-data:/usr/local/tomcat/import-data
       - ./tomcat/logs:/usr/local/tomcat/logs
+      - ./tomcat/conf/server.xml:/usr/local/tomcat/conf/server.xml
     ports:
       - 8080:8080
     networks:
