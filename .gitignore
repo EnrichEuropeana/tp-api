@@ -2,6 +2,7 @@
 build
 dist
 WebContent
+import-data
 .env*
 
 # Eclipse
