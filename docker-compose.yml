@@ -1,0 +1,9 @@
+version: '3.7'
+
+services:
+  tomcat:
+    image: tomcat:jre8-openjdk-bullseye
+    volumes:
+      - ./tomcat/:/usr/local/tomcat
+    ports:
+      - 8080:8080
