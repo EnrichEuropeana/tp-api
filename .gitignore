@@ -2,7 +2,7 @@
 build
 dist
 WebContent
-import-data
+tomcat
 .env*
 
 # Eclipse
