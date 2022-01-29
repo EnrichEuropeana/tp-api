@@ -15,6 +15,10 @@ docker_stop:
 	cd $(dbPath) && sudo docker-compose down
 	cd $(pwd) && sudo docker-compose down
 
+build_sid:
+	@echo "compiling for SID"
+	ant -f ./build.sid.xml clean && ant -f ./build.sid.xml
+
 build_local:
 	@echo "compiling for local"
 	ant -f ./build.local.xml clean && ant -f ./build.local.xml
