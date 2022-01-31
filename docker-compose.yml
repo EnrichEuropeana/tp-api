@@ -9,6 +9,8 @@ services:
       - ./tomcat/import-data:/usr/local/tomcat/import-data
       - ./tomcat/logs:/usr/local/tomcat/logs
       - ./tomcat/conf/server.xml:/usr/local/tomcat/conf/server.xml
+      - ./tomcat/conf/catalina.properties:/usr/local/tomcat/conf/catalina.properties
+      - ./tomcat/shared-lib:/usr/local/tomcat/shared-lib
     ports:
       - 8080:8080
     networks:
