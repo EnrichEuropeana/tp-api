@@ -9,7 +9,7 @@ echo "Deploying to $STAGE..."
 date
 echo
 
-scp ./dist/tp-api.war $SSH_USER@$SSH_HOST:$SSH_DEST
+scp ./dist/$MV_SRC $SSH_USER@$SSH_HOST:$SSH_DEST
 
 OUT=$?
 
