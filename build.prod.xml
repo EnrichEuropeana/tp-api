@@ -15,13 +15,13 @@
     </target>
 
     <target name="compile" depends="init" >
-        <javac destdir="build/classes" debug="true" srcdir="src">
+        <javac destdir="build/classes" debug="true" srcdir="src" includeantruntime="false">
             <classpath refid="compile.classpath"/>
         </javac>
     </target>
 
     <target name="war" depends="compile">
-        <war destfile="dist/tp-api.war" webxml="WebContent/WEB-INF/web.xml">
+        <war destfile="dist/prod_tp-api.war" webxml="WebContent/WEB-INF/web.xml">
             <fileset dir="WebContent"/>
             <lib dir="WebContent/WEB-INF/lib"/>
             <classes dir="build/classes"/>

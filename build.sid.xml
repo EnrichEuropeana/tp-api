@@ -7,7 +7,7 @@
         </fileset>
     </path>
 
-    <copy file="resources/local/config.properties" todir="build/classes"/>
+    <copy file="resources/sid/config.properties" todir="build/classes"/>
 
     <target name="init">
         <mkdir dir="build/classes"/>
@@ -21,7 +21,7 @@
     </target>
 
     <target name="war" depends="compile">
-        <war destfile="dist/local_tp-api.war" webxml="WebContent/WEB-INF/web.xml">
+        <war destfile="dist/sid_tp-api.war" webxml="WebContent/WEB-INF/web.xml">
             <fileset dir="WebContent"/>
             <lib dir="WebContent/WEB-INF/lib"/>
             <classes dir="build/classes"/>

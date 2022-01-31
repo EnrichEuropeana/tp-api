@@ -1014,8 +1014,18 @@ public class StoryResponse {
 		    con.disconnect();
 		}  catch (Exception e) {
         } finally {
-			in.close();
-			con.disconnect();
+        	try {
+        		if (in != null) {
+							in.close();
+        		}
+        		if (con != null) {
+							con.disconnect();
+        		}
+        	} catch (Exception e) {
+        	} finally {
+        		in = null;
+        		con = null;
+        	}
 	   }
 
 		ResponseBuilder rBuild = Response.ok("Solr update successful");

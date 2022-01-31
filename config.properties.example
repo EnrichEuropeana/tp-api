@@ -5,3 +5,4 @@ PASS=dbpassword
 SECRET=openid-connect-secret
 SOLR=http://localhost:8983
 HOME=/home/user
+TIMEOUT=30000
