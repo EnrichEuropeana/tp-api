@@ -923,138 +923,148 @@ public class ProjectResponse {
 			}
 			else {
 
-		            // get the property value and print it out
+		    // get the property value and print it out
 
-		    		HttpClient httpclient = HttpClients.createDefault();
+		    HttpClient httpclient = HttpClients.createDefault();
 
-		            HttpPost httppost = new HttpPost("https://sso.apps.paas-dev.psnc.pl/auth/realms/EnrichEuropeana/protocol/openid-connect/token");
+		    HttpPost httppost = new HttpPost("https://sso.apps.paas-dev.psnc.pl/auth/realms/EnrichEuropeana/protocol/openid-connect/token");
 
-	    	        List<NameValuePair> params = new ArrayList<NameValuePair>(2);
-	    	        params.add(new BasicNameValuePair("grant_type", "client_credentials"));
-	    	        params.add(new BasicNameValuePair("client_secret", PropertiesCache.getInstance().getProperty("SECRET")));
-	    	        params.add(new BasicNameValuePair("client_id", "tp-api-client"));
-	    	        httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
-	    	        HttpResponse response = httpclient.execute(httppost);
-	    	        HttpEntity entity = response.getEntity();
-	    	        HttpURLConnection con = null;
-	    	        BufferedReader in = null;
+	    	List<NameValuePair> params = new ArrayList<NameValuePair>(2);
+	    	params.add(new BasicNameValuePair("grant_type", "client_credentials"));
+	    	params.add(new BasicNameValuePair("client_secret", PropertiesCache.getInstance().getProperty("SECRET")));
+	    	params.add(new BasicNameValuePair("client_id", "tp-api-client"));
+	    	httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
+	    	HttpResponse response = httpclient.execute(httppost);
+	    	HttpEntity entity = response.getEntity();
+	    	HttpURLConnection con = null;
+	    	BufferedReader in = null;
 
-	    	        if (entity != null) {
-	    	            try (InputStream instream = entity.getContent()) {
-	    	                StringWriter writer = new StringWriter();
-	    	                IOUtils.copy(instream, writer, StandardCharsets.UTF_8);
-	    	                JsonObject authData = new JsonParser().parse(writer.toString()).getAsJsonObject();
+	    	if (entity != null) {
+	    	  try (InputStream instream = entity.getContent()) {
+	    	    StringWriter writer = new StringWriter();
+	    	    IOUtils.copy(instream, writer, StandardCharsets.UTF_8);
+	    	    JsonObject authData = new JsonParser().parse(writer.toString()).getAsJsonObject();
 
-	    	    	        String authHeader = authData.get("access_token").toString();
+	    	    String authHeader = authData.get("access_token").toString();
 
-	        	            URL url = new URL(manifestUrl);
-	        				con = (HttpURLConnection) url.openConnection();
+	        	URL url = new URL(manifestUrl);
+	        	con = (HttpURLConnection) url.openConnection();
 
-							con.setRequestMethod("GET");
-							con.setRequestProperty("Content-Type", "application/json");
-						    con.setRequestProperty("Authorization", "Bearer " + authHeader.replace("\"", "") );
+						con.setRequestMethod("GET");
+						con.setRequestProperty("Content-Type", "application/json");
+						con.setRequestProperty("Authorization", "Bearer " + authHeader.replace("\"", "") );
 
-						    if (converted == false) {
-		    	    	        String redirect = con.getHeaderField("Location");
+						if (converted == false) {
+		    	    String redirect = con.getHeaderField("Location");
 
-			    				if (redirect != null){
-			    					con.disconnect();
-			    					con = (HttpURLConnection) new URL(redirect).openConnection();
-			    				}
-			    				else {
-			    					con.disconnect();
-			    					con = (HttpURLConnection) new URL(con.getURL().toString()).openConnection();
-			    				}
-						    }
+			    		if (redirect != null){
+			    			con.disconnect();
+			    			con = (HttpURLConnection) new URL(redirect).openConnection();
+			    		}
+			    		else {
+			    			con.disconnect();
+			    			con = (HttpURLConnection) new URL(con.getURL().toString()).openConnection();
+			    		}
+						}
 
 
-							in = new BufferedReader(
+						in = new BufferedReader(
 							  new InputStreamReader(con.getInputStream(), "UTF-8"));
-							String inputLine;
-							StringBuffer content = new StringBuffer();
-							while ((inputLine = in.readLine()) != null) {
-							    content.append(inputLine);
-							}
-							in.close();
-							con.disconnect();
+						String inputLine;
+						StringBuffer content = new StringBuffer();
+						while ((inputLine = in.readLine()) != null) {
+							content.append(inputLine);
+						}
+						in.close();
+						con.disconnect();
 
-	    					JsonObject manifest = new JsonParser().parse(content.toString()).getAsJsonObject();
+	    			JsonObject manifest = new JsonParser().parse(content.toString()).getAsJsonObject();
 
-	    					JsonArray imageArray = manifest.get("sequences").getAsJsonArray().get(0).getAsJsonObject().get("canvases").getAsJsonArray();
-	    					int imageCount = imageArray.size();
+	    			JsonArray imageArray = manifest.get("sequences").getAsJsonArray().get(0).getAsJsonObject().get("canvases").getAsJsonArray();
+	    			int imageCount = imageArray.size();
 
-	    					if (pdfImage != "") {
-	    						imageLinks.clear();
-		    					for (int i = 0; i < imageCount; i++) {
-		    						imageLinks.add("\"" + pdfImage.replace("\"", "") + "?page=" + i + "\"");
-		    					}
-	    					}
+	    			if (pdfImage != "") {
+	    				imageLinks.clear();
+		    			for (int i = 0; i < imageCount; i++) {
+		    				imageLinks.add("\"" + pdfImage.replace("\"", "") + "?page=" + i + "\"");
+		    			}
+	    			}
 
-	    					itemQuery = "INSERT INTO Item ("
-	    							+ "Title, "
-	    							+ "StoryId, "
-	    							+ "ImageLink, "
-	    							+ "OrderIndex, "
-	    							+ "Manifest, "
-	    							+ "`edm:WebResource`"
-	    							+ ") VALUES ";
-	    					for (int i = 0; i < imageCount; i++) {
-	    						imageLink = imageArray.get(i).getAsJsonObject().get("images").getAsJsonArray().get(0).getAsJsonObject().get("resource").getAsJsonObject().toString();
+	    			itemQuery = "INSERT INTO Item ("
+	    				+ "Title, "
+	    				+ "StoryId, "
+	    				+ "ImageLink, "
+	    				+ "OrderIndex, "
+	    				+ "Manifest, "
+	    				+ "`edm:WebResource`"
+	    				+ ") VALUES ";
+	    			for (int i = 0; i < imageCount; i++) {
+	    				imageLink = imageArray.get(i).getAsJsonObject().get("images").getAsJsonArray().get(0).getAsJsonObject().get("resource").getAsJsonObject().toString();
 
-	    						// if first item, add imageLink to story
-	    						if (i == 0) {
-	    							String storyImageQuery = "UPDATE Story SET PreviewImage = " + "\"" + imageLink.replace("\"", "\\\"") + "\"" +
-	    														"WHERE\r\n" +
-	    														"    StoryId = \r\n" +
-	    														"	(\r\n" +
-	    														"		SELECT \r\n" +
-	    														"            StoryId\r\n" +
-	    														"        FROM\r\n" +
-	    														"        (\r\n" +
-	    														"			SELECT StoryId \r\n" +
-	    														"            FROM\r\n" +
-	    														"				Story\r\n" +
-	    														"			WHERE `dc:title` = " + "\"" + storyTitle.replace("\"", "") + "\"" +
-	    														"			ORDER BY StoryId DESC\r\n" +
-	    														"			LIMIT 1\r\n" +
-	    														"		) a\r\n" +
-	    														"	)";
-	    							String storyImageResponse = executeInsertQuery(storyImageQuery, "Import");
-	    						}
+	    				// if first item, add imageLink to story
+	    				if (i == 0) {
+	    					String storyImageQuery = "UPDATE Story SET PreviewImage = " + "\"" + imageLink.replace("\"", "\\\"") + "\"" +
+	    						"WHERE\r\n" +
+	    						"    StoryId = \r\n" +
+	    						"	(\r\n" +
+	    						"		SELECT \r\n" +
+	    						"            StoryId\r\n" +
+	    						"        FROM\r\n" +
+	    						"        (\r\n" +
+	    						"			SELECT StoryId \r\n" +
+	    						"            FROM\r\n" +
+	    						"				Story\r\n" +
+	    						"			WHERE `dc:title` = " + "\"" + storyTitle.replace("\"", "") + "\"" +
+	    						"			ORDER BY StoryId DESC\r\n" +
+	    						"			LIMIT 1\r\n" +
+	    						"		) a\r\n" +
+	    						"	)";
+	    					String storyImageResponse = executeInsertQuery(storyImageQuery, "Import");
+	    				}
 
-	    						if (i == 0) {
-	    							itemQuery += "("
-	    							+ "\"" + storyTitle.replace("\"", "") + " Item "  + (i + 1) + "\"" +  ", "
-	    							+ "(SELECT StoryId FROM Story WHERE `dc:title` = " + "\"" + storyTitle.replace("\"", "") + "\" ORDER BY StoryId DESC LIMIT 1), "
-	    							+ "\"" + imageLink.replace("\"", "\\\"") + "\"" + ", "
-	    							+ (i + 1) + ", "
-	    							+ "\"" + manifestUrl + "\"" + ", "
-	    							+ imageLinks.get(i) + ")";
-	    						}
-	    						else {
-	    							itemQuery += ", ("
-	    									+ "\"" + storyTitle.replace("\"", "") + " Item "  + (i + 1) + "\"" +  ", "
-	    	    							+ "(SELECT StoryId FROM Story WHERE `dc:title` = " + "\"" + storyTitle.replace("\"", "") + "\" ORDER BY StoryId DESC LIMIT 1), "
-	    									+ "\"" + imageLink.replace("\"", "\\\"") + "\"" + ", "
-	    									+ (i + 1) + ", "
-	    	    							+ "\"" + manifestUrl + "\"" + ", "
-	    	    							+ imageLinks.get(i) + ")";
-	    						}
-	    					}
-	    					String itemResponse = executeInsertQuery(itemQuery, "Import");
+	    				if (i == 0) {
+	    					itemQuery += "("
+	    						+ "\"" + storyTitle.replace("\"", "") + " Item "  + (i + 1) + "\"" +  ", "
+	    						+ "(SELECT StoryId FROM Story WHERE `dc:title` = " + "\"" + storyTitle.replace("\"", "") + "\" ORDER BY StoryId DESC LIMIT 1), "
+	    						+ "\"" + imageLink.replace("\"", "\\\"") + "\"" + ", "
+	    						+ (i + 1) + ", "
+	    						+ "\"" + manifestUrl + "\"" + ", "
+	    						+ imageLinks.get(i) + ")";
+	    				}
+	    				else {
+	    					itemQuery += ", ("
+	    						+ "\"" + storyTitle.replace("\"", "") + " Item "  + (i + 1) + "\"" +  ", "
+	    	    			+ "(SELECT StoryId FROM Story WHERE `dc:title` = " + "\"" + storyTitle.replace("\"", "") + "\" ORDER BY StoryId DESC LIMIT 1), "
+	    						+ "\"" + imageLink.replace("\"", "\\\"") + "\"" + ", "
+	    						+ (i + 1) + ", "
+	    	    			+ "\"" + manifestUrl + "\"" + ", "
+	    	    			+ imageLinks.get(i) + ")";
+	    				}
+	    			}
+	    			String itemResponse = executeInsertQuery(itemQuery, "Import");
 
 
-	    					if (itemResponse == "Failed") {
-	    						ResponseBuilder rBuild = Response.status(Response.Status.BAD_REQUEST);
-	    				        return rBuild.build();
-	    					}
-	    	            }  catch (Exception e) {
-	    	            } finally {
-							in.close();
-							con.disconnect();
-	    			   }
-	    	        }
-				}
+	    			if (itemResponse == "Failed") {
+	    				ResponseBuilder rBuild = Response.status(Response.Status.BAD_REQUEST);
+	    				return rBuild.build();
+	    			}
+	    	  }  catch (Exception e) {
+	    	  } finally {
+        		try {
+        			if (in != null) {
+								in.close();
+        			}
+        			if (con != null) {
+								con.disconnect();
+        			}
+        		} catch (Exception e) {
+        		} finally {
+        			in = null;
+        			con = null;
+        		}
+	    		}
+	    	}
+			}
 		}
 		else {
 			query += "Update Story SET ";
@@ -1119,20 +1129,20 @@ public class ProjectResponse {
 		    in.close();
 		    con.disconnect();
 	    }  catch (Exception e) {
-        } finally {
-        	try {
-        		if (in != null) {
-							in.close();
-        		}
-        		if (con != null) {
-							con.disconnect();
-        		}
-        	} catch (Exception e) {
-        	} finally {
-        		in = null;
-        		con = null;
+      } finally {
+        try {
+        	if (in != null) {
+						in.close();
         	}
-	   }
+        	if (con != null) {
+						con.disconnect();
+        	}
+        } catch (Exception e) {
+        } finally {
+        	in = null;
+        	con = null;
+        }
+	   	}
 
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
