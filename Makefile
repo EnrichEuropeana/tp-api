@@ -17,7 +17,9 @@ docker_stop:
 
 build_sid:
 	@echo "compiling for SID"
+	cd $(pwd) && sudo docker-compose down
 	ant -f ./build.sid.xml clean && ant -f ./build.sid.xml
+	cd $(pwd) && sudo docker-compose up -d
 
 build_local:
 	@echo "compiling for local"
