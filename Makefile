@@ -1,5 +1,6 @@
 pwd := $(shell pwd)
 dbPath := ../../transcribathon-platform/tp-mysql
+adminerPath := ../../transcribathon-platform/tp-mysql-manager
 
 docker_logs:
 	sudo docker-compose logs
@@ -7,12 +8,15 @@ docker_logs:
 docker_start:
 	@echo "Starting the database container..."
 	cd $(dbPath) && sudo docker-compose up -d
+	@echo "Starting the database manager container..."
+	cd $(adminerPath) && sudo docker-compose up -d
 	@echo "Starting the tomcat container..."
 	cd $(pwd) && sudo docker-compose up -d
 
 docker_stop:
 	@echo "Stopping all container..."
 	cd $(dbPath) && sudo docker-compose down
+	cd $(adminerPath) && sudo docker-compose down
 	cd $(pwd) && sudo docker-compose down
 
 build_sid:
