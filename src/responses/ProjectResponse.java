@@ -773,12 +773,19 @@ public class ProjectResponse {
 									}
 								}
 							}
+							else if (dataArray.get(i).getAsJsonObject().get("skos:prefLabel").isJsonObject()) {
+								if (!keys.contains("PlaceName")) {
+									keys.add("PlaceName");
+									values.add(dataArray.get(i).getAsJsonObject().get("skos:prefLabel").getAsJsonObject().get("@value").toString());
+								}
+							}
 							else {
 								if (!keys.contains("PlaceName")) {
 									keys.add("PlaceName");
 									values.add(dataArray.get(i).getAsJsonObject().get("skos:prefLabel").toString());
 								}
 							}
+
 						}
 					}
 					else if (entry.getKey().equals("@type") && !entry.getValue().isJsonArray() && entry.getValue().getAsString().equals("edm:Agent")) {
