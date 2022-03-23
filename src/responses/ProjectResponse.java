@@ -45,6 +45,9 @@ import org.apache.commons.io.IOUtils;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -817,14 +820,18 @@ public class ProjectResponse {
 									//manifestUrl = dataArray.get(i).getAsJsonObject().get("dcterms:isReferencedBy").getAsJsonObject().get("@id").getAsString();
 								}
 							}
-							else {
+							// BEWARE:
+							// isReferencedBy is optional and amount of images in the imageLinks array
+							// may be difffent then in the maniftest.json aoth arays not matching
+							// see on item import below
+							// else {
 								if (dataArray.get(i).getAsJsonObject().has("ebucore:hasMimeType") && dataArray.get(i).getAsJsonObject().get("ebucore:hasMimeType").toString().contains("application/pdf")) {
 									pdfImage = dataArray.get(i).getAsJsonObject().get("@id").toString();
 								}
 								else {
 									imageLinks.add(dataArray.get(i).getAsJsonObject().get("@id").toString());
 								}
-							}
+							// }
 						}
 						else if (entry.getKey().equals("@type") && !entry.getValue().isJsonArray() && entry.getValue().getAsString().equals("edm:ProvidedCHO")) {
 							if (dataArray.get(i).getAsJsonObject().keySet().contains("@id")){
@@ -1056,6 +1063,7 @@ public class ProjectResponse {
 	    				return rBuild.build();
 	    			}
 	    	  }  catch (Exception e) {
+	    			LogFactory.getLog(ProjectResponse.class).error("Error: ", e);
 	    	  } finally {
         		try {
         			if (in != null) {
@@ -1136,6 +1144,7 @@ public class ProjectResponse {
 		    in.close();
 		    con.disconnect();
 	    }  catch (Exception e) {
+	    	LogFactory.getLog(ProjectResponse.class).error("Error: ", e);
       } finally {
         try {
         	if (in != null) {
