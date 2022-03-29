@@ -795,8 +795,15 @@ public class ProjectResponse {
 						if (!keys.contains("edm:agent")) {
 							if (dataArray.get(i).getAsJsonObject().keySet().contains("skos:prefLabel")) {
 								keys.add("edm:agent");
-								values.add("\"" + dataArray.get(i).getAsJsonObject().get("skos:prefLabel").getAsString().replace(",", " | ").replace("\\\"", "").replaceAll("[\"{}\\[\\]]", "")
+								// deal with JSON-LD @language and @value keys of skos:prefLabel object here
+								if (dataArray.get(i).getAsJsonObject().get("skos:prefLabel").isJsonObject() && dataArray.get(i).getAsJsonObject().get("skos:prefLabel").getAsJsonObject().keySet().contains("@value")) {
+									values.add("\"" + dataArray.get(i).getAsJsonObject().get("skos:prefLabel").getAsJsonObject().get("@value").getAsString()
 										+ " | " + dataArray.get(i).getAsJsonObject().get("@id").getAsString().replace(",", " | ").replace("\\\"", "").replaceAll("[\"{}\\[\\]]", "") + "\"");
+
+								} else {
+									values.add("\"" + dataArray.get(i).getAsJsonObject().get("skos:prefLabel").toString().replace(",", " | ").replace("\\\"", "").replaceAll("[\"{}\\[\\]]", "")
+										+ " | " + dataArray.get(i).getAsJsonObject().get("@id").getAsString().replace(",", " | ").replace("\\\"", "").replaceAll("[\"{}\\[\\]]", "") + "\"");
+								}
 							}
 						}
 						else {
