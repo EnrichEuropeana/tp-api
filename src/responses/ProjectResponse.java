@@ -809,7 +809,7 @@ public class ProjectResponse {
 						else {
 							if (dataArray.get(i).getAsJsonObject().keySet().contains("skos:prefLabel")) {
 								int index = keys.indexOf("edm:agent");
-								values.set(index, "\"" + values.get(index).replace("\"", "") + " || " + dataArray.get(i).getAsJsonObject().get("skos:prefLabel").getAsString().replace(",", " | ").replace("\\\"", "").replaceAll("[\"{}\\[\\]]", "")
+								values.set(index, "\"" + values.get(index).replace("\"", "") + " || " + dataArray.get(i).getAsJsonObject().get("skos:prefLabel").toString().replace(",", " | ").replace("\\\"", "").replaceAll("[\"{}\\[\\]]", "")
 										+ " | " + dataArray.get(i).getAsJsonObject().get("@id").getAsString().replace(",", " | ").replace("\\\"", "").replaceAll("[\"{}\\[\\]]", "") + "\"");
 							}
 						}
