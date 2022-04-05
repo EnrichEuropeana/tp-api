@@ -55,6 +55,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import Utilities.Util;
+
 import eu.transcribathon.properties.PropertiesCache;
 import objects.ApiKey;
 import objects.Dataset;
@@ -820,7 +822,7 @@ public class ProjectResponse {
 								|| (entry.getValue().isJsonArray() && entry.getValue().getAsJsonArray().toString().contains("edm:WebResource"))) {
 							if (dataArray.get(i).getAsJsonObject().keySet().contains("dcterms:isReferencedBy")){
 								if (dataArray.get(i).getAsJsonObject().get("dcterms:isReferencedBy").isJsonObject()
-										&& dataArray.get(i).getAsJsonObject().get("dcterms:isReferencedBy").getAsJsonObject().get("@id").getAsString().endsWith("manifest.json")) {
+										&& Util.isValidManifestUrl(dataArray.get(i).getAsJsonObject().get("dcterms:isReferencedBy").getAsJsonObject().get("@id").getAsString())) {
 									if (manifestUrl == "") {
 										manifestUrl = dataArray.get(i).getAsJsonObject().get("dcterms:isReferencedBy").getAsJsonObject().get("@id").getAsString();
 									}
