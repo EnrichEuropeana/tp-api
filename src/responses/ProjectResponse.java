@@ -332,36 +332,36 @@ public class ProjectResponse {
 
 
 	//Add new entry
-	@Path("/test")
-	@POST
-	public String test(String body) throws SQLException, IOException {
-	    URL storySolr = new URL(PropertiesCache.getInstance().getProperty("SOLR") + "/solr/Stories/dataimport?command=full-import&clean=true");
-	    HttpURLConnection con = (HttpURLConnection) storySolr.openConnection();
-	    con.setRequestMethod("GET");
-		  con.setConnectTimeout(Integer.parseInt(PropertiesCache.getInstance().getProperty("TIMEOUT")));
-	    BufferedReader in = new BufferedReader(
-	    new InputStreamReader(con.getInputStream()));
-	    String inputLine;
-	    StringBuffer content = new StringBuffer();
-	    while ((inputLine = in.readLine()) != null) {
-	        content.append(inputLine);
-	    }
-	    in.close();
-	    con.disconnect();
+	// @Path("/test")
+	// @POST
+	// public String test(String body) throws SQLException, IOException {
+	//     URL storySolr = new URL(PropertiesCache.getInstance().getProperty("SOLR") + "/solr/Stories/dataimport?command=full-import&clean=true");
+	//     HttpURLConnection con = (HttpURLConnection) storySolr.openConnection();
+	//     con.setRequestMethod("GET");
+	// 	  con.setConnectTimeout(Integer.parseInt(PropertiesCache.getInstance().getProperty("TIMEOUT")));
+	//     BufferedReader in = new BufferedReader(
+	//     new InputStreamReader(con.getInputStream()));
+	//     String inputLine;
+	//     StringBuffer content = new StringBuffer();
+	//     while ((inputLine = in.readLine()) != null) {
+	//         content.append(inputLine);
+	//     }
+	//     in.close();
+	//     con.disconnect();
 
-	    URL itemSolr = new URL(PropertiesCache.getInstance().getProperty("SOLR") + "/solr/Items/dataimport?command=full-import&clean=true");
-	    con = (HttpURLConnection) itemSolr.openConnection();
-	    con.setRequestMethod("GET");
-		  con.setConnectTimeout(Integer.parseInt(PropertiesCache.getInstance().getProperty("TIMEOUT")));
-	    in = new BufferedReader(
-	    new InputStreamReader(con.getInputStream()));
-	    content = new StringBuffer();
-	    while ((inputLine = in.readLine()) != null) {
-	        content.append(inputLine);
-	    }
-	    in.close();
-		return content.toString();
-	}
+	//     URL itemSolr = new URL(PropertiesCache.getInstance().getProperty("SOLR") + "/solr/Items/dataimport?command=full-import&clean=true");
+	//     con = (HttpURLConnection) itemSolr.openConnection();
+	//     con.setRequestMethod("GET");
+	// 	  con.setConnectTimeout(Integer.parseInt(PropertiesCache.getInstance().getProperty("TIMEOUT")));
+	//     in = new BufferedReader(
+	//     new InputStreamReader(con.getInputStream()));
+	//     content = new StringBuffer();
+	//     while ((inputLine = in.readLine()) != null) {
+	//         content.append(inputLine);
+	//     }
+	//     in.close();
+	// 	return content.toString();
+	// }
 
 
 	//Edit entry by id
@@ -1123,51 +1123,51 @@ public class ProjectResponse {
 		fileWriter.write(body);
 	    fileWriter.close();
 
-	    HttpURLConnection con = null;
-	    BufferedReader in = null;
-	    try {
-		    URL storySolr = new URL(PropertiesCache.getInstance().getProperty("SOLR") + "/solr/Stories/dataimport?command=full-import&clean=true");
-		    con = (HttpURLConnection) storySolr.openConnection();
-		    con.setRequestMethod("GET");
-		  	con.setConnectTimeout(Integer.parseInt(PropertiesCache.getInstance().getProperty("TIMEOUT")));
-		    in = new BufferedReader(
-		    new InputStreamReader(con.getInputStream()));
-		    String inputLine;
-		    StringBuffer content = new StringBuffer();
-		    while ((inputLine = in.readLine()) != null) {
-		        content.append(inputLine);
-		    }
-		    in.close();
-		    con.disconnect();
+	    // HttpURLConnection con = null;
+	    // BufferedReader in = null;
+	    // try {
+		    // URL storySolr = new URL(PropertiesCache.getInstance().getProperty("SOLR") + "/solr/Stories/dataimport?command=full-import&clean=true");
+		    // con = (HttpURLConnection) storySolr.openConnection();
+		    // con.setRequestMethod("GET");
+		  	// con.setConnectTimeout(Integer.parseInt(PropertiesCache.getInstance().getProperty("TIMEOUT")));
+		    // in = new BufferedReader(
+		    // new InputStreamReader(con.getInputStream()));
+		    // String inputLine;
+		    // StringBuffer content = new StringBuffer();
+		    // while ((inputLine = in.readLine()) != null) {
+		        // content.append(inputLine);
+		    // }
+		    // in.close();
+		    // con.disconnect();
 
-		    URL itemSolr = new URL(PropertiesCache.getInstance().getProperty("SOLR") + "/solr/Items/dataimport?command=full-import&clean=true");
-		    con = (HttpURLConnection) itemSolr.openConnection();
-		    con.setRequestMethod("GET");
-		  	con.setConnectTimeout(Integer.parseInt(PropertiesCache.getInstance().getProperty("TIMEOUT")));
-		    in = new BufferedReader(
-		    new InputStreamReader(con.getInputStream()));
-		    content = new StringBuffer();
-		    while ((inputLine = in.readLine()) != null) {
-		        content.append(inputLine);
-		    }
-		    in.close();
-		    con.disconnect();
-	    }  catch (Exception e) {
-	    	LogFactory.getLog(ProjectResponse.class).error("Error: ", e);
-      } finally {
-        try {
-        	if (in != null) {
-						in.close();
-        	}
-        	if (con != null) {
-						con.disconnect();
-        	}
-        } catch (Exception e) {
-        } finally {
-        	in = null;
-        	con = null;
-        }
-	   	}
+		    // URL itemSolr = new URL(PropertiesCache.getInstance().getProperty("SOLR") + "/solr/Items/dataimport?command=full-import&clean=true");
+		    // con = (HttpURLConnection) itemSolr.openConnection();
+		    // con.setRequestMethod("GET");
+		  	// con.setConnectTimeout(Integer.parseInt(PropertiesCache.getInstance().getProperty("TIMEOUT")));
+		    // in = new BufferedReader(
+		    // new InputStreamReader(con.getInputStream()));
+		    // content = new StringBuffer();
+		    // while ((inputLine = in.readLine()) != null) {
+		        // content.append(inputLine);
+		    // }
+		    // in.close();
+		    // con.disconnect();
+	    // }  catch (Exception e) {
+	    // 	LogFactory.getLog(ProjectResponse.class).error("Error: ", e);
+      // } finally {
+        // try {
+        	// if (in != null) {
+						// in.close();
+        	// }
+        	// if (con != null) {
+						// con.disconnect();
+        	// }
+        // } catch (Exception e) {
+        // } finally {
+        	// in = null;
+        	// con = null;
+        // }
+	   	// }
 
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
