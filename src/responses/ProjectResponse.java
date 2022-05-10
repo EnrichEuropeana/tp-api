@@ -1000,6 +1000,9 @@ public class ProjectResponse {
 	    			JsonArray imageArray = manifest.get("sequences").getAsJsonArray().get(0).getAsJsonObject().get("canvases").getAsJsonArray();
 	    			int imageCount = imageArray.size();
 
+						// clear image list, we fill it in for loop with image link from manifest
+						imageLinks.clear();
+
 	    			if (pdfImage != "") {
 	    				imageLinks.clear();
 		    			for (int i = 0; i < imageCount; i++) {
@@ -1015,8 +1018,11 @@ public class ProjectResponse {
 	    				+ "Manifest, "
 	    				+ "`edm:WebResource`"
 	    				+ ") VALUES ";
+
 	    			for (int i = 0; i < imageCount; i++) {
 	    				imageLink = imageArray.get(i).getAsJsonObject().get("images").getAsJsonArray().get(0).getAsJsonObject().get("resource").getAsJsonObject().toString();
+	    				String imageLinkfromManifest = imageArray.get(i).getAsJsonObject().get("images").getAsJsonArray().get(0).getAsJsonObject().get("resource").getAsJsonObject().get("@id").getAsString();
+	    				imageLinks.add(imageLinkfromManifest);
 
 	    				// if first item, add imageLink to story
 	    				if (i == 0) {
@@ -1046,7 +1052,7 @@ public class ProjectResponse {
 	    						+ "\"" + imageLink.replace("\"", "\\\"") + "\"" + ", "
 	    						+ (i + 1) + ", "
 	    						+ "\"" + manifestUrl + "\"" + ", "
-	    						+ imageLinks.get(i) + ")";
+	    						+ "\"" + imageLinks.get(i) + "\"" + ")";
 	    				}
 	    				else {
 	    					itemQuery += ", ("
@@ -1055,7 +1061,7 @@ public class ProjectResponse {
 	    						+ "\"" + imageLink.replace("\"", "\\\"") + "\"" + ", "
 	    						+ (i + 1) + ", "
 	    	    			+ "\"" + manifestUrl + "\"" + ", "
-	    	    			+ imageLinks.get(i) + ")";
+	    						+ "\"" + imageLinks.get(i) + "\"" + ")";
 	    				}
 	    			}
 	    			String itemResponse = executeInsertQuery(itemQuery, "Import");
