@@ -798,8 +798,8 @@ public class ProjectResponse {
 							if (dataArray.get(i).getAsJsonObject().keySet().contains("skos:prefLabel")) {
 								keys.add("edm:agent");
 								values.add("\"" + dataArray.get(i).getAsJsonObject().get("skos:prefLabel").toString().replace(",", " | ").replace("\\\"", "").replaceAll("[\"{}\\[\\]]", "").replace("@language:", "").replace(" | @value:", ": ")
+
 										+ " | " + dataArray.get(i).getAsJsonObject().get("@id").getAsString().replace(",", " | ").replace("\\\"", "").replaceAll("[\"{}\\[\\]]", "") + "\"");
-								}
 							}
 						}
 						else {
