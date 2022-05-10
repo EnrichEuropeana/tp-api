@@ -55,6 +55,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import Utilities.Util;
+
 import eu.transcribathon.properties.PropertiesCache;
 import objects.ApiKey;
 import objects.Dataset;
@@ -814,7 +816,7 @@ public class ProjectResponse {
 								|| (entry.getValue().isJsonArray() && entry.getValue().getAsJsonArray().toString().contains("edm:WebResource"))) {
 							if (dataArray.get(i).getAsJsonObject().keySet().contains("dcterms:isReferencedBy")){
 								if (dataArray.get(i).getAsJsonObject().get("dcterms:isReferencedBy").isJsonObject()
-										&& dataArray.get(i).getAsJsonObject().get("dcterms:isReferencedBy").getAsJsonObject().get("@id").getAsString().endsWith("manifest.json")) {
+										&& Util.isValidManifestUrl(dataArray.get(i).getAsJsonObject().get("dcterms:isReferencedBy").getAsJsonObject().get("@id").getAsString())) {
 									if (manifestUrl == "") {
 										manifestUrl = dataArray.get(i).getAsJsonObject().get("dcterms:isReferencedBy").getAsJsonObject().get("@id").getAsString();
 									}
@@ -998,6 +1000,9 @@ public class ProjectResponse {
 	    			JsonArray imageArray = manifest.get("sequences").getAsJsonArray().get(0).getAsJsonObject().get("canvases").getAsJsonArray();
 	    			int imageCount = imageArray.size();
 
+						// clear image list, we fill it in for loop with image link from manifest
+						imageLinks.clear();
+
 	    			if (pdfImage != "") {
 	    				imageLinks.clear();
 		    			for (int i = 0; i < imageCount; i++) {
@@ -1013,8 +1018,11 @@ public class ProjectResponse {
 	    				+ "Manifest, "
 	    				+ "`edm:WebResource`"
 	    				+ ") VALUES ";
+
 	    			for (int i = 0; i < imageCount; i++) {
 	    				imageLink = imageArray.get(i).getAsJsonObject().get("images").getAsJsonArray().get(0).getAsJsonObject().get("resource").getAsJsonObject().toString();
+	    				String imageLinkfromManifest = imageArray.get(i).getAsJsonObject().get("images").getAsJsonArray().get(0).getAsJsonObject().get("resource").getAsJsonObject().get("@id").getAsString();
+	    				imageLinks.add(imageLinkfromManifest);
 
 	    				// if first item, add imageLink to story
 	    				if (i == 0) {
@@ -1044,7 +1052,7 @@ public class ProjectResponse {
 	    						+ "\"" + imageLink.replace("\"", "\\\"") + "\"" + ", "
 	    						+ (i + 1) + ", "
 	    						+ "\"" + manifestUrl + "\"" + ", "
-	    						+ imageLinks.get(i) + ")";
+	    						+ "\"" + imageLinks.get(i) + "\"" + ")";
 	    				}
 	    				else {
 	    					itemQuery += ", ("
@@ -1053,7 +1061,7 @@ public class ProjectResponse {
 	    						+ "\"" + imageLink.replace("\"", "\\\"") + "\"" + ", "
 	    						+ (i + 1) + ", "
 	    	    			+ "\"" + manifestUrl + "\"" + ", "
-	    	    			+ imageLinks.get(i) + ")";
+	    						+ "\"" + imageLinks.get(i) + "\"" + ")";
 	    				}
 	    			}
 	    			String itemResponse = executeInsertQuery(itemQuery, "Import");
