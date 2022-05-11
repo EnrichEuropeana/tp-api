@@ -1149,7 +1149,7 @@ public class ItemResponse {
 
 	    	    	        String authHeader = authData.get("access_token").toString();
 
-	        	            URL url = new URL("https://fresenia.man.poznan.pl/dei/api/transcription?recordId=" + recordId + "&itemId=" + id);
+	        	           URL url = new URL(PropertiesCache.getInstance().getProperty("DEI_API") + "/transcription?recordId=" + recordId + "&itemId=" + id);
 	        				HttpURLConnection con = (HttpURLConnection) url.openConnection();
 
 							con.setRequestMethod("POST");
