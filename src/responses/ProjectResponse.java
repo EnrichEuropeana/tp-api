@@ -985,6 +985,13 @@ public class ProjectResponse {
 						}
 
 
+						int manifestUrlStatus = con.getResponseCode();
+
+						if (manifestUrlStatus > 302) {
+	    				ResponseBuilder rBuild = Response.status(Response.Status.BAD_REQUEST).entity("IIIF manifest not reachable. Status: " + manifestUrlStatus);
+	    				return rBuild.build();
+						}
+
 						in = new BufferedReader(
 							  new InputStreamReader(con.getInputStream(), "UTF-8"));
 						String inputLine;
