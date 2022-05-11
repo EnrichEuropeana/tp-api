@@ -1014,7 +1014,6 @@ public class ProjectResponse {
 						imageLinks.clear();
 
 	    			if (pdfImage != "") {
-	    				imageLinks.clear();
 		    			for (int i = 0; i < imageCount; i++) {
 		    				imageLinks.add(pdfImage + "?page=" + i);
 		    			}
