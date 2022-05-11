@@ -829,7 +829,7 @@ public class ProjectResponse {
 							// see on item import below
 							// else {
 								if (dataArray.get(i).getAsJsonObject().has("ebucore:hasMimeType") && dataArray.get(i).getAsJsonObject().get("ebucore:hasMimeType").toString().contains("application/pdf")) {
-									pdfImage = dataArray.get(i).getAsJsonObject().get("@id").toString();
+									pdfImage = dataArray.get(i).getAsJsonObject().get("@id").getAsString();
 								}
 								else {
 									imageLinks.add(dataArray.get(i).getAsJsonObject().get("@id").toString());
@@ -1016,7 +1016,7 @@ public class ProjectResponse {
 	    			if (pdfImage != "") {
 	    				imageLinks.clear();
 		    			for (int i = 0; i < imageCount; i++) {
-		    				imageLinks.add("\"" + pdfImage.replace("\"", "") + "?page=" + i + "\"");
+		    				imageLinks.add(pdfImage + "?page=" + i);
 		    			}
 	    			}
 
@@ -1032,6 +1032,7 @@ public class ProjectResponse {
 	    			for (int i = 0; i < imageCount; i++) {
 	    				imageLink = imageArray.get(i).getAsJsonObject().get("images").getAsJsonArray().get(0).getAsJsonObject().get("resource").getAsJsonObject().toString();
 	    				String imageLinkfromManifest = imageArray.get(i).getAsJsonObject().get("images").getAsJsonArray().get(0).getAsJsonObject().get("resource").getAsJsonObject().get("@id").getAsString();
+
 	    				imageLinks.add(imageLinkfromManifest);
 
 	    				// if first item, add imageLink to story
