@@ -30,7 +30,7 @@ public class Util {
 
 	public static boolean isValidManifestUrl(String maniftestUrlString) throws MalformedURLException {
 
-		// assume it is manfiest by name
+		// assume it is manifest by name
 		if (maniftestUrlString.endsWith("manifest.json")) {
 			return true;
 		}
