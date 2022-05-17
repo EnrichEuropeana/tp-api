@@ -847,6 +847,20 @@ public class ProjectResponse {
 						}
 					}
 				}
+				// hackish: for now just rewrite dc:creator here and place the edm:agent content, when
+				// dc:creator is just a reference
+				// address this in new API with an appropriate JSON-LD library which can handle references
+				if (entry.getKey().equals("dc:creator") && entry.getValue().toString().contains("@id")) {
+					int edmAgentIndex = keys.indexOf("edm:agent");
+					int dcCreatorIndex = keys.indexOf("dc:creator");
+					String edmAgentContent = values.get(edmAgentIndex);
+					values.set(dcCreatorIndex, edmAgentContent);
+
+
+	    		// LogFactory.getLog(ProjectResponse.class).info("DEBUG entry: " + entry);
+	    		// LogFactory.getLog(ProjectResponse.class).info("DEBUG edmAgent: " + values.get(agentIndex));
+	    		// System.exit(0);
+				}
 			}
 		}
 
