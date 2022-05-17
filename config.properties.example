@@ -6,3 +6,4 @@ SECRET=openid-connect-secret
 SOLR=http://localhost:8983
 HOME=/home/user
 TIMEOUT=30000
+DEI_API= https://fresenia-dev.man.poznan.pl/dei-test/api
