@@ -855,11 +855,15 @@ public class ProjectResponse {
 					int dcCreatorIndex = keys.indexOf("dc:creator");
 					String edmAgentContent = values.get(edmAgentIndex);
 					values.set(dcCreatorIndex, edmAgentContent);
-
-
-	    		// LogFactory.getLog(ProjectResponse.class).info("DEBUG entry: " + entry);
-	    		// LogFactory.getLog(ProjectResponse.class).info("DEBUG edmAgent: " + values.get(agentIndex));
-	    		// System.exit(0);
+				}
+				// same as for edm:dataProvider
+				if (entry.getKey().equals("edm:dataProvider") && entry.getValue().toString().contains("@id")) {
+					int keysIndex = keys.indexOf("edm:dataProvider");
+					String referenceContent = ""; // get value from foaf:Organization or directly from id (best)
+					values.set(keysIndex, referenceContent);
+	    		LogFactory.getLog(ProjectResponse.class).info("DEBUG keyIndex: " + keysIndex);
+	    		LogFactory.getLog(ProjectResponse.class).info("DEBUG referenceContent: " + referenceContent);
+	    		System.exit(0);
 				}
 			}
 		}
