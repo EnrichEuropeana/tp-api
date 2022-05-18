@@ -797,7 +797,7 @@ public class ProjectResponse {
 						if (!keys.contains("edm:agent")) {
 							if (dataArray.get(i).getAsJsonObject().keySet().contains("skos:prefLabel")) {
 								keys.add("edm:agent");
-								values.add("\"" + dataArray.get(i).getAsJsonObject().get("skos:prefLabel").toString().replace(",", " | ").replace("\\\"", "").replaceAll("[\"{}\\[\\]]", "").replace("@language:", "").replace(" | @value:", ": ")
+								values.add("\"" + dataArray.get(i).getAsJsonObject().get("skos:prefLabel").toString().replace("\",\"", "\" | \"").replace("\\\"", "").replaceAll("[\"{}\\[\\]]", "").replace("@language:", "").replace(" | @value:", ": ")
 
 										+ " | " + dataArray.get(i).getAsJsonObject().get("@id").getAsString().replace(",", " | ").replace("\\\"", "").replaceAll("[\"{}\\[\\]]", "") + "\"");
 							}
@@ -857,13 +857,31 @@ public class ProjectResponse {
 					values.set(dcCreatorIndex, edmAgentContent);
 				}
 				// same as for edm:dataProvider
+				// Todo: change key »edm:dataProvider« with generic key to use in all places
 				if (entry.getKey().equals("edm:dataProvider") && entry.getValue().toString().contains("@id")) {
 					int keysIndex = keys.indexOf("edm:dataProvider");
-					String referenceContent = ""; // get value from foaf:Organization or directly from id (best)
-					values.set(keysIndex, referenceContent);
-	    		LogFactory.getLog(ProjectResponse.class).info("DEBUG keyIndex: " + keysIndex);
-	    		LogFactory.getLog(ProjectResponse.class).info("DEBUG referenceContent: " + referenceContent);
-	    		System.exit(0);
+					String idValue = entry.getValue().getAsJsonObject().get("@id").getAsString();
+
+					JsonObject referenceContent = Util.findNodeByIdValue(idValue, dataArray);
+
+					String valueToAdd = "";
+					for(Map.Entry<String, JsonElement> valueEntry : referenceContent.entrySet()) {
+	    			if (!valueEntry.getKey().equals("@id") && !valueEntry.getKey().equals("@type")) {
+							String valueStr = valueEntry.getValue().toString();
+							valueToAdd +=
+								"\""
+									+ valueStr
+										.replace("\",\"", "\" | \"")
+										.replace("\\\"", "")
+										.replace("},{", ", ")
+										.replaceAll("[\"{}\\[\\]]", "")
+										.replace("@language:", "")
+										.replace(" | @value:", ": ")
+									+ "\"";
+						}
+					}
+
+					values.set(keysIndex, valueToAdd);
 				}
 			}
 		}
