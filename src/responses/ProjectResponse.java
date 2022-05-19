@@ -797,7 +797,7 @@ public class ProjectResponse {
 						if (!keys.contains("edm:agent")) {
 							if (dataArray.get(i).getAsJsonObject().keySet().contains("skos:prefLabel")) {
 								keys.add("edm:agent");
-								values.add("\"" + dataArray.get(i).getAsJsonObject().get("skos:prefLabel").toString().replace(",", " | ").replace("\\\"", "").replaceAll("[\"{}\\[\\]]", "").replace("@language:", "").replace(" | @value:", ": ")
+								values.add("\"" + dataArray.get(i).getAsJsonObject().get("skos:prefLabel").toString().replace("\",\"", "\" | \"").replace("\\\"", "").replaceAll("[\"{}\\[\\]]", "").replace("@language:", "").replace(" | @value:", ": ")
 
 										+ " | " + dataArray.get(i).getAsJsonObject().get("@id").getAsString().replace(",", " | ").replace("\\\"", "").replaceAll("[\"{}\\[\\]]", "") + "\"");
 							}
@@ -829,7 +829,7 @@ public class ProjectResponse {
 							// see on item import below
 							// else {
 								if (dataArray.get(i).getAsJsonObject().has("ebucore:hasMimeType") && dataArray.get(i).getAsJsonObject().get("ebucore:hasMimeType").toString().contains("application/pdf")) {
-									pdfImage = dataArray.get(i).getAsJsonObject().get("@id").toString();
+									pdfImage = dataArray.get(i).getAsJsonObject().get("@id").getAsString();
 								}
 								else {
 									imageLinks.add(dataArray.get(i).getAsJsonObject().get("@id").toString());
@@ -846,6 +846,42 @@ public class ProjectResponse {
 							}
 						}
 					}
+				}
+				// hackish: for now just rewrite dc:creator here and place the edm:agent content, when
+				// dc:creator is just a reference
+				// address this in new API with an appropriate JSON-LD library which can handle references
+				if (entry.getKey().equals("dc:creator") && entry.getValue().toString().contains("@id")) {
+					int edmAgentIndex = keys.indexOf("edm:agent");
+					int dcCreatorIndex = keys.indexOf("dc:creator");
+					String edmAgentContent = values.get(edmAgentIndex);
+					values.set(dcCreatorIndex, edmAgentContent);
+				}
+				// same as for edm:dataProvider
+				// Todo: change key »edm:dataProvider« with generic key to use in all places
+				if (entry.getKey().equals("edm:dataProvider") && entry.getValue().toString().contains("@id")) {
+					int keysIndex = keys.indexOf("edm:dataProvider");
+					String idValue = entry.getValue().getAsJsonObject().get("@id").getAsString();
+
+					JsonObject referenceContent = Util.findNodeByIdValue(idValue, dataArray);
+
+					String valueToAdd = "";
+					for(Map.Entry<String, JsonElement> valueEntry : referenceContent.entrySet()) {
+	    			if (!valueEntry.getKey().equals("@id") && !valueEntry.getKey().equals("@type")) {
+							String valueStr = valueEntry.getValue().toString();
+							valueToAdd +=
+								"\""
+									+ valueStr
+										.replace("\",\"", "\" | \"")
+										.replace("\\\"", "")
+										.replace("},{", ", ")
+										.replaceAll("[\"{}\\[\\]]", "")
+										.replace("@language:", "")
+										.replace(" | @value:", ": ")
+									+ "\"";
+						}
+					}
+
+					values.set(keysIndex, valueToAdd);
 				}
 			}
 		}
@@ -985,6 +1021,16 @@ public class ProjectResponse {
 						}
 
 
+						int manifestUrlStatus = con.getResponseCode();
+
+						if (manifestUrlStatus > 302) {
+	    				ResponseBuilder rBuild =
+	    					Response
+									.status(Response.Status.BAD_REQUEST)
+									.entity("IIIF manifest not reachable. Status: " + manifestUrlStatus);
+	    				return rBuild.build();
+						}
+
 						in = new BufferedReader(
 							  new InputStreamReader(con.getInputStream(), "UTF-8"));
 						String inputLine;
@@ -1004,9 +1050,8 @@ public class ProjectResponse {
 						imageLinks.clear();
 
 	    			if (pdfImage != "") {
-	    				imageLinks.clear();
 		    			for (int i = 0; i < imageCount; i++) {
-		    				imageLinks.add("\"" + pdfImage.replace("\"", "") + "?page=" + i + "\"");
+		    				imageLinks.add(pdfImage + "?page=" + i);
 		    			}
 	    			}
 
@@ -1022,6 +1067,7 @@ public class ProjectResponse {
 	    			for (int i = 0; i < imageCount; i++) {
 	    				imageLink = imageArray.get(i).getAsJsonObject().get("images").getAsJsonArray().get(0).getAsJsonObject().get("resource").getAsJsonObject().toString();
 	    				String imageLinkfromManifest = imageArray.get(i).getAsJsonObject().get("images").getAsJsonArray().get(0).getAsJsonObject().get("resource").getAsJsonObject().get("@id").getAsString();
+
 	    				imageLinks.add(imageLinkfromManifest);
 
 	    				// if first item, add imageLink to story

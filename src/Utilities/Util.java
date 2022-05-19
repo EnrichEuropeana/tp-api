@@ -10,8 +10,10 @@ import java.net.MalformedURLException;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonArray;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,8 +31,7 @@ public class Util {
 	}
 
 	public static boolean isValidManifestUrl(String maniftestUrlString) throws MalformedURLException {
-
-		// assume it is manfiest by name
+		// assume it is manifest by name
 		if (maniftestUrlString.endsWith("manifest.json")) {
 			return true;
 		}
@@ -74,5 +75,21 @@ public class Util {
 		}
 
 		return false;
+	}
+
+	public static JsonObject findNodeByIdValue (String IdValue, JsonArray dataArray) {
+		JsonObject filtered = new JsonObject();
+		int size = dataArray.size();
+
+		for (int i = 0; i < size; i++) {
+			JsonObject obj = dataArray.get(i).getAsJsonObject();
+			String id = obj.get("@id").getAsString();
+			if (id.equals(IdValue)) {
+				filtered = obj;
+				break;
+			}
+    }
+
+    return filtered;
 	}
 }
