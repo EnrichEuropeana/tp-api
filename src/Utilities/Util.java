@@ -4,8 +4,15 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
 import java.net.URL;
-import java.net.HttpURLConnection;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import java.net.MalformedURLException;
+
+import java.security.cert.X509Certificate;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -38,10 +45,34 @@ public class Util {
 
 		// or then by occurence of @type = sc:Manifest in content
 		URL url = new URL(maniftestUrlString);
-		HttpURLConnection con = null;
+		HttpsURLConnection con = null;
 
 		try {
-			con = (HttpURLConnection)	url.openConnection();
+			// we ignoring SSL cert issues here for now
+			// we are just checking on valid manifest
+			TrustManager[] trustAllCerts = new TrustManager[] {
+				new X509TrustManager() {
+					public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+						return null;
+					}
+					public void checkClientTrusted(X509Certificate[] certs, String authType) {}
+					public void checkServerTrusted(X509Certificate[] certs, String authType) {}
+				}
+			};
+
+			SSLContext sc = SSLContext.getInstance("SSL");
+			sc.init(null, trustAllCerts, new java.security.SecureRandom());
+			HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+
+			HostnameVerifier allHostsValid = new HostnameVerifier() {
+				public boolean verify(String hostname, SSLSession session) {
+					return true;
+				}
+			};
+
+			HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
+
+			con = (HttpsURLConnection)	url.openConnection();
 			con.setRequestMethod("GET");
 			con.setConnectTimeout(30000);
 			con.setReadTimeout(30000);
