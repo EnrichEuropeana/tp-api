@@ -945,7 +945,8 @@ public class ProjectResponse {
 						+ ") "
 						+ "VALUES ("
 						+ "\"" + storyTitle.replace("\"", "") + " Item "  + "1" + "\"" +  ", "
-						+ "(SELECT StoryId FROM Story WHERE `dc:title` = " + "\"" + storyTitle.replace("\"", "") + "\" ORDER BY StoryId DESC LIMIT 1), "
+						// + "(SELECT StoryId FROM Story WHERE `dc:title` = " + "\"" + storyTitle.replace("\"", "") + "\" ORDER BY StoryId DESC LIMIT 1), "
+						+ "(SELECT StoryId FROM Story WHERE `ExternalRecordId` = " + "\"" + externalRecordId + "\" ORDER BY StoryId DESC LIMIT 1), "
 						+ "\"" + imageLink.replace("\"", "") + "\"" + ", "
 						+ "1" + ", "
 						+ "\"" + manifestUrl + "\"" + ")";
@@ -962,7 +963,8 @@ public class ProjectResponse {
 						"			SELECT StoryId \r\n" +
 						"            FROM\r\n" +
 						"				Story\r\n" +
-						"			WHERE `dc:title` = " + "\"" + storyTitle.replace("\"", "") + "\"" +
+						// "			WHERE `dc:title` = " + "\"" + storyTitle.replace("\"", "") + "\"" +
+						"			WHERE `ExternalRecordId` = " + "\"" + externalRecordId + "\"" +
 						"			ORDER BY StoryId DESC\r\n" +
 						"			LIMIT 1\r\n" +
 						"		) a\r\n" +
@@ -1094,7 +1096,8 @@ public class ProjectResponse {
 	    				if (i == 0) {
 	    					itemQuery += "("
 	    						+ "\"" + storyTitle.replace("\"", "") + " Item "  + (i + 1) + "\"" +  ", "
-	    						+ "(SELECT StoryId FROM Story WHERE `dc:title` = " + "\"" + storyTitle.replace("\"", "") + "\" ORDER BY StoryId DESC LIMIT 1), "
+	    						// + "(SELECT StoryId FROM Story WHERE `dc:title` = " + "\"" + storyTitle.replace("\"", "") + "\" ORDER BY StoryId DESC LIMIT 1), "
+	    						+ "(SELECT StoryId FROM Story WHERE `ExternalRecordId` = " + "\"" + externalRecordId + "\" ORDER BY StoryId DESC LIMIT 1), "
 	    						+ "\"" + imageLink.replace("\"", "\\\"") + "\"" + ", "
 	    						+ (i + 1) + ", "
 	    						+ "\"" + manifestUrl + "\"" + ", "
@@ -1103,7 +1106,8 @@ public class ProjectResponse {
 	    				else {
 	    					itemQuery += ", ("
 	    						+ "\"" + storyTitle.replace("\"", "") + " Item "  + (i + 1) + "\"" +  ", "
-	    	    			+ "(SELECT StoryId FROM Story WHERE `dc:title` = " + "\"" + storyTitle.replace("\"", "") + "\" ORDER BY StoryId DESC LIMIT 1), "
+	    	    			// + "(SELECT StoryId FROM Story WHERE `dc:title` = " + "\"" + storyTitle.replace("\"", "") + "\" ORDER BY StoryId DESC LIMIT 1), "
+	    	    			+ "(SELECT StoryId FROM Story WHERE `ExternalRecordId` = " + "\"" + externalRecordId + "\" ORDER BY StoryId DESC LIMIT 1), "
 	    						+ "\"" + imageLink.replace("\"", "\\\"") + "\"" + ", "
 	    						+ (i + 1) + ", "
 	    	    			+ "\"" + manifestUrl + "\"" + ", "
