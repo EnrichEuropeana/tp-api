@@ -70,6 +70,7 @@ public class Item {
 	public String StoryedmRights;
 	public String StoryedmBegin;
 	public String StoryedmEnd;
+	public String StoryedmAgent;
 	public String StoryedmIsShownAt;
 	public String StorydcRights;
 	public String StorydcLanguage;
@@ -89,7 +90,7 @@ public class Item {
 	public List<Annotation> Annotations;
 	public List<Comment> Comments;
 	public List<AutomatedEnrichment> AutomatedEnrichments;
-	
+
 	public void setStorydcTitle(String storydcTitle) {
 		StorydcTitle = storydcTitle;
 	}
@@ -182,6 +183,9 @@ public class Item {
 	}
 	public void setStoryedmEnd(String storyedmEnd) {
 		StoryedmEnd = storyedmEnd;
+	}
+	public void setStoryedmAgent(String storyedmAgent) {
+		StoryedmAgent = storyedmAgent;
 	}
 	public void setStoryedmIsShownAt(String storyedmIsShownAt) {
 		StoryedmIsShownAt = storyedmIsShownAt;
@@ -345,6 +349,6 @@ public class Item {
 	public void setAutomatedEnrichments(List<AutomatedEnrichment> automatedEnrichments) {
 		AutomatedEnrichments = automatedEnrichments;
 	}
-	
+
 
 }
