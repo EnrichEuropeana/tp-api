@@ -1,5 +1,6 @@
 pwd := $(shell pwd)
 dbPath := ../../transcribathon-platform/tp-mysql
+solrPath := ../../transcribathon-platform/tp-solr
 adminerPath := ../../transcribathon-platform/tp-mysql-manager
 
 docker_logs:
@@ -8,6 +9,8 @@ docker_logs:
 docker_start:
 	@echo "Starting the database container..."
 	cd $(dbPath) && sudo docker-compose up -d
+	@echo "Starting Solr..."
+	cd $(solrPath) && sudo docker-compose up -d
 	@echo "Starting the database manager container..."
 	cd $(adminerPath) && sudo docker-compose up -d
 	@echo "Starting the tomcat container..."
@@ -16,6 +19,7 @@ docker_start:
 docker_stop:
 	@echo "Stopping all container..."
 	cd $(dbPath) && sudo docker-compose down
+	cd $(solrPath) && sudo docker-compose down
 	cd $(adminerPath) && sudo docker-compose down
 	cd $(pwd) && sudo docker-compose down
 
