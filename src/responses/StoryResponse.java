@@ -37,6 +37,9 @@ import java.text.SimpleDateFormat;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import eu.transcribathon.properties.PropertiesCache;
 import javafx.util.Pair;
 
@@ -457,12 +460,69 @@ public class StoryResponse {
 	    return result;
 	}
 
+	public int getStoryId(String recordId) throws SQLException {
+
+		String query = "SELECT StoryId as StoryId FROM Story WHERE RecordId LIKE BINARY '" + recordId + "'";
+		List<String> resultList = new ArrayList<String>();
+		ResultSet rs = null;
+		Connection conn = null;
+		Statement stmt = null;
+
+		try {
+			Class.forName(PropertiesCache.getInstance().getProperty("DRIVER"));
+
+			conn = DriverManager.getConnection(
+				PropertiesCache.getInstance().getProperty("DB_URL"),
+				PropertiesCache.getInstance().getProperty("USER"),
+				PropertiesCache.getInstance().getProperty("PASS")
+			);
+
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(query);
+
+			while(rs.next()) {
+			  resultList.add(rs.getString("StoryId"));
+			}
+
+			rs.close();
+			stmt.close();
+			conn.close();
+
+		} catch(SQLException se) {
+			se.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} finally {
+			try { rs.close(); } catch (Exception e) { /* ignored */ }
+			try { stmt.close(); } catch (Exception e) { /* ignored */ }
+			try { conn.close(); } catch (Exception e) { /* ignored */ }
+		}
+
+		try {
+			int storyId = Integer.parseInt(resultList.get(0));
+			return storyId;
+		} catch (IndexOutOfBoundsException e) {
+		// 	e.printStackTrace();
+		}
+
+		return 0;
+	}
 
 	//GET entries
 
 	@Produces("application/json;charset=utf-8")
 	@GET
 	public Response search(@DefaultValue("true") @QueryParam("items") String showItems, @Context UriInfo uriInfo, String body) throws SQLException {
+
+		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
+
+		// return early if just it is just queried by the recordId
+		// use existen getEntry method (from GET endpoint)
+		if (queryParams.containsKey("recordId")) {
+			String recordId = queryParams.getFirst("recordId");
+			int storyId = getStoryId(recordId);
+			return getEntry(showItems, storyId, body);
+		}
 
 		String query = "";
 		if (showItems.contentEquals("false")) {
@@ -513,7 +573,6 @@ public class StoryResponse {
 					", s.PreviewImage as StoryPreviewImage " +
 					"FROM Story s " +
 					"WHERE 1";
-			MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
 
 			for(String key : queryParams.keySet()){
 				if (key == "items") {
@@ -645,7 +704,6 @@ public class StoryResponse {
 					") s " +
 					"ON i.StoryId = s.StoryId " +
 					"WHERE 1";
-			MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
 
 			for(String key : queryParams.keySet()){
 				if (key == "items") {
