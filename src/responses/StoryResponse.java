@@ -462,7 +462,7 @@ public class StoryResponse {
 
 	public int getStoryId(String recordId) throws SQLException {
 
-		String query = "SELECT StoryId as StoryId FROM Story WHERE RecordId = '" + recordId + "'";
+		String query = "SELECT StoryId as StoryId FROM Story WHERE RecordId LIKE BINARY '" + recordId + "'";
 		List<String> resultList = new ArrayList<String>();
 		ResultSet rs = null;
 		Connection conn = null;
