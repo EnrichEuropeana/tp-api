@@ -850,39 +850,39 @@ public class ProjectResponse {
 				// hackish: for now just rewrite dc:creator here and place the edm:agent content, when
 				// dc:creator is just a reference
 				// address this in new API with an appropriate JSON-LD library which can handle references
-				if (entry.getKey().equals("dc:creator") && entry.getValue().toString().contains("@id")) {
-					int edmAgentIndex = keys.indexOf("edm:agent");
-					int dcCreatorIndex = keys.indexOf("dc:creator");
-					String edmAgentContent = values.get(edmAgentIndex);
-					values.set(dcCreatorIndex, edmAgentContent);
-				}
+				// if (entry.getKey().equals("dc:creator") && entry.getValue().toString().contains("@id")) {
+				// 	int edmAgentIndex = keys.indexOf("edm:agent");
+				// 	int dcCreatorIndex = keys.indexOf("dc:creator");
+				// 	String edmAgentContent = values.get(edmAgentIndex);
+				// 	values.set(dcCreatorIndex, edmAgentContent);
+				// }
 				// same as for edm:dataProvider
 				// Todo: change key »edm:dataProvider« with generic key to use in all places
-				if (entry.getKey().equals("edm:dataProvider") && entry.getValue().toString().contains("@id")) {
-					int keysIndex = keys.indexOf("edm:dataProvider");
-					String idValue = entry.getValue().getAsJsonObject().get("@id").getAsString();
+				// if (entry.getKey().equals("edm:dataProvider") && entry.getValue().toString().contains("@id")) {
+				// 	int keysIndex = keys.indexOf("edm:dataProvider");
+				// 	String idValue = entry.getValue().getAsJsonObject().get("@id").getAsString();
 
-					JsonObject referenceContent = Util.findNodeByIdValue(idValue, dataArray);
+				// 	JsonObject referenceContent = Util.findNodeByIdValue(idValue, dataArray);
 
-					String valueToAdd = "";
-					for(Map.Entry<String, JsonElement> valueEntry : referenceContent.entrySet()) {
-	    			if (!valueEntry.getKey().equals("@id") && !valueEntry.getKey().equals("@type")) {
-							String valueStr = valueEntry.getValue().toString();
-							valueToAdd +=
-								"\""
-									+ valueStr
-										.replace("\",\"", "\" | \"")
-										.replace("\\\"", "")
-										.replace("},{", ", ")
-										.replaceAll("[\"{}\\[\\]]", "")
-										.replace("@language:", "")
-										.replace(" | @value:", ": ")
-									+ "\"";
-						}
-					}
+				// 	String valueToAdd = "";
+				// 	for(Map.Entry<String, JsonElement> valueEntry : referenceContent.entrySet()) {
+	    			// if (!valueEntry.getKey().equals("@id") && !valueEntry.getKey().equals("@type")) {
+				// 			String valueStr = valueEntry.getValue().toString();
+				// 			valueToAdd +=
+				// 				"\""
+				// 					+ valueStr
+				// 						.replace("\",\"", "\" | \"")
+				// 						.replace("\\\"", "")
+				// 						.replace("},{", ", ")
+				// 						.replaceAll("[\"{}\\[\\]]", "")
+				// 						.replace("@language:", "")
+				// 						.replace(" | @value:", ": ")
+				// 					+ "\"";
+				// 		}
+				// 	}
 
-					values.set(keysIndex, valueToAdd);
-				}
+				// 	values.set(keysIndex, valueToAdd);
+				// }
 			}
 		}
 
