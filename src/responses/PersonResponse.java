@@ -29,16 +29,16 @@ public class PersonResponse {
 		   List<Person> personList = new ArrayList<Person>();
 		   ResultSet rs = null;
 		   Connection conn = null;
-		   Statement stmt = null;		   	       
+		   Statement stmt = null;
 		   try {
-			   
+
 		   // Register JDBC driver
 				Class.forName(PropertiesCache.getInstance().getProperty("DRIVER"));
-				
+
 				   // Open a connection
 				   conn = DriverManager.getConnection(
-						   PropertiesCache.getInstance().getProperty("DB_URL"), 
-						   PropertiesCache.getInstance().getProperty("USER"), 
+						   PropertiesCache.getInstance().getProperty("DB_URL"),
+						   PropertiesCache.getInstance().getProperty("USER"),
 						   PropertiesCache.getInstance().getProperty("PASS")
 						   );
 				   // Execute SQL query
@@ -49,8 +49,7 @@ public class PersonResponse {
 				   rs = stmt.executeQuery(query);
 				   if(rs.next() == false){
 					   return "";
-				   }
-				   else {
+				   } else {
 					   String personId = rs.getString("PersonId");
 					   rs.close();
 					   stmt.close();
@@ -58,20 +57,34 @@ public class PersonResponse {
 					   return personId;
 				   }
 			   }
+				 if (type == "lastInsertId") {
+					 int insertPerson = stmt.executeUpdate(query);
+					 int lastId = 0;
+					 String queryOut = "Person could not inserted.";
+					 ResultSet lastInsertId = stmt.executeQuery("SELECT LAST_INSERT_ID()");
+					 lastInsertId.next();
+					 lastId = Integer.valueOf(lastInsertId.getInt(1));
+					 if (lastId > 0) {
+						 queryOut = Integer.toString(lastId);
+					 }
+					 lastInsertId.close();
+					 stmt.close();
+					 conn.close();
+					 return queryOut;
+				 }
 			   int success = stmt.executeUpdate(query);
 			   if (success > 0) {
 				   stmt.close();
 				   conn.close();
 				   return type +" succesful";
-			   }
-			   else {
+			   } else {
 				   stmt.close();
 				   conn.close();
 				   return type +" could not be executed";
 			   }
 		   }
 		   rs = stmt.executeQuery(query);
-		   
+
 		   // Extract data from result set
 		   while(rs.next()){
 		      //Retrieve by column name
@@ -88,7 +101,7 @@ public class PersonResponse {
 			  Person.setItemId(rs.getInt("ItemId"));
 			  personList.add(Person);
 		   }
-		
+
 		   // Clean-up environment
 		   rs.close();
 		   stmt.close();
@@ -115,27 +128,27 @@ public class PersonResponse {
 	}
 
 	//Search using custom filters
-	
+
 	@Produces("application/json;charset=utf-8")
 	@GET
 	public Response search(@Context UriInfo uriInfo) throws SQLException {
 		String query = "SELECT * FROM ("
 				+ "SELECT " +
-				"   ip.PersonId as PersonId,\r\n" + 
-				"	FirstName,\r\n" + 
-				"    LastName,\r\n" + 
-				"    BirthPLace,\r\n" + 
-				"    BirthDate,\r\n" + 
-				"    DeathPlace,\r\n" + 
-				"    DeathDate,\r\n" + 
-				"    Link,\r\n" + 
-				"    Description,\r\n" + 
-				"    ip.ItemId as ItemId\r\n" + 
-				"FROM Person p\r\n" + 
-				"JOIN ItemPerson ip 	ON p.PersonId = ip.PersonId\r\n) a " + 
+				"   ip.PersonId as PersonId,\r\n" +
+				"	FirstName,\r\n" +
+				"    LastName,\r\n" +
+				"    BirthPLace,\r\n" +
+				"    BirthDate,\r\n" +
+				"    DeathPlace,\r\n" +
+				"    DeathDate,\r\n" +
+				"    Link,\r\n" +
+				"    Description,\r\n" +
+				"    ip.ItemId as ItemId\r\n" +
+				"FROM Person p\r\n" +
+				"JOIN ItemPerson ip 	ON p.PersonId = ip.PersonId\r\n) a " +
 				" WHERE 1";
 		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
-		
+
 		for(String key : queryParams.keySet()){
 			String[] values = queryParams.getFirst(key).split(",");
 			query += " AND (";
@@ -156,110 +169,87 @@ public class PersonResponse {
         return rBuild.build();
 	}
 
-
 	//Add new entry
-	
 	@POST
-	public Response add(String body) throws SQLException {	
-	    GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
-	    Gson gson = gsonBuilder.create();
-	    Person person = gson.fromJson(body, Person.class);
+	public Response add(String body) throws SQLException {
+	  GsonBuilder gsonBuilder = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss");
+	  Gson gson = gsonBuilder.create();
+	  Person person = gson.fromJson(body, Person.class);
 
-    	// Check if Person exists already
-    	String checkQuery = "SELECT PersonId FROM Person "
-    						+ "WHERE FirstName ";
-		if(!person.FirstName.equals("")) {
-			checkQuery += "= '" + person.FirstName + "' ";
-		}
-		else {
-			checkQuery += "is null ";
-		}
-    	checkQuery += "AND LastName ";
-		if(!person.LastName.equals("")) {
-			checkQuery += "= '" + person.LastName + "' ";
-		}
-		else {
-			checkQuery += "is null ";
-		}
-		checkQuery += " LIMIT 1";
+	  String rBuildString = "";
+
+		String FirstNameCheckQuery = !person.FirstName.equals("")
+			? "FirstName = '" + person.FirstName + "'"
+			: "FirstName is null";
+		String LastNameCheckQuery = !person.LastName.equals("")
+			? "LastName = '" + person.LastName + "'"
+			: "LastName is null";
+
+    String checkQuery = "SELECT PersonId FROM Person WHERE "
+    	+ FirstNameCheckQuery
+    	+ " AND "
+    	+ LastNameCheckQuery
+    	+ " AND "
+    	+ "ItemId = " + person.ItemId
+			+ " LIMIT 1";
+
 		String PersonId = executeQuery(checkQuery, "PersonId");
-		if (PersonId == "") {
-			// Person doesn't exist yet
-		    String query = "";
-			query += "INSERT INTO Person (FirstName, LastName, BirthPlace, BirthDate, DeathPlace, DeathDate, Link, Description, ItemId) "
-							+ "VALUES (";
-			if(!person.FirstName.equals("")) {
-				query += "'" + person.FirstName + "',";
-			}
-			else {
-				query += "null,";
-			}
-			if(!person.LastName.equals("")) {
-				query += "'" + person.LastName + "',";
-			}
-			else {
-				query += "null,";
-			}
-			if(!person.BirthPlace.equals("")) {
-				query += "'" + person.BirthPlace + "',";
-			}
-			else {
-				query += "null,";
-			}
-			if(!person.BirthDate.equals("")) {
-				query += "'" + person.BirthDate + "',";
-			}
-			else {
-				query += "null,";
-			}
-			if(!person.DeathPlace.equals("")) {
-				query += "'" + person.DeathPlace + "',";
-			}
-			else {
-				query += "null,";
-			}
-			if(!person.DeathDate.equals("")) {
-				query += "'" + person.DeathDate + "',";
-			}
-			else {
-				query += "null,";
-			}
-			if(!person.Link.equals("")) {
-				query += "'" + person.Link + "',";
-			}
-			else {
-				query += "null,";
-			}
-			if(!person.Description.equals("")) {
-				query += "'" + person.Description + "',";
-			}
-			else {
-				query += "null,";
-			}
-			query += person.ItemId;
-			query += ")";
-			String resource = executeQuery(query, "Insert");
-			
-			// Add Person to Item
-			
-			PersonId = executeQuery(checkQuery, "PersonId");
-			String itemPersonInsert = "INSERT INTO ItemPerson (ItemId, PersonId) "
-										+ "VALUES (" + person.ItemId + ", " + PersonId + ")";
-			String itemPersonInsertResponse = executeQuery(itemPersonInsert, "Insert");
-			ResponseBuilder rBuild = Response.ok(query);
-	        return rBuild.build();
-		}
-		else {
-			// Add Person to Item
-			
-			String itemPersonInsert = "INSERT INTO ItemPerson (ItemId, PersonId) "
-										+ "VALUES (" + person.ItemId + ", " + PersonId + ")";
-			String itemPersonInsertResponse = executeQuery(itemPersonInsert, "Insert");
-			ResponseBuilder rBuild = Response.ok(itemPersonInsertResponse);
-	        return rBuild.build();
-		}
-	}
 
+		if (PersonId == "") {
+
+			String FirstName = !person.FirstName.equals("") ? "'" + person.FirstName + "'," : "null,";
+			String LastName = !person.LastName.equals("") ? "'" + person.LastName + "'," : "null,";
+			String BirthPlace = !person.BirthPlace.equals("") ? "'" + person.BirthPlace + "'," : "null,";
+			String BirthDate = !person.BirthDate.equals("") ? "'" + person.BirthDate + "'," : "null,";
+			String DeathPlace = !person.DeathPlace.equals("") ? "'" + person.DeathPlace + "'," : "null,";
+			String DeathDate = !person.DeathDate.equals("") ? "'" + person.DeathDate + "'," : "null,";
+			String Link = !person.Link.equals("") ? "'" + person.Link	+ "'," : "null,";
+			String Description = !person.Description.equals("") ? "'" + person.Description	+ "'," : "null,";
+
+			String query = "INSERT INTO Person ("
+				+ "FirstName"
+				+ ", LastName"
+				+ ", BirthPlace"
+				+ ", BirthDate"
+				+ ", DeathPlace"
+				+ ", DeathDate"
+				+ ", Link"
+				+ ", Description"
+				+ ", ItemId"
+			+ ") VALUES ("
+				+ FirstName
+				+ LastName
+				+ BirthPlace
+				+ BirthDate
+				+ DeathPlace
+				+ DeathDate
+				+ Link
+				+ Description
+				+ person.ItemId
+			+ ")";
+
+			PersonId = executeQuery(query, "lastInsertId");
+
+			String itemPersonInsert = "INSERT INTO ItemPerson ("
+				+ "ItemId"
+				+ ", PersonId"
+			+ ") VALUES ("
+				+ person.ItemId
+				+ ", " + PersonId
+				+ ")";
+
+			String itemPersonInsertResponse = executeQuery(itemPersonInsert, "Insert");
+
+			rBuildString = itemPersonInsert;
+			// rBuildString = PersonId;
+		} else {
+			rBuildString = "Nothing added, person already exists for this item.";
+		}
+
+		ResponseBuilder rBuild = Response.ok(rBuildString);
+
+	  return rBuild.build();
+	}
 
 	//Edit entry by id
 	@Path("/{id}")
@@ -277,7 +267,7 @@ public class PersonResponse {
 	    		else {
 	    			query += "null,";
 	    		}
-	    		
+
 	    		query += "LastName = ";
 	    		if(!changes.LastName.equals("")) {
 	    			query += "'" + changes.LastName + "',";
@@ -333,13 +323,13 @@ public class PersonResponse {
 	    			query += "null ";
 	    		}
 		query += " WHERE PersonId = " + id;
-		
+
 		String resource = executeQuery(query, "Update");
 		//ResponseBuilder rBuild = Response.ok(resource);
 		ResponseBuilder rBuild = Response.ok(query);
         return rBuild.build();
 	}
-	
+
 
 	//Delete entry by id
 	@Path("/{id}")
@@ -348,7 +338,7 @@ public class PersonResponse {
 		String resource = executeQuery("DELETE FROM Person WHERE PersonId = " + id, "Delete");
 		return resource;
 	}
-	
+
 
 	//Get entry by id
 	@Path("/{id}")
@@ -357,18 +347,18 @@ public class PersonResponse {
 	public Response getEntry(@PathParam("id") int id) throws SQLException {
 		String resource = executeQuery("SELECT * FROM ("
 				+ "SELECT " +
-				"   ip.PersonId as PersonId,\r\n" + 
-				"	FirstName,\r\n" + 
-				"    LastName,\r\n" + 
-				"    BirthPLace,\r\n" + 
-				"    BirthDate,\r\n" + 
-				"    DeathPlace,\r\n" + 
-				"    DeathDate,\r\n" + 
-				"    Link,\r\n" + 
-				"    Description,\r\n" + 
-				"    ip.ItemId as ItemId\r\n" + 
-				"FROM Person p\r\n" + 
-				"JOIN ItemPerson ip 	ON p.PersonId = ip.PersonId\r\n) a " + 
+				"   ip.PersonId as PersonId,\r\n" +
+				"	FirstName,\r\n" +
+				"    LastName,\r\n" +
+				"    BirthPLace,\r\n" +
+				"    BirthDate,\r\n" +
+				"    DeathPlace,\r\n" +
+				"    DeathDate,\r\n" +
+				"    Link,\r\n" +
+				"    Description,\r\n" +
+				"    ip.ItemId as ItemId\r\n" +
+				"FROM Person p\r\n" +
+				"JOIN ItemPerson ip 	ON p.PersonId = ip.PersonId\r\n) a " +
 				" WHERE PersonId = " + id, "Select");
 		ResponseBuilder rBuild = Response.ok(resource);
         return rBuild.build();
