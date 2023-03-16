@@ -986,6 +986,7 @@ public class StoryResponse {
 							"			i.DateEnd,  \r\n" +
 							"			i.DateStartDisplay, \r\n" +
 							"			i.DateEndDisplay,  \r\n" +
+							"			i.CreationDate,  \r\n" +
 							"			i.DatasetId,  \r\n" +
 							"			i.ImageLink, \r\n" +
 							"			i.OrderIndex,  \r\n" +

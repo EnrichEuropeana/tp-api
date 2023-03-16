@@ -81,6 +81,7 @@ public class PlaceResponse {
 				  Place.setUserGenerated(rs.getString("UserGenerated"));
 				  Place.setWikidataName(rs.getString("WikidataName"));
 				  Place.setWikidataId(rs.getString("WikidataId"));
+				  Place.setPlaceRole(rs.getString("PlaceRole"));
 				  placeList.add(Place);
 		   }
 		
@@ -128,6 +129,7 @@ public class PlaceResponse {
 				"		p.UserGenerated as UserGenerated ,\r\n" + 
 				"		p.WikidataName as WikidataName ,\r\n" + 
 				"		p.WikidataId as WikidataId ,\r\n" + 
+				"		p.PlaceRole as PlaceRole ,\r\n" +
 				"		(SELECT WP_UserId FROM User WHERE UserId = p.UserId) as UserId\r\n" + 
 				"FROM Place p\r\n" + 
 				"LEFT JOIN Item i On p.ItemId = i.ItemId) a WHERE 1";
@@ -172,6 +174,7 @@ public class PlaceResponse {
 				"		p.UserGenerated as UserGenerated ,\r\n" + 
 				"		p.WikidataName as WikidataName ,\r\n" + 
 				"		p.WikidataId as WikidataId ,\r\n" + 
+				"		p.PlaceRole as PlaceRole ,\r\n" + 
 				"		(SELECT WP_UserId FROM User WHERE UserId = p.UserId) as UserId\r\n" + 
 				"FROM Place p\r\n" + 
 				"LEFT JOIN Item i On p.ItemId = i.ItemId) a ";
@@ -221,6 +224,7 @@ public class PlaceResponse {
 				"		p.UserGenerated as UserGenerated ,\r\n" + 
 				"		p.WikidataName as WikidataName ,\r\n" + 
 				"		p.WikidataId as WikidataId ,\r\n" + 
+				"		p.PlaceRole as PlaceRole ,\r\n" + 
 				"		(SELECT WP_UserId FROM User WHERE UserId = p.UserId) as UserId\r\n" + 
 				"FROM Place p\r\n" + 
 				"LEFT JOIN Item i On p.ItemId = i.ItemId) a WHERE ItemId = " + id;
@@ -273,6 +277,7 @@ public class PlaceResponse {
 					+ ", '" + place.Comment + "'"
 					+ ", '" + place.WikidataName + "'"
 					+ ", '" + place.WikidataId + "'"
+					+ ", '" + place.PlaceRole + "'"
 					+ ", (SELECT UserId FROM User " 
 					+ "		WHERE WP_UserId = " + place.UserId + ")"
 					+ ", " + place.UserGenerated + ")";
@@ -301,7 +306,8 @@ public class PlaceResponse {
  	    				 + "Longitude = " + changes.Longitude + ", "
 	    				 + "Comment = '" + changes.Comment + "', "
 	    				 + "WikidataId = '" + changes.WikidataId + "', "
-	    				 + "WikidataName = '" + changes.WikidataName + "' ";
+	    				 + "WikidataName = '" + changes.WikidataName + "', "
+						 + "WikidataName = '" + changes.PlaceRole + "' ";
 		query += " WHERE PlaceId = " + id;
 		String resource = executeQuery(query, "Update");
 		ResponseBuilder rBuild = Response.ok(resource);
