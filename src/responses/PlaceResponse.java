@@ -267,7 +267,7 @@ public class PlaceResponse {
 	    
 	    //Check if all mandatory fields are included
 	    if (place.Latitude != null && place.Longitude != null && place.ItemId != null) {
-			String query = "INSERT INTO Place (Name, Latitude, Longitude, ItemId, Link, Zoom, Comment, WikidataName, WikidataId, UserId, UserGenerated) "
+			String query = "INSERT INTO Place (Name, Latitude, Longitude, ItemId, Link, Zoom, Comment, WikidataName, WikidataId, PlaceRole, UserId, UserGenerated) "
 					+ "VALUES ('" + place.Name + "'"
 					+ ", " + place.Latitude
 					+ ", " + place.Longitude
