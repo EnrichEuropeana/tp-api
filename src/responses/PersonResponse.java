@@ -322,11 +322,12 @@ public class PersonResponse {
 
 	    		query += "Description = ";
 	    		if(!changes.Description.equals("")) {
-	    			query += "'" + changes.Description + "'";
+	    			query += "'" + changes.Description + "',";
 	    		}
 	    		else {
-	    			query += "null ";
+	    			query += "null,";
 	    		}
+
 				query += "PersonRole = ";
 	    		if(!changes.PersonRole.equals("")) {
 	    			query += "'" + changes.PersonRole + "'";
@@ -334,6 +335,7 @@ public class PersonResponse {
 	    		else {
 	    			query += "null ";
 	    		}
+
 		query += " WHERE PersonId = " + id;
 
 		String resource = executeQuery(query, "Update");

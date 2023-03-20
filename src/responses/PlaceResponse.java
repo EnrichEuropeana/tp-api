@@ -307,7 +307,7 @@ public class PlaceResponse {
 	    				 + "Comment = '" + changes.Comment + "', "
 	    				 + "WikidataId = '" + changes.WikidataId + "', "
 	    				 + "WikidataName = '" + changes.WikidataName + "', "
-						 + "WikidataName = '" + changes.PlaceRole + "' ";
+						 + "PlaceRole = '" + changes.PlaceRole + "' ";
 		query += " WHERE PlaceId = " + id;
 		String resource = executeQuery(query, "Update");
 		ResponseBuilder rBuild = Response.ok(resource);
