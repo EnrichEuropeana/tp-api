@@ -958,7 +958,7 @@ public class ItemResponse {
 				"                SEPARATOR '&~&') AS TranscriptionTimestamp,\r\n" +
 				"            GROUP_CONCAT(t.NoText\r\n" +
 				"                SEPARATOR '&~&') AS TranscriptionNoText,\r\n" +
-				"            GROUP_CONCAT(IFNULL(t.EuropeanaAnnotationId, 'NULL')\r\n" +
+				"            GROUP_CONCAT(IFNULL(t.EuropeanaAnnotationId, 0)\r\n" +
 				"                SEPARATOR '&~&') AS TranscriptionEuropeanaAnnotationId,\r\n" +
 				"            GROUP_CONCAT(IFNULL(l.LanguageId, 'NULL')\r\n" +
 				"                SEPARATOR '&~&') AS TranscriptionLanguageId,\r\n" +
@@ -1324,7 +1324,7 @@ public class ItemResponse {
 								"			t.CurrentVersion + 0 AS CurrentVersion,\r\n" +
 								"			t.Timestamp AS Timestamp,\r\n" +
 								"			u.WP_UserId AS WP_UserId,\r\n" +
-								"			IFNULL(t.EuropeanaAnnotationId, 'NULL') AS EuropeanaAnnotationId,\r\n" +
+								"			IFNULL(t.EuropeanaAnnotationId, 0) AS EuropeanaAnnotationId,\r\n" +
 								"			t.NoText + 0 AS NoText,\r\n" +
 								"    		IFNULL(l.LanguageId, 'NULL') AS LanguageId,\r\n" +
 								"    		IFNULL(l.Name, 'NULL') AS LanguageName,\r\n" +
