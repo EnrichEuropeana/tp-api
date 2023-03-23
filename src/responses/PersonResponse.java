@@ -98,6 +98,7 @@ public class PersonResponse {
 			  Person.setDeathDate(rs.getString("DeathDate"));
 			  Person.setLink(rs.getString("Link"));
 			  Person.setDescription(rs.getString("Description"));
+			  Person.setPersonRole(rs.getString("PersonRole"));
 			  Person.setItemId(rs.getInt("ItemId"));
 			  personList.add(Person);
 		   }
@@ -143,6 +144,7 @@ public class PersonResponse {
 				"    DeathDate,\r\n" +
 				"    Link,\r\n" +
 				"    Description,\r\n" +
+				"    PersonRole,\r\n" +
 				"    ip.ItemId as ItemId\r\n" +
 				"FROM Person p\r\n" +
 				"JOIN ItemPerson ip 	ON p.PersonId = ip.PersonId\r\n) a " +
@@ -205,6 +207,7 @@ public class PersonResponse {
 			String DeathDate = !person.DeathDate.equals("") ? "'" + person.DeathDate + "'," : "null,";
 			String Link = !person.Link.equals("") ? "'" + person.Link	+ "'," : "null,";
 			String Description = !person.Description.equals("") ? "'" + person.Description	+ "'," : "null,";
+			String PersonRole = !person.PersonRole.equals("") ? "'" + person.PersonRole	+ "'," : "null,";
 
 			String query = "INSERT INTO Person ("
 				+ "FirstName"
@@ -215,6 +218,7 @@ public class PersonResponse {
 				+ ", DeathDate"
 				+ ", Link"
 				+ ", Description"
+				+ ", PersonRole"
 				+ ", ItemId"
 			+ ") VALUES ("
 				+ FirstName
@@ -225,6 +229,7 @@ public class PersonResponse {
 				+ DeathDate
 				+ Link
 				+ Description
+				+ PersonRole
 				+ person.ItemId
 			+ ")";
 
@@ -317,11 +322,20 @@ public class PersonResponse {
 
 	    		query += "Description = ";
 	    		if(!changes.Description.equals("")) {
-	    			query += "'" + changes.Description + "'";
+	    			query += "'" + changes.Description + "',";
+	    		}
+	    		else {
+	    			query += "null,";
+	    		}
+
+				query += "PersonRole = ";
+	    		if(!changes.PersonRole.equals("")) {
+	    			query += "'" + changes.PersonRole + "'";
 	    		}
 	    		else {
 	    			query += "null ";
 	    		}
+
 		query += " WHERE PersonId = " + id;
 
 		String resource = executeQuery(query, "Update");
@@ -356,6 +370,7 @@ public class PersonResponse {
 				"    DeathDate,\r\n" +
 				"    Link,\r\n" +
 				"    Description,\r\n" +
+				"    PersonRole,\r\n" +
 				"    ip.ItemId as ItemId\r\n" +
 				"FROM Person p\r\n" +
 				"JOIN ItemPerson ip 	ON p.PersonId = ip.PersonId\r\n) a " +

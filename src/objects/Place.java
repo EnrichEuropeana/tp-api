@@ -13,6 +13,7 @@ public class Place {
 	public String Comment;
 	public String WikidataName;
 	public String WikidataId;
+	public String PlaceRole;
 	public String UserGenerated;
 	public Integer UserId;
 	
@@ -61,6 +62,10 @@ public class Place {
 
 	public void setWikidataId(String wikidataId) {
 		WikidataId = wikidataId;
+	}
+
+	public void setPlaceRole(String PlaceRole) {
+        this.PlaceRole = PlaceRole;
 	}
 	
 	public void setUserGenerated (String UserGenerated) {

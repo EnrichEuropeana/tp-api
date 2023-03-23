@@ -433,6 +433,7 @@ public class ItemResponse {
 			  item.setDateEnd(rs.getTimestamp("DateEnd"));
 			  item.setDateStartDisplay(rs.getString("DateStartDisplay"));
 			  item.setDateEndDisplay(rs.getString("DateEndDisplay"));
+			  item.setDateRole(rs.getString("DateRole"));
 			  item.setDatasetId(rs.getInt("DatasetId"));
 			  item.setImageLink(rs.getString("ImageLink"));
 			  item.setOrderIndex(rs.getInt("OrderIndex"));
@@ -566,6 +567,7 @@ public class ItemResponse {
 			  item.setDateEnd(rs.getTimestamp("DateEnd"));
 			  item.setDateStartDisplay(rs.getString("DateStartDisplay"));
 			  item.setDateEndDisplay(rs.getString("DateEndDisplay"));
+			  item.setDateRole(rs.getString("DateRole"));
 			  item.setDatasetId(rs.getInt("DatasetId"));
 			  item.setImageLink(rs.getString("ImageLink"));
 			  item.setOrderIndex(rs.getInt("OrderIndex"));
@@ -731,6 +733,7 @@ public class ItemResponse {
 				"            i.DateEnd AS DateEnd,\r\n" +
 				"            i.DateStartDisplay AS DateStartDisplay,\r\n" +
 				"            i.DateEndDisplay AS DateEndDisplay,\r\n" +
+				"            i.DateRole AS DateRole,\r\n" +
 				"            i.DatasetId AS DatasetId,\r\n" +
 				"            i.ImageLink AS ImageLink,\r\n" +
 				"            i.OrderIndex AS OrderIndex,\r\n" +
@@ -955,7 +958,7 @@ public class ItemResponse {
 				"                SEPARATOR '&~&') AS TranscriptionTimestamp,\r\n" +
 				"            GROUP_CONCAT(t.NoText\r\n" +
 				"                SEPARATOR '&~&') AS TranscriptionNoText,\r\n" +
-				"            GROUP_CONCAT(IFNULL(t.EuropeanaAnnotationId, 'NULL')\r\n" +
+				"            GROUP_CONCAT(IFNULL(t.EuropeanaAnnotationId, 0)\r\n" +
 				"                SEPARATOR '&~&') AS TranscriptionEuropeanaAnnotationId,\r\n" +
 				"            GROUP_CONCAT(IFNULL(l.LanguageId, 'NULL')\r\n" +
 				"                SEPARATOR '&~&') AS TranscriptionLanguageId,\r\n" +
@@ -1236,6 +1239,7 @@ public class ItemResponse {
 					"    i.DateEnd AS DateEnd,\r\n" +
 					"    i.DateStartDisplay AS DateStartDisplay,\r\n" +
 					"    i.DateEndDisplay AS DateEndDisplay,\r\n" +
+					"    i.DateRole AS DateRole,\r\n" +
 					"    i.DatasetId AS DatasetId,\r\n" +
 					"    i.ImageLink AS ImageLink,\r\n" +
 					"    i.OrderIndex AS OrderIndex,\r\n" +
@@ -1320,7 +1324,7 @@ public class ItemResponse {
 								"			t.CurrentVersion + 0 AS CurrentVersion,\r\n" +
 								"			t.Timestamp AS Timestamp,\r\n" +
 								"			u.WP_UserId AS WP_UserId,\r\n" +
-								"			IFNULL(t.EuropeanaAnnotationId, 'NULL') AS EuropeanaAnnotationId,\r\n" +
+								"			IFNULL(t.EuropeanaAnnotationId, 0) AS EuropeanaAnnotationId,\r\n" +
 								"			t.NoText + 0 AS NoText,\r\n" +
 								"    		IFNULL(l.LanguageId, 'NULL') AS LanguageId,\r\n" +
 								"    		IFNULL(l.Name, 'NULL') AS LanguageName,\r\n" +
@@ -1418,7 +1422,8 @@ public class ItemResponse {
 						"			pl.UserId AS UserId,\r\n" +
 						"			pl.UserGenerated + 0 AS UserGenerated,\r\n" +
 						"			pl.WikidataName AS WikidataName,\r\n" +
-						"			pl.WikidataId AS WikidataId\r\n" +
+						"			pl.WikidataId AS WikidataId,\r\n" +
+						"			pl.PlaceRole AS PlaceRole\r\n" +
 						"		FROM\r\n" +
 						"			Place pl\r\n" +
 						"		WHERE pl.ItemId = " + id;
@@ -1439,7 +1444,8 @@ public class ItemResponse {
 							"			IFNULL(pe.DeathPlace, 'NULL') AS DeathPlace,\r\n" +
 							"			IFNULL(pe.DeathDate, 'NULL') AS DeathDate,\r\n" +
 							"			IFNULL(pe.Link, 'NULL') AS Link,\r\n" +
-							"			IFNULL(pe.Description, 'NULL') AS Description\r\n" +
+							"			IFNULL(pe.Description, 'NULL') AS Description,\r\n" +
+							"			IFNULL(pe.PersonRole, 'NULL') AS PersonRole\r\n" +
 							"		FROM\r\n" +
 							"			ItemPerson iperson \r\n" +
 							"		JOIN Person pe ON iperson.PersonId = pe.PersonId\r\n" +

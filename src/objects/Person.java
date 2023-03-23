@@ -10,6 +10,7 @@ public class Person {
 	public String DeathDate;
 	public String Link; 
 	public String Description; 
+	public String PersonRole;
 	public Integer ItemId; 
 	
 	public void setPersonId (Integer PersonId) {
@@ -31,6 +32,9 @@ public class Person {
 		Description = description;
 	}
 
+    public void setPersonRole(String personRole) {
+		PersonRole = personRole;
+	}
 
 	public void setBirthPlace (String BirthPlace) {
 		this.BirthPlace = BirthPlace;

@@ -112,9 +112,9 @@ public class TranscriptionResponse {
 			  transcription.setWP_UserId(rs.getInt("WP_UserId"));
 			  transcription.setItemId(rs.getInt("ItemId"));
 			  transcription.setCurrentVersion(rs.getString("CurrentVersion"));
-			  if (!rs.getString("EuropeanaAnnotationId").equals("NULL")) {
-				  transcription.setEuropeanaAnnotationId(rs.getInt("EuropeanaAnnotationId"));
-			  }
+			  
+			  transcription.setEuropeanaAnnotationId(rs.getInt("EuropeanaAnnotationId"));
+			  
 			  transcription.setNoText(rs.getString("NoText"));
 
 			  // Add Languages
