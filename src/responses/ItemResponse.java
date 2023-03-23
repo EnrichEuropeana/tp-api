@@ -433,7 +433,7 @@ public class ItemResponse {
 			  item.setDateEnd(rs.getTimestamp("DateEnd"));
 			  item.setDateStartDisplay(rs.getString("DateStartDisplay"));
 			  item.setDateEndDisplay(rs.getString("DateEndDisplay"));
-			  item.setCreationDate(rs.getString("CreationDate"));
+			  item.setDateRole(rs.getString("DateRole"));
 			  item.setDatasetId(rs.getInt("DatasetId"));
 			  item.setImageLink(rs.getString("ImageLink"));
 			  item.setOrderIndex(rs.getInt("OrderIndex"));
@@ -567,7 +567,7 @@ public class ItemResponse {
 			  item.setDateEnd(rs.getTimestamp("DateEnd"));
 			  item.setDateStartDisplay(rs.getString("DateStartDisplay"));
 			  item.setDateEndDisplay(rs.getString("DateEndDisplay"));
-			  item.setCreationDate(rs.getString("CreationDate"));
+			  item.setDateRole(rs.getString("DateRole"));
 			  item.setDatasetId(rs.getInt("DatasetId"));
 			  item.setImageLink(rs.getString("ImageLink"));
 			  item.setOrderIndex(rs.getInt("OrderIndex"));
@@ -733,7 +733,7 @@ public class ItemResponse {
 				"            i.DateEnd AS DateEnd,\r\n" +
 				"            i.DateStartDisplay AS DateStartDisplay,\r\n" +
 				"            i.DateEndDisplay AS DateEndDisplay,\r\n" +
-				"            i.CreationDate AS CreationDate,\r\n" +
+				"            i.DateRole AS DateRole,\r\n" +
 				"            i.DatasetId AS DatasetId,\r\n" +
 				"            i.ImageLink AS ImageLink,\r\n" +
 				"            i.OrderIndex AS OrderIndex,\r\n" +
@@ -1239,7 +1239,7 @@ public class ItemResponse {
 					"    i.DateEnd AS DateEnd,\r\n" +
 					"    i.DateStartDisplay AS DateStartDisplay,\r\n" +
 					"    i.DateEndDisplay AS DateEndDisplay,\r\n" +
-					"    i.CreationDate AS CreationDate,\r\n" +
+					"    i.DateRole AS DateRole,\r\n" +
 					"    i.DatasetId AS DatasetId,\r\n" +
 					"    i.ImageLink AS ImageLink,\r\n" +
 					"    i.OrderIndex AS OrderIndex,\r\n" +

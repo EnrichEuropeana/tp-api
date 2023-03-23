@@ -31,7 +31,7 @@ public class Item {
 	public Timestamp DateEnd;
 	public String DateStartDisplay;
 	public String DateEndDisplay;
-	public String CreationDate;
+	public String DateRole;
 	public Integer DatasetId;
 	public String ImageLink;
 	public Integer OrderIndex;
@@ -305,8 +305,8 @@ public class Item {
 	public void setDateEndDisplay(String dateEndDisplay) {
 		DateEndDisplay = dateEndDisplay;
 	}
-	public void setCreationDate(String creationDate) {
-		CreationDate = creationDate;
+	public void setDateRole(String dateRole) {
+		DateRole = dateRole;
 	}
 	public void setDatasetId(Integer datasetId) {
 		DatasetId = datasetId;
