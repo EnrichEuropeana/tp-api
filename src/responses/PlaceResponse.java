@@ -196,7 +196,7 @@ public class PlaceResponse {
 		}
 		query += " UNION \r\n" + 
 				"					(\r\n" + 
-				"						SELECT null, PlaceName, PlaceLatitude, PlaceLongitude, null, StoryId, `dc:title`, null, PlaceZoom, null, null, null, null, null\r\n" + 
+				"						SELECT null, PlaceName, PlaceLatitude, PlaceLongitude, null, StoryId, `dc:title`, null, PlaceZoom, null, null, null, null, null, null\r\n" + 
 				"						FROM Story\r\n" + 
 				"					)";
 		String resource = executeQuery(query, "Select");
@@ -246,7 +246,7 @@ public class PlaceResponse {
 		}
 		query += " UNION \r\n" + 
 				"					(\r\n" + 
-				"						SELECT null, PlaceName, PlaceLatitude, PlaceLongitude, null, StoryId, `dc:title`, null, PlaceZoom, null, null, null, null, null\r\n" + 
+				"						SELECT null, PlaceName, PlaceLatitude, PlaceLongitude, null, StoryId, `dc:title`, null, PlaceZoom, null, null, null, null, null, null\r\n" + 
 				"						FROM Story\r\n" + 
 				"						WHERE StoryId = (SELECT StoryId FROM Item WHERE ItemId = " + id + ") AND PlaceLatitude is not null" +
 				"					)";
