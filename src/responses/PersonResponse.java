@@ -207,10 +207,14 @@ public class PersonResponse {
 			String LastName = !person.LastName.equals("") ? "'" + person.LastName + "'," : "null,";
 			String BirthPlace = !person.BirthPlace.equals("") ? "'" + person.BirthPlace + "'," : "null,";
 			String BirthDate = !person.BirthDate.equals("") ? "'" + person.BirthDate + "'," : "null,";
-			String BirthDateDisplay = !person.BirthDateDisplay.equals("") ? "'" + person.BirthDateDisplay + "'," : "null,";
+			String BirthDateDisplay = (person.BirthDateDisplay != null && !person.BirthDateDisplay.equals(""))
+				? "'" + person.BirthDateDisplay + "',"
+				: "null,";
 			String DeathPlace = !person.DeathPlace.equals("") ? "'" + person.DeathPlace + "'," : "null,";
 			String DeathDate = !person.DeathDate.equals("") ? "'" + person.DeathDate + "'," : "null,";
-			String DeathDateDisplay = !person.DeathDateDisplay.equals("") ? "'" + person.DeathDateDisplay + "'," : "null,";
+			String DeathDateDisplay = (person.DeathDateDisplay != null && !person.DeathDateDisplay.equals(""))
+				? "'" + person.DeathDateDisplay + "',"
+				: "null,";
 			String Link = !person.Link.equals("") ? "'" + person.Link	+ "'," : "null,";
 			String Description = !person.Description.equals("") ? "'" + person.Description	+ "'," : "null,";
 			String PersonRole = !person.PersonRole.equals("") ? "'" + person.PersonRole	+ "'," : "null,";
@@ -305,8 +309,10 @@ public class PersonResponse {
 	    		else {
 	    			query += "null,";
 	    		}
+	    		// check if changes.BirthDateDisplay exists
+
 	    		query += "BirthDateDisplay = ";
-	    		if(!changes.BirthDateDisplay.equals("")) {
+	    		if(changes.BirthDateDisplay != null && !changes.BirthDateDisplay.equals("")) {
 	    			query += "'" + changes.BirthDateDisplay + "',";
 	    		}
 	    		else {
@@ -330,7 +336,7 @@ public class PersonResponse {
 	    		}
 
 	    		query += "DeathDateDisplay = ";
-	    		if(!changes.DeathDateDisplay.equals("")) {
+	    		if(changes.DeathDateDisplay != null && !changes.DeathDateDisplay.equals("")) {
 	    			query += "'" + changes.DeathDateDisplay + "',";
 	    		}
 	    		else {
