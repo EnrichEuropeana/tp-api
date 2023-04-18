@@ -94,8 +94,10 @@ public class PersonResponse {
 			  Person.setLastName(rs.getString("LastName"));
 			  Person.setBirthPlace(rs.getString("BirthPlace"));
 			  Person.setBirthDate(rs.getString("BirthDate"));
+			  Person.setBirthDateDisplay(rs.getString("BirthDateDisplay"));
 			  Person.setDeathPlace(rs.getString("DeathPlace"));
 			  Person.setDeathDate(rs.getString("DeathDate"));
+			  Person.setDeathDateDisplay(rs.getString("DeathDateDisplay"));
 			  Person.setLink(rs.getString("Link"));
 			  Person.setDescription(rs.getString("Description"));
 			  Person.setPersonRole(rs.getString("PersonRole"));
@@ -140,8 +142,10 @@ public class PersonResponse {
 				"    LastName,\r\n" +
 				"    BirthPLace,\r\n" +
 				"    BirthDate,\r\n" +
+				"    BirthDateDisplay,\r\n" +
 				"    DeathPlace,\r\n" +
 				"    DeathDate,\r\n" +
+				"    DeathDateDisplay,\r\n" +
 				"    Link,\r\n" +
 				"    Description,\r\n" +
 				"    PersonRole,\r\n" +
@@ -203,8 +207,14 @@ public class PersonResponse {
 			String LastName = !person.LastName.equals("") ? "'" + person.LastName + "'," : "null,";
 			String BirthPlace = !person.BirthPlace.equals("") ? "'" + person.BirthPlace + "'," : "null,";
 			String BirthDate = !person.BirthDate.equals("") ? "'" + person.BirthDate + "'," : "null,";
+			String BirthDateDisplay = (person.BirthDateDisplay != null && !person.BirthDateDisplay.equals(""))
+				? "'" + person.BirthDateDisplay + "',"
+				: "null,";
 			String DeathPlace = !person.DeathPlace.equals("") ? "'" + person.DeathPlace + "'," : "null,";
 			String DeathDate = !person.DeathDate.equals("") ? "'" + person.DeathDate + "'," : "null,";
+			String DeathDateDisplay = (person.DeathDateDisplay != null && !person.DeathDateDisplay.equals(""))
+				? "'" + person.DeathDateDisplay + "',"
+				: "null,";
 			String Link = !person.Link.equals("") ? "'" + person.Link	+ "'," : "null,";
 			String Description = !person.Description.equals("") ? "'" + person.Description	+ "'," : "null,";
 			String PersonRole = !person.PersonRole.equals("") ? "'" + person.PersonRole	+ "'," : "null,";
@@ -214,8 +224,10 @@ public class PersonResponse {
 				+ ", LastName"
 				+ ", BirthPlace"
 				+ ", BirthDate"
+				+ ", BirthDateDisplay"
 				+ ", DeathPlace"
 				+ ", DeathDate"
+				+ ", DeathDateDisplay"
 				+ ", Link"
 				+ ", Description"
 				+ ", PersonRole"
@@ -225,8 +237,10 @@ public class PersonResponse {
 				+ LastName
 				+ BirthPlace
 				+ BirthDate
+				+ BirthDateDisplay
 				+ DeathPlace
 				+ DeathDate
+				+ DeathDateDisplay
 				+ Link
 				+ Description
 				+ PersonRole
@@ -295,6 +309,15 @@ public class PersonResponse {
 	    		else {
 	    			query += "null,";
 	    		}
+	    		// check if changes.BirthDateDisplay exists
+
+	    		query += "BirthDateDisplay = ";
+	    		if(changes.BirthDateDisplay != null && !changes.BirthDateDisplay.equals("")) {
+	    			query += "'" + changes.BirthDateDisplay + "',";
+	    		}
+	    		else {
+	    			query += "null,";
+	    		}
 
 	    		query += "DeathPlace = ";
 	    		if(!changes.DeathPlace.equals("")) {
@@ -307,6 +330,14 @@ public class PersonResponse {
 	    		query += "DeathDate = ";
 	    		if(!changes.DeathDate.equals("")) {
 	    			query += "'" + changes.DeathDate + "',";
+	    		}
+	    		else {
+	    			query += "null,";
+	    		}
+
+	    		query += "DeathDateDisplay = ";
+	    		if(changes.DeathDateDisplay != null && !changes.DeathDateDisplay.equals("")) {
+	    			query += "'" + changes.DeathDateDisplay + "',";
 	    		}
 	    		else {
 	    			query += "null,";
@@ -366,8 +397,10 @@ public class PersonResponse {
 				"    LastName,\r\n" +
 				"    BirthPLace,\r\n" +
 				"    BirthDate,\r\n" +
+				"    BirthDateDisplay,\r\n" +
 				"    DeathPlace,\r\n" +
 				"    DeathDate,\r\n" +
+				"    DeathDateDisplay,\r\n" +
 				"    Link,\r\n" +
 				"    Description,\r\n" +
 				"    PersonRole,\r\n" +
