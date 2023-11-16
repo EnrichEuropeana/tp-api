@@ -171,18 +171,28 @@ public class TranscriptionProfileResponse {
 		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
 		
 		for(String key : queryParams.keySet()){
-			String[] values = queryParams.getFirst(key).split(",");
-			query += " AND (";
-		    int valueCount = values.length;
-		    int i = 1;
-		    for(String value : values) {
-		    	query += key + " = '" + value + "'";
-			    if (i < valueCount) {
-			    	query += " OR ";
-			    }
-			    i++;
-		    }
-		    query += ")";
+			if (!key.contentEquals("limit") && !key.contentEquals("offset")) {
+			    String[] values = queryParams.getFirst(key).split(",");
+			    query += " AND (";
+		        int valueCount = values.length;
+		        int i = 1;
+		        for(String value : values) {
+		        	query += key + " = '" + value + "'";
+			        if (i < valueCount) {
+			        	query += " OR ";
+			        }
+			        i++;
+		        }
+		        query += ")";
+			}
+		}
+
+		if (queryParams.containsKey("limit")) {
+			query += " LIMIT " + queryParams.getFirst("limit");
+		}
+
+		if (queryParams.containsKey("offset")) {
+			query += " OFFSET " + queryParams.getFirst("offset");
 		}
 		String resource = executeQuery(query, "Select");
 		ResponseBuilder rBuild = Response.ok(resource);
