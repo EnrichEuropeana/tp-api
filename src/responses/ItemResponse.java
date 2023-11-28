@@ -1441,8 +1441,10 @@ public class ItemResponse {
 							"			IFNULL(pe.LastName, 'NULL') AS LastName,\r\n" +
 							"			IFNULL(pe.BirthPlace, 'NULL') AS BirthPlace,\r\n" +
 							"			IFNULL(pe.BirthDate, 'NULL') AS BirthDate,\r\n" +
+							"           IFNULL(pe.BirthDateDisplay, 'NULL') AS BirthDateDisplay,\r\n" +
 							"			IFNULL(pe.DeathPlace, 'NULL') AS DeathPlace,\r\n" +
 							"			IFNULL(pe.DeathDate, 'NULL') AS DeathDate,\r\n" +
+							"           IFNULL(pe.DeathDateDisplay, 'NULL') AS DeathDateDisplay,\r\n" +
 							"			IFNULL(pe.Link, 'NULL') AS Link,\r\n" +
 							"			IFNULL(pe.Description, 'NULL') AS Description,\r\n" +
 							"			IFNULL(pe.PersonRole, 'NULL') AS PersonRole\r\n" +
