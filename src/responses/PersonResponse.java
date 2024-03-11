@@ -89,19 +89,72 @@ public class PersonResponse {
 		   while(rs.next()){
 		      //Retrieve by column name
 			  Person Person = new Person();
-			  Person.setPersonId(rs.getInt("PersonId"));
-			  Person.setFirstName(rs.getString("FirstName"));
-			  Person.setLastName(rs.getString("LastName"));
-			  Person.setBirthPlace(rs.getString("BirthPlace"));
-			  Person.setBirthDate(rs.getString("BirthDate"));
-			  Person.setBirthDateDisplay(rs.getString("BirthDateDisplay"));
-			  Person.setDeathPlace(rs.getString("DeathPlace"));
-			  Person.setDeathDate(rs.getString("DeathDate"));
-			  Person.setDeathDateDisplay(rs.getString("DeathDateDisplay"));
-			  Person.setLink(rs.getString("Link"));
-			  Person.setDescription(rs.getString("Description"));
-			  Person.setPersonRole(rs.getString("PersonRole"));
-			  Person.setItemId(rs.getInt("ItemId"));
+
+			  Integer personId = rs.getInt("PersonId");
+			  if(!rs.wasNull()) {
+				Person.setPersonId(personId);
+			  }
+			  
+			  String firstName = rs.getString("FirstName");
+			  if(!rs.wasNull()) {
+				Person.setFirstName(firstName);
+			  }
+			  
+			  String lastName = rs.getString("LastName");
+			  if(!rs.wasNull()) {
+				Person.setLastName(lastName);
+			  }
+			  
+			  String birthPlace = rs.getString("BirthPlace");
+			  if(!rs.wasNull()) {
+				Person.setBirthPlace(birthPlace);
+			  }
+
+			  String birthDate = rs.getString("BirthDate");
+			  if(!rs.wasNull()) {
+				Person.setBirthDate(birthDate);
+			  }
+			  
+			  String birthDateDisplay = rs.getString("BirthDateDisplay");
+			  if(!rs.wasNull()) {
+				Person.setBirthDateDisplay(birthDateDisplay);
+			  }
+
+			  String deathPlace = rs.getString("DeathPlace");
+			  if(!rs.wasNull()) {
+				Person.setDeathPlace(deathPlace);
+			  }
+
+			  String deathDate = rs.getString("DeathDate");
+			  if(!rs.wasNull()) {
+				Person.setDeathDate(deathDate);
+			  }
+			  
+			  String deathDateDisplay = rs.getString("DeathDateDisplay");
+			  if(!rs.wasNull()) {
+				Person.setDeathDateDisplay(deathDateDisplay);
+			  }
+			  
+			  String personLink = rs.getString("Link");
+			  if(!rs.wasNull()) {
+				Person.setLink(personLink);
+			  }
+			  
+			  String personDescription = rs.getString("Description");
+			  if(!rs.wasNull()) {
+				Person.setDescription(personDescription);
+			  }
+			  
+			  String personRole = rs.getString("PersonRole");
+			  if(!rs.wasNull()) {
+				Person.setPersonRole(personRole);
+			  }
+			  
+			  Integer itemId = rs.getInt("ItemId");
+			  if(!rs.wasNull()) {
+				Person.setItemId(itemId);
+			  }
+			  
 			  personList.add(Person);
 		   }
 

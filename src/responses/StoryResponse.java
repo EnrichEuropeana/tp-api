@@ -1047,7 +1047,7 @@ public class StoryResponse {
 	    HttpURLConnection con = null;
 	    BufferedReader in = null;
 		try {
-			URL storySolr = new URL(PropertiesCache.getInstance().getProperty("SOLR") + "/solr/Stories/dataimport?command=delta-import&commit=true");
+			URL storySolr = new URL(PropertiesCache.getInstance().getProperty("SOLR") + "/solr/merged_core/dataimport?command=delta-import&commit=true");
 		    con = (HttpURLConnection) storySolr.openConnection();
 		    con.setRequestMethod("GET");
 		    in = new BufferedReader(
@@ -1060,17 +1060,17 @@ public class StoryResponse {
 		    in.close();
 		    con.disconnect();
 
-		    URL itemSolr = new URL(PropertiesCache.getInstance().getProperty("SOLR") + "/solr/Items/dataimport?command=delta-import&commit=true");
-		    con = (HttpURLConnection) itemSolr.openConnection();
-		    con.setRequestMethod("GET");
-		    in = new BufferedReader(
-		    new InputStreamReader(con.getInputStream()));
-		    content = new StringBuffer();
-		    while ((inputLine = in.readLine()) != null) {
-		        content.append(inputLine);
-		    }
-		    in.close();
-		    con.disconnect();
+		    // URL itemSolr = new URL(PropertiesCache.getInstance().getProperty("SOLR") + "/solr/Items/dataimport?command=delta-import&commit=true");
+		    // con = (HttpURLConnection) itemSolr.openConnection();
+		    // con.setRequestMethod("GET");
+		    // in = new BufferedReader(
+		    // new InputStreamReader(con.getInputStream()));
+		    // content = new StringBuffer();
+		    // while ((inputLine = in.readLine()) != null) {
+		    //     content.append(inputLine);
+		    // }
+		    // in.close();
+		    // con.disconnect();
 		}  catch (Exception e) {
         } finally {
         	try {

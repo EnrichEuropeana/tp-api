@@ -243,6 +243,7 @@ public class RankingResponse {
 						"	s.TeamId as TeamId, \r\n" + 
 					    " 	s.TeamName as TeamName, \r\n" +
 					    " 	s.EventUser as EventUser, \r\n" +
+						"   'Team' as Role, \r\n" +
 						"    SUM(s.Miles) as Miles,\r\n" + 
 						"    SUM(s.Miles) / (SELECT COUNT(*) FROM TeamUser WHERE TeamId = s.TeamId) as MilesPerPerson,\r\n" + 
 						"    SUM(s.Locations) as Locations,\r\n" + 
