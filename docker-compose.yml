@@ -1,5 +1,3 @@
-version: '3.7'
-
 services:
   tomcat:
     image: tomcat:9-jre8-openjdk-bullseye
