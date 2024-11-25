@@ -1128,8 +1128,18 @@ public class ItemResponse {
 			String exported = executeDataQuery(exportedQuery, "Exported");
 			String recordIdQuery = "SELECT * FROM Story WHERE StoryId = (SELECT StoryId FROM Item WHERE ItemId = " + id + ")";
 			String recordId = executeDataQuery(recordIdQuery, "ExternalRecordId");
-			String[] recordIdSplit = recordId.split("/");
-			recordId =  "/" + recordIdSplit[recordIdSplit.length - 2] + "/" + recordIdSplit[recordIdSplit.length - 1];
+			// String[] recordIdSplit = recordId.split("/");
+			// recordId =  "/" + recordIdSplit[recordIdSplit.length - 2] + "/" + recordIdSplit[recordIdSplit.length - 1];
+			if (recordId == null || recordId.isEmpty()) {
+                recordId = "";
+            } else {
+                String[] recordIdSplit = recordId.split("/");
+                if (recordIdSplit.length < 3) {
+                    recordId = "";
+                } else {
+                    recordId = "/" + recordIdSplit[recordIdSplit.length - 2] + "/" + recordIdSplit[recordIdSplit.length - 1];
+                }
+            }
 
 			// Case for status 4 is not working yet
 			if (completionStatus.equals("4") && exported.equals("0") ) {
